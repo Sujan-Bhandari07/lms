@@ -1,0 +1,14 @@
+{
+  "name": "@lms/source",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {},
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "@nx/js": "24.0.0",
+    "@nx/workspace": "24.0.0",
+    "nx": "24.0.0",
+    "typescript": "~6.0.3"
+  }
+}
