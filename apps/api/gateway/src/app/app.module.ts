@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import {ConfigModule, ConfigService} from "@nestjs/config"
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { UsersController } from './controllers/user.controller';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           transport: Transport.RMQ,
           options: {
             urls: [config.getOrThrow<string>('RABBITMQ_URL')],
-            queue: 'USERS_QUEUE',
+            queue: config.getOrThrow<string>("USERS_QUEUE"),
             queueOptions: { durable: true },
           },
         }),
@@ -29,7 +30,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           transport: Transport.RMQ,
           options: {
             urls: [config.getOrThrow<string>('RABBITMQ_URL')],
-            queue: 'COURSES_QUEUE',
+            queue: config.getOrThrow<string>("COURSES_QUEUE"),
             queueOptions: { durable: true },
           },
         }),
@@ -42,7 +43,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           transport: Transport.RMQ,
           options: {
             urls: [config.getOrThrow<string>('RABBITMQ_URL')],
-            queue: 'PAYMENST_QUEUE',
+            queue: config.getOrThrow<string>("PAYMENTS_QUEUE"),
             queueOptions: { durable: true },
           },
         }),
@@ -51,7 +52,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     ]),
 
   ],
-  controllers: [AppController],
+  controllers: [AppController,UsersController],
   providers: [AppService],
 })
 export class AppModule {}

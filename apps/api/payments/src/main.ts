@@ -3,10 +3,11 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { MicroserviceOptions,Transport } from '@nestjs/microservices';
+import {ServiceExceptionFilter} from "@lms/filters"
 
 async function bootstrap() {
   process.title="Payments service"
@@ -23,6 +24,14 @@ async function bootstrap() {
       },
     },
   );
+  app.useGlobalFilters(new ServiceExceptionFilter())
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist:true,
+    transform:true,
+    forbidNonWhitelisted:true
+
+  }))
+
 
   await app.listen();
   Logger.log("Payments service started");

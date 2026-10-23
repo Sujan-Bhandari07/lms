@@ -26,6 +26,9 @@
       ],
       "@lms/db": [
         "./libs/db/src/index.ts"
+      ],
+      "@lms/filters": [
+        "./libs/filters/src/index.ts"
       ]
     }
   },
