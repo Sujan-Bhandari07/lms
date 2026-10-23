@@ -7,8 +7,104 @@
       "sharedGlobals"
     ],
     "production": [
-      "default"
+      "default",
+      "!{projectRoot}/.eslintrc.json",
+      "!{projectRoot}/eslint.config.mjs",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.spec.json"
     ],
     "sharedGlobals": []
-  }
+  },
+  "generators": {
+    "@nx/nest": {
+      "application": {
+        "unitTestRunner": "none",
+        "e2eTestRunner": "none"
+      },
+      "library": {
+        "unitTestRunner": "none"
+      },
+      "service": {
+        "unitTestRunner": "none"
+      },
+      "controller": {
+        "unitTestRunner": "none"
+      },
+      "class": {
+        "unitTestRunner": "none"
+      },
+      "gateway": {
+        "unitTestRunner": "none"
+      },
+      "guard": {
+        "unitTestRunner": "none"
+      },
+      "interceptor": {
+        "unitTestRunner": "none"
+      },
+      "resolver": {
+        "unitTestRunner": "none"
+      },
+      "filter": {
+        "unitTestRunner": "none"
+      },
+      "pipe": {
+        "unitTestRunner": "none"
+      },
+      "provider": {
+        "unitTestRunner": "none"
+      },
+      "resource": {
+        "unitTestRunner": "none"
+      }
+    },
+    "@nx/next": {
+      "application": {
+        "e2eTestRunner": "none",
+        "style": "css",
+        "linter": "eslint"
+      },
+      "library": {
+        "unitTestRunner": "none"
+      }
+    }
+  },
+  "plugins": [
+    {
+      "plugin": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "previewTargetName": "preview",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps",
+        "serveStaticTargetName": "serve-static"
+      }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nx/next/plugin",
+      "options": {
+        "startTargetName": "start",
+        "buildTargetName": "build",
+        "devTargetName": "dev",
+        "serveStaticTargetName": "serve-static",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
+    },
+    {
+      "plugin": "@nx/vitest",
+      "options": {
+        "testTargetName": "test",
+        "ciTargetName": "test-ci",
+        "testMode": "watch"
+      }
+    }
+  ]
 }

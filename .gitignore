@@ -7,6 +7,7 @@ out-tsc
 
 # dependencies
 node_modules
+.env
 
 # IDEs and editors
 /.idea
@@ -43,3 +44,9 @@ Thumbs.db
 .nx/migrate-runs
 .claude/worktrees
 .claude/settings.local.json
+
+# Next.js
+.next
+out
+vitest.config.*.timestamp*
+.vitest
