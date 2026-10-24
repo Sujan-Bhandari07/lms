@@ -14,6 +14,7 @@ import { Students, StudentsDocument } from "./schema/studentprofile";
 import { Tutors } from "./schema/tutorsprofie";
 import bcrypt from "bcryptjs";
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
+import { MediaClient } from "@lms/medias";
 @Injectable()
 export class AppService {
   constructor(
@@ -25,6 +26,7 @@ export class AppService {
     @InjectModel(Tutors.name)
     private readonly tutorModel: Model<Tutors>,
     private readonly eventemitter: EventEmitter2,
+    private readonly media:MediaClient
   ) {}
 
   async register(data: IRegister) {
@@ -34,11 +36,18 @@ export class AppService {
       throw new ConflictException(`User already exist with ${email}.`);
     }
     const hashedpassword = await bcrypt.hash(password, 10);
-    const profile= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRt_JtzhU6BiLY_rc1hxdlLoE_Cy8llGKkv-m4zl77LQ&s=10"
+    const profile =
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRt_JtzhU6BiLY_rc1hxdlLoE_Cy8llGKkv-m4zl77LQ&s=10';
+
+const response = await fetch(profile);
+const buffer = Buffer.from(await response.arrayBuffer());
+
+const base64 = buffer.toString("base64");
+const url = await this.media.upload(base64,"profile")
     const user = await this.userModel.create({
       fullname,
       email,
-      profilepic: profile,
+      profilepic: url.url,
       role,
       password: hashedpassword,
     });

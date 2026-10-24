@@ -29,6 +29,9 @@
       ],
       "@lms/filters": [
         "./libs/filters/src/index.ts"
+      ],
+      "@lms/medias": [
+        "./libs/medias/src/index.ts"
       ]
     }
   },
