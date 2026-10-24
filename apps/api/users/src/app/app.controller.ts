@@ -1,7 +1,7 @@
 import { Controller } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { MessagePattern, Payload } from "@nestjs/microservices";
-import { RegisterDto } from "@lms/shared";
+import { LoginDto, LogoutDto, RegisterDto, UUpdateUserDto } from "@lms/shared";
 
 @Controller()
 export class AppController {
@@ -9,7 +9,39 @@ export class AppController {
 
   @MessagePattern("register")
   register(@Payload() data: RegisterDto) {
-    console.log(data,'data drom user ')
+
     return this.userService.register(data);
   }
+
+  @MessagePattern("login")
+  login( @Payload()  data:LoginDto){
+    return this.userService.login(data)
+
+  }
+
+  @MessagePattern("logout")
+  logout( @Payload()  data:LogoutDto){
+    return this.userService.logout(data)
+
+  }
+
+   @MessagePattern("getprofile")
+  getprofile( @Payload()  data:LogoutDto){
+    return this.userService.getprofile(data)
+
+  }
+
+
+    @MessagePattern("updateprofile")
+  updateprofile( @Payload()  data:UUpdateUserDto){
+    return this.userService.updateprofile(data)
+
+  }
+
+
+ 
+
+
+
+
 }

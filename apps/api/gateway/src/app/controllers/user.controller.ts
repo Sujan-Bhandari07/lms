@@ -1,8 +1,23 @@
-import { RegisterDto } from "@lms/shared";
-import { Body, Controller, Inject, Post, Res } from "@nestjs/common";
+import { AuthReq, GUpdateUserDto, LoginDto, RegisterDto } from "@lms/shared";
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from "@nestjs/common";
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ClientProxy } from "@nestjs/microservices";
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import { firstValueFrom } from "rxjs";
+import { AuthGuard } from "../guards/auth.guard";
 
 @Controller("users")
 export class UsersController {
@@ -14,8 +29,6 @@ export class UsersController {
     @Body() data: RegisterDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    console.log("data from gateway", data);
-
     const response = await firstValueFrom(
       this.usersClient.send("register", data),
     );
@@ -34,4 +47,72 @@ export class UsersController {
       },
     };
   }
+
+  @Post("login")
+  async login(
+    @Body() data: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await firstValueFrom(this.usersClient.send("login", data));
+    res.cookie("token", result.token, { maxAge: 7 * 24 * 60 * 60 * 1000 });
+
+    return {
+      success: true,
+      message: "Login successfull.",
+      payload: {
+        _id: result.data._id,
+        fullname: result.data.fullname,
+        email: result.data.email,
+        role: result.data.role,
+        profilepic: result.data.profilepic,
+      },
+    };
+  }
+
+  @Post("logout")
+  async logout(@Res() res: Response, @Req() req: Request) {
+    const { token } = req.cookies;
+    if (!token) {
+      throw new UnauthorizedException("Already been logout.");
+    }
+    const result = await firstValueFrom(
+      this.usersClient.send("logout", { token }),
+    );
+    if (result.success) {
+      res.clearCookie("token");
+      return {
+        message: result.message,
+      };
+    }
+  }
+
+  @Get("getprofile")
+  @UseGuards(AuthGuard)
+  async getprofile(@Req() req: AuthReq) {
+    const token = req.user;
+    return firstValueFrom(this.usersClient.send("getprofile", { token }));
+  }
+
+  @Post("updateprofile")
+  @UseGuards(AuthGuard)
+  @UseInterceptors(
+    FileInterceptor("profile", {
+      limits: { fileSize: 5 * 1024 * 1024 },
+      fileFilter: (_req, file, cb) =>
+        file.mimetype.startsWith("image/")
+          ? cb(null, true)
+          : cb(new BadRequestException("Only image files are allowed"), false),
+    }),
+  )
+  async updateprofile(@Body() data: GUpdateUserDto,
+@UploadedFile() file:Express.Multer.File,
+@Req() req:AuthReq) {
+
+  const token=req.user
+  const buffer=  file?.buffer.toString("base64")
+
+  return firstValueFrom(this.usersClient.send("updateprofile",{
+    ...data,token,...(buffer && { profile:buffer})
+  }))
+}
 }

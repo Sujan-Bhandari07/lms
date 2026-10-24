@@ -6,6 +6,7 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
+import cookieParser from "cookie-parser"
 import {GatewayExceptionFilter} from "@lms/filters"
 
 async function bootstrap() {
@@ -21,6 +22,7 @@ async function bootstrap() {
     forbidNonWhitelisted:true
 
   }))
+    app.use(cookieParser());
   await app.listen(port);
   Logger.log(`🚀 Gateway is running on: http://localhost:${port}/${globalPrefix}`);
 }
