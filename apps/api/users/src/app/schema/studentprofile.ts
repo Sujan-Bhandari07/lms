@@ -12,6 +12,8 @@ class Certificate {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: "Tutors" })
   tutor: Types.ObjectId;
+
+  
 }
 
 const Certificateschema = SchemaFactory.createForClass(Certificate);

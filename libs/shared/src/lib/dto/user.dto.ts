@@ -92,7 +92,7 @@ export class UUpdateUserDto extends GUpdateUserDto {
   token!: string;
 }
 
-export class CreateCerticateDto {
+export class GCreateCerticateDto {
   @IsString({ message: "Coursename must be string ." })
   @IsNotEmpty({ message: "Coursename cannot be empty." })
   @IsDefined({ message: "Coursename is required" })
@@ -104,18 +104,16 @@ export class CreateCerticateDto {
   tutor!: string;
 
   @IsMongoId()
+  @IsNotEmpty({ message: "Course id  cannot be empty." })
+  @IsDefined({ message: "Course id  is required" })
+  courseid!: string;
+}
+
+export class UCreateCerticateDto extends GCreateCerticateDto {
+  @IsMongoId()
   @IsNotEmpty({ message: "Student id  cannot be empty." })
   @IsDefined({ message: "Student id  is required" })
   studentid!: string;
-
-
- @IsMongoId()
-  @IsNotEmpty({ message: "Course id  cannot be empty." })
-  @IsDefined({ message: "Course id  is required" })
-  courseid!:string
-
-
-
 }
 
 export class GUpdateTutorDto {
@@ -144,4 +142,19 @@ export class VerifyTutorDto {
   userid!: string;
 }
 
-export class UpdateEnrolledCourseDto extends CreateCerticateDto {}
+export class GUpdateEnrolledCourseDto extends GCreateCerticateDto {}
+export class UUpdateEnrolledCourseDto extends UCreateCerticateDto {}
+
+export class GMakeCourseCompletedDto {
+  @IsMongoId()
+  @IsNotEmpty({ message: "Course id  cannot be empty." })
+  @IsDefined({ message: "Course id  is required" })
+  courseid!: string;
+}
+
+export class UMakeCourseCompletedDto extends GMakeCourseCompletedDto {
+  @IsMongoId()
+  @IsNotEmpty({ message: "Student id  cannot be empty." })
+  @IsDefined({ message: "Student id  is required" })
+  studentid!: string;
+}

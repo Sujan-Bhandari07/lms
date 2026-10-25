@@ -10,6 +10,7 @@ import {
 } from "@nestjs/common";
 import Redis from "ioredis";
 import {
+  ICompleteCourse,
   ICreateCertificate,
   ILogin,
   IRegister,
@@ -305,5 +306,25 @@ export class AppService {
         : "Tutor unverified by admin.",
       tutor,
     );
+  }
+
+  async makecousecomplete(data: ICompleteCourse) {
+    const body = {
+      studentid: new Types.ObjectId(data.studentid),
+      courseid: new Types.ObjectId(data.courseid),
+    };
+    const student = await this.studentModel.findOne({ userid: body.studentid });
+    if (!student) {
+      throw new NotFoundException("Student not found");
+    }
+    const course = student.enrolledcourses.find(
+      (data) => data.courseid === body.courseid,
+    );
+    if (!course) {
+      throw new BadRequestException("Pls enrolled the course first.");
+    }
+    course.iscompleted = !course.iscompleted;
+    await student.save();
+    return success("Toggled iscompleted");
   }
 }

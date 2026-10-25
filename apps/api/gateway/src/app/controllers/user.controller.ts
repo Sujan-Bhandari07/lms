@@ -1,4 +1,13 @@
-import { AuthReq, GUpdateUserDto, LoginDto, RegisterDto } from "@lms/shared";
+import {
+  AuthReq,
+  GCreateCerticateDto,
+  GMakeCourseCompletedDto,
+  GUpdateEnrolledCourseDto,
+  GUpdateTutorDto,
+  GUpdateUserDto,
+  LoginDto,
+  RegisterDto,
+} from "@lms/shared";
 import {
   BadRequestException,
   Body,
@@ -13,7 +22,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from "@nestjs/platform-express";
 import { ClientProxy } from "@nestjs/microservices";
 import type { Request, Response } from "express";
 import { firstValueFrom } from "rxjs";
@@ -104,15 +113,87 @@ export class UsersController {
           : cb(new BadRequestException("Only image files are allowed"), false),
     }),
   )
-  async updateprofile(@Body() data: GUpdateUserDto,
-@UploadedFile() file:Express.Multer.File,
-@Req() req:AuthReq) {
+  async updateprofile(
+    @Body() data: GUpdateUserDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: AuthReq,
+  ) {
+    const token = req.user;
+    const buffer = file?.buffer.toString("base64");
 
-  const token=req.user
-  const buffer=  file?.buffer.toString("base64")
+    return firstValueFrom(
+      this.usersClient.send("updateprofile", {
+        ...data,
+        token,
+        ...(buffer && { profile: buffer }),
+      }),
+    );
+  }
 
-  return firstValueFrom(this.usersClient.send("updateprofile",{
-    ...data,token,...(buffer && { profile:buffer})
-  }))
-}
+  @Post("updateenrolledcourse")
+  @UseGuards(AuthGuard)
+  updatecourse(@Body() data: GUpdateEnrolledCourseDto, @Req() req: AuthReq) {
+    return firstValueFrom(
+      this.usersClient.send("updateenrolledcourse", {
+        ...data,
+        studentid: req.user,
+      }),
+    );
+  }
+
+
+ @Post("updatecertificate")
+  @UseGuards(AuthGuard)
+  updatecertificate(@Body() data: GCreateCerticateDto, @Req() req: AuthReq) {
+    return firstValueFrom(
+      this.usersClient.send("updatecertificate", {
+        ...data,
+        studentid: req.user,
+      }),
+    );
+  }
+
+
+
+
+  @Post("updatetutorprofile")
+  @UseGuards(AuthGuard)
+  updatetutorprofile(@Body() data: GUpdateTutorDto, @Req() req: AuthReq) {
+    return firstValueFrom(
+      this.usersClient.send("updatetutorprofile", {
+        ...data,
+        userid: req.user,
+      }),
+    );
+  }
+
+
+    @Post("verifytutor")
+  @UseGuards(AuthGuard)
+  verifytutor( @Req() req: AuthReq) {
+    return firstValueFrom(
+      this.usersClient.send("verifytutor", {
+        
+        userid: req.user,
+      }),
+    );
+  }
+
+  @Post("toggleiscompleted")
+  @UseGuards(AuthGuard)
+  toggleiscompleted( @Body() data:GMakeCourseCompletedDto, @Req() req: AuthReq) {
+    return firstValueFrom(
+      this.usersClient.send("toggleiscompleted", {
+        ...data,
+        studentidid: req.user,
+      }),
+    );
+  }
+
+  
+
+
+  
+
+
 }

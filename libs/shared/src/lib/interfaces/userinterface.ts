@@ -36,6 +36,11 @@ interface IverifyTutor{
 
 }
 
+interface ICompleteCourse{
+    courseid:string,
+    studentid:string
+}
 
 
-export {IRegister,IverifyTutor,IUpdateTutor,ILogin,IUpdateUser,ICreateCertificate,IUpdateEnrolledCourse}
+
+export {IRegister,IverifyTutor,ICompleteCourse,IUpdateTutor,ILogin,IUpdateUser,ICreateCertificate,IUpdateEnrolledCourse}

@@ -1,16 +1,17 @@
-import { Controller } from "@nestjs/common";
-import { AppService } from "./app.service";
-import { MessagePattern, Payload } from "@nestjs/microservices";
 import {
-  CreateCerticateDto,
   LoginDto,
   LogoutDto,
   RegisterDto,
-  UpdateEnrolledCourseDto,
+  UCreateCerticateDto,
+  UMakeCourseCompletedDto,
+  UUpdateEnrolledCourseDto,
   UUpdateTutorDto,
   UUpdateUserDto,
-  VerifyTutorDto,
+  VerifyTutorDto
 } from "@lms/shared";
+import { Controller } from "@nestjs/common";
+import { MessagePattern, Payload } from "@nestjs/microservices";
+import { AppService } from "./app.service";
 
 @Controller()
 export class AppController {
@@ -42,12 +43,12 @@ export class AppController {
   }
 
   @MessagePattern("updateenrolledcourse")
-  updateenrolledcourse(@Payload() data: UpdateEnrolledCourseDto) {
+  updateenrolledcourse(@Payload() data: UUpdateEnrolledCourseDto) {
     return this.userService.updateenrolledcourse(data);
   }
 
   @MessagePattern("updatecertificate")
-  updatecertificate(@Payload() data: CreateCerticateDto) {
+  updatecertificate(@Payload() data:UCreateCerticateDto) {
     return this.userService.updatecertificates(data);
   }
 
@@ -59,5 +60,10 @@ export class AppController {
   @MessagePattern("verifytutor")
   verifytutor(@Payload() data: VerifyTutorDto) {
     return this.userService.verifyTutor(data);
+  }
+
+  @MessagePattern("toggleiscompleted")
+  toggleiscompleted(@Payload() data: UMakeCourseCompletedDto) {
+    return this.userService.makecousecomplete(data);
   }
 }
