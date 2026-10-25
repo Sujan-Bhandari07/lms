@@ -1,96 +1,273 @@
-# Lms
+ <div align="center">
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+  <img src="assets/logo.svg" alt="Sikai Logo" width="120" />
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+  # Sikai — सिकाइ
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+  ### Learn Smarter. Grow Together.
 
-## Run tasks
+  **An AI-powered Learning Management System**
 
-To run tasks with Nx use:
+  <p>
+    <img src="https://img.shields.io/badge/Status-In%20Development-orange?style=for-the-badge" alt="In Development" />
+    <img src="https://img.shields.io/badge/Monorepo-Nx-143055?style=for-the-badge&logo=nx" alt="Nx" />
+    <img src="https://img.shields.io/badge/Frontend-Next.js-black?style=for-the-badge&logo=next.js" alt="Next.js" />
+    <img src="https://img.shields.io/badge/Backend-NestJS-E0234E?style=for-the-badge&logo=nestjs" alt="NestJS" />
+  </p>
 
-```sh
-npx nx <target> <project-name>
+  **Empowering learning through technology, intelligence, and innovation.**
+
+</div>
+
+---
+
+> [!WARNING]
+> **Sikai is currently under active development.**
+>
+> Features, APIs, architecture, and setup instructions are subject to change. This project is not yet a production-ready release.
+
+## About Sikai
+
+**Sikai (सिकाइ)** means *learning* in Nepali. It represents a vision of making education more accessible, interactive, and intelligent through modern web technologies and artificial intelligence.
+
+Sikai is a Learning Management System (LMS) being developed using **Next.js, NestJS, and Nx**, with a microservices-based backend architecture.
+
+Beyond traditional learning management, the project explores AI-powered learning experiences using Large Language Models (LLMs), LangChain, LangGraph, and the Model Context Protocol (MCP).
+
+The goal is to build a scalable platform that brings together students, tutors, courses, real-time communication, and intelligent learning tools.
+
+## ✨ Key Features & Goals
+
+- 🎓 **Learning Management:** Course, student, tutor, and certificate workflows.
+- 🤖 **AI-Powered Learning:** Explore LLM-powered assistance and intelligent learning workflows.
+- 🧠 **AI Agents:** Build agentic workflows with LangChain and LangGraph.
+- 🔌 **MCP Integration:** Connect AI workflows to tools and external capabilities through MCP servers.
+- ⚡ **Real-Time Communication:** WebSockets for interactive, real-time experiences.
+- 🔐 **Session Management:** Redis-backed sessions and fast data access.
+- 📨 **Asynchronous Messaging:** RabbitMQ for communication between backend services.
+- ☁️ **Cloud Media Storage:** Cloudinary integration for image and media uploads.
+- 🏗️ **Microservices Architecture:** Separate backend services with clear responsibilities.
+- 🐳 **Containerized Infrastructure:** Docker for local development and supporting services.
+- 📦 **Monorepo Development:** Nx for organizing frontend, backend applications, and shared libraries.
+
+*These are project goals and integrations; implementation and completion may vary while development continues.*
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|---|---|
+| Monorepo | Nx |
+| Frontend | Next.js, React, Tailwind CSS |
+| Backend | NestJS, Node.js, TypeScript |
+| Database | MongoDB, Mongoose |
+| Caching & Sessions | Redis |
+| Message Broker | RabbitMQ |
+| AI & LLM | LLMs, LangChain, LangGraph |
+| AI Tool Integration | Model Context Protocol (MCP) |
+| Real-Time | WebSockets |
+| Media Management | Cloudinary |
+| Infrastructure | Docker, Docker Compose |
+| Package Manager | npm |
+
+## 🏛️ System Architecture
+
+Sikai uses an Nx monorepo to organize the frontend and backend services within a unified workspace.
+
+```mermaid
+flowchart TB
+    User["Learner / Tutor"] --> Web["Next.js Frontend"]
+    Web --> Gateway["NestJS API Gateway"]
+
+    Gateway --> Users["Users Service"]
+    Gateway --> Courses["Courses Service"]
+    Gateway --> Media["Media Service"]
+
+    Web <-->|"Real-time events"| WS["WebSocket Layer"]
+
+    Users --> Mongo[("MongoDB")]
+    Courses --> Mongo
+
+    Gateway <--> Redis[("Redis")]
+    Gateway <--> RMQ["RabbitMQ"]
+    RMQ <--> Users
+    RMQ <--> Courses
+    RMQ <--> Media
+
+    Media --> Cloudinary["Cloudinary"]
+
+    Gateway --> AI["LLM / LangChain"]
+    AI --> Graph["LangGraph"]
+    Graph <--> MCP["MCP Server"]
 ```
 
-For example:
+*This diagram illustrates the intended high-level design and may differ from the current implementation.*
 
-```sh
-npx nx build myproject
+### Why this architecture?
+
+- **Nx** — manages multiple applications and shared libraries in one repository.
+- **Next.js** — powers the frontend experience.
+- **NestJS** — provides a modular backend and microservice infrastructure.
+- **MongoDB** — stores application data.
+- **Redis** — supports session storage and caching.
+- **RabbitMQ** — enables asynchronous communication between services.
+- **LangChain & LangGraph** — provide building blocks for LLM applications and agent workflows.
+- **MCP** — enables AI applications to interact with supported tools and resources.
+- **WebSockets** — enable bidirectional, real-time communication.
+- **Cloudinary** — manages cloud-hosted media.
+- **Docker** — simplifies local infrastructure setup.
+
+## 📂 Project Structure
+
+The following is an illustrative structure. Adjust it to match the actual applications and libraries in your repository.
+
+```text
+sikai/
+├── apps/
+│   ├── web/                  # Next.js frontend
+│   └── api/
+│       ├── gateway/          # API gateway
+│       ├── users/             # User microservice
+│       ├── courses/           # Course microservice
+│       └── media/             # Media microservice
+├── libs/                      # Shared libraries and clients
+├── assets/
+│   └── logo.svg               # Project logo
+├── docker-compose.yml         # Local infrastructure
+├── nx.json
+├── package.json
+├── tsconfig.base.json
+└── README.md
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+## 🚀 Getting Started
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Prerequisites
 
-## Add new projects
+Make sure you have the following installed:
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+- [Node.js](https://nodejs.org/)
+- [npm](https://docs.npmjs.com/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- A MongoDB instance or MongoDB Atlas account
+- Cloudinary credentials if testing media uploads
+- API credentials for your configured LLM provider
 
-To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
-```sh
-npx nx add @nx/react
+### 1. Clone the repository
+
+```bash
+git clone <your-repository-url>
+cd <your-repository-folder>
 ```
 
-Use the plugin's generator to create new projects. For example, to create a new React app or library:
+### 2. Install dependencies
 
-```sh
-# Generate an app
-npx nx g @nx/react:app demo
-
-# Generate a library
-npx nx g @nx/react:lib some-lib
+```bash
+npm install
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+### 3. Configure environment variables
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Create the required `.env` files for the applications and services that need them.
 
-## Set up CI!
+Typical configuration includes:
 
-### Step 1
+- MongoDB connection URI
+- Redis connection settings
+- RabbitMQ connection URL and queue names
+- Cloudinary credentials
+- LLM provider API keys and model settings
+- Session configuration
+- MCP server configuration, where required
 
-To connect to Nx Cloud, run the following command:
+Use your existing service configuration as the source of truth. Do not commit secrets or real `.env` files to Git.
 
-```sh
-npx nx connect
+### 4. Start infrastructure
+
+If your repository includes a Docker Compose configuration:
+
+```bash
+docker compose up -d
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+Check the Compose file to see which services are configured and which ports they expose.
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### 5. Run the applications
 
-### Step 2
+First, inspect the projects available in your Nx workspace:
 
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
+```bash
+npx nx show projects
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+You can run a configured project with:
 
-## Install Nx Console
+```bash
+npx nx serve <project-name>
+```
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+Alternatively, use the development scripts defined in your root `package.json`, for example:
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+npm run dev:web
+npm run dev:gateway
+npm run dev:users
+npm run dev:courses
+```
 
-## Useful links
+These example scripts must exist in your repository before you can use them. Start the required dependencies and services according to your configuration.
 
-Learn more:
+## 🗺️ Development Roadmap
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Sikai is a work in progress. The roadmap will evolve as features are implemented and tested.
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- [ ] Complete core student and tutor workflows
+- [ ] Develop course management functionality
+- [ ] Finalize authentication and session management
+- [ ] Complete media upload integration
+- [ ] Improve inter-service communication
+- [ ] Expand real-time communication features
+- [ ] Integrate AI-powered learning assistance
+- [ ] Develop LangGraph agent workflows
+- [ ] Integrate MCP tools and resources
+- [ ] Add comprehensive testing and validation
+- [ ] Improve logging, monitoring, and error handling
+- [ ] Prepare deployment and production infrastructure
+
+## 🔒 Security
+
+Security is an important part of Sikai's development.
+
+- Keep API keys and credentials in environment variables.
+- Never commit session secrets or database credentials.
+- Validate and sanitize incoming requests.
+- Apply authentication and authorization to protected endpoints.
+- Restrict AI tools and MCP integrations to explicitly permitted operations.
+- Protect user data and uploaded media.
+
+## 🤝 Contributing
+
+Sikai is currently under development. Contributions, ideas, and constructive feedback are welcome.
+
+1. Open an issue to discuss a proposed change.
+2. Fork the repository and create a feature branch.
+3. Make focused changes consistent with the existing Nx workspace.
+4. Run the available checks and tests.
+5. Submit a pull request describing your changes.
+
+Please avoid sharing credentials, personal information, or sensitive security details in public issues.
+
+## 📄 License
+
+A license has not yet been specified. Until a license is added to the repository, do not assume that the project is available for unrestricted reuse or distribution.
+
+---
+
+<div align="center">
+
+  **सिकाइ — Learn today. Build tomorrow.**
+
+  *Proudly inspired by the Nepali spirit of learning and growth.*
+
+  **Status: Currently in Development 🚧**
+
+</div>
