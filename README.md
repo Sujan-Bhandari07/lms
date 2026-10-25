@@ -1,6 +1,22 @@
 <div align="center">
 
-<img src="assets/logo.svg" alt="Ujyalo logo" width="360" />
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="ujyalo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="30" fill="#172554"/>
+  <circle cx="64" cy="48" r="25" fill="url(#ujyalo)"/>
+  <path d="M64 12 V5 M64 91 V83 M28 48 H20 M108 48 H100 M38 22 L32 16 M90 22 L96 16"
+        stroke="#FDE68A" stroke-width="4" stroke-linecap="round"/>
+  <path d="M22 73 Q43 64 64 82 Q85 64 106 73 V94 Q85 86 64 101 Q43 86 22 94 Z"
+        fill="#FFFFFF"/>
+  <path d="M64 82 V101" stroke="#F59E0B" stroke-width="3" fill="none"/>
+</svg>
+
 
 # Ujyalo
 
