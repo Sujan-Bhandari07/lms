@@ -9,10 +9,19 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import Redis from "ioredis";
-import { ILogin, IRegister, IUpdateUser, success } from "@lms/shared";
+import {
+  ICreateCertificate,
+  ILogin,
+  IRegister,
+  IUpdateEnrolledCourse,
+  IUpdateTutor,
+  IUpdateUser,
+  IverifyTutor,
+  success,
+} from "@lms/shared";
 import { InjectModel } from "@nestjs/mongoose";
 import { UserDocument, Users } from "./schema/userschema";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { Students, StudentsDocument } from "./schema/studentprofile";
 import { Tutors } from "./schema/tutorsprofie";
 import bcrypt from "bcryptjs";
@@ -71,7 +80,9 @@ export class AppService {
         email: user.email,
         role: user.role,
         profilepic: user.profilepic,
-      }),  "EX",7*24*60*60
+      }),
+      "EX",
+      7 * 24 * 60 * 60,
     );
 
     this.eventemitter.emit("createprofile", {
@@ -128,7 +139,8 @@ export class AppService {
         role: isexistinguser.role,
         profilepic: isexistinguser.profilepic,
       }),
-      "EX",7*24*60*60
+      "EX",
+      7 * 24 * 60 * 60,
     );
 
     return {
@@ -143,71 +155,155 @@ export class AppService {
     };
   }
 
-
-
-  async logout(data:{token:string}){
-
-    this.redis.del(`session-${data.token}`)
+  async logout(data: { token: string }) {
+    this.redis.del(`session-${data.token}`);
     return {
-      success:true,
-      message:"Logout successfull."
-    }
-
+      success: true,
+      message: "Logout successfull.",
+    };
   }
 
-
-  async getprofile(data:{token:string}){
-    const user= await this.redis.get(`session-${data.token}`)
-    if(!user){
-      throw new UnauthorizedException("pls login first.")
+  async getprofile(data: { token: string }) {
+    const user = await this.redis.get(`session-${data.token}`);
+    if (!user) {
+      throw new UnauthorizedException("pls login first.");
     }
-    return success("user found",JSON.parse(user))
+    return success("user found", JSON.parse(user));
   }
 
-  async updateprofile(data:IUpdateUser){
-    const {fullname,password,profile,token} =data
-    const user= JSON.parse(await this.redis.get(`session-${token}`))
-    if(!user){
-      throw new NotFoundException("User not found")
+  async updateprofile(data: IUpdateUser) {
+    const { fullname, password, profile, token } = data;
+    const user = JSON.parse(await this.redis.get(`session-${token}`));
+    if (!user) {
+      throw new NotFoundException("User not found");
     }
-    const dbuser= await this.userModel.findOne({_id:user._id})
-    if(!dbuser){
-        throw new NotFoundException("User not found")
-    }
-
-    if(fullname){
-      dbuser.fullname=fullname
-      user.fullname=fullname
+    const dbuser = await this.userModel.findOne({ _id: user._id });
+    if (!dbuser) {
+      throw new NotFoundException("User not found");
     }
 
-    if(password){
-      const hashedpaswword=await bcrypt.hash(password,10)
-      dbuser.password=hashedpaswword
-
-    }
-    if(profile){
-      const url = await this.media.upload(profile,"profile")
-      dbuser.profilepic=url.url
-      user.profilepic=url.url
+    if (fullname) {
+      dbuser.fullname = fullname;
+      user.fullname = fullname;
     }
 
-    await dbuser.save()
-    await this.redis.set(`session-${token}`,JSON.stringify(user),"KEEPTTL")
+    if (password) {
+      const hashedpaswword = await bcrypt.hash(password, 10);
+      dbuser.password = hashedpaswword;
+    }
+    if (profile) {
+      const url = await this.media.upload(profile, "profile");
+      dbuser.profilepic = url.url;
+      user.profilepic = url.url;
+    }
 
+    await dbuser.save();
+    await this.redis.set(`session-${token}`, JSON.stringify(user), "KEEPTTL");
 
-    return success("User updated successfully ",user)
-
-
-    
-    
+    return success("User updated successfully ", user);
   }
 
+  async updatecertificates(data: ICreateCertificate) {
+    const { coursename, tutor, studentid, courseid } = data;
 
-   
+    const body = {
+      coursename,
+      tutor: new Types.ObjectId(tutor),
+      studentid: new Types.ObjectId(studentid),
+      courseid: new Types.ObjectId(courseid),
+    };
+    const studentprofile = await this.studentModel.findOne({
+      userid: body.studentid,
+    });
 
+    if (!studentprofile) {
+      throw new NotFoundException("Student not found.");
+    }
 
-  
+    const isenrolled = studentprofile.enrolledcourses.find(
+      (item) => item.courseid === body.courseid,
+    );
 
+    if (!isenrolled) {
+      throw new BadRequestException("pls enrolled the course first.");
+    }
 
+    if (isenrolled.iscompleted) {
+      studentprofile.certificates.push({
+        coursename,
+        tutor: body.tutor,
+        courseid: body.courseid,
+      });
 
+      await studentprofile.save();
+
+      return success("Certifacte added to student profile", studentprofile);
+    } else {
+      throw new BadRequestException("Pls complete the enrolled course first.");
+    }
+  }
+
+  async updateenrolledcourse(data: IUpdateEnrolledCourse) {
+    const { coursename, tutor, studentid, courseid } = data;
+    const body = {
+      coursename,
+      tutor: new Types.ObjectId(tutor),
+      studentid: new Types.ObjectId(studentid),
+      courseid: new Types.ObjectId(courseid),
+    };
+
+    const student = await this.studentModel.findOne({ userid: body.studentid });
+    if (!student) {
+      throw new NotFoundException("Student profile is not found.");
+    }
+    const isalreadyenrolled = student.enrolledcourses.find(
+      (item) => item.courseid === body.courseid,
+    );
+    if (isalreadyenrolled) {
+      throw new ConflictException("You have already enrolled this course .");
+    }
+
+    student.enrolledcourses.push({
+      coursename: body.coursename,
+      courseid: body.courseid,
+      tutor: body.tutor,
+      iscompleted: false,
+    });
+    await student.save();
+
+    return success("Enrolled to the course", student);
+  }
+
+  async UpdateTutorprofile(data: IUpdateTutor) {
+    const { acedemics, experience, userid } = data;
+    const uu = new Types.ObjectId(userid);
+    const tutor = await this.tutorModel.findOne({ userid: uu });
+    if (!tutor) {
+      throw new NotFoundException("Tutor not found");
+    }
+    tutor.acedemics = acedemics;
+    tutor.experience = experience;
+    await tutor.save();
+
+    return success("Tutor profile updated successfully.");
+  }
+
+  async verifyTutor(data: IverifyTutor) {
+    const tutor = await this.tutorModel.findOne({
+      userid: new Types.ObjectId(data.userid),
+    });
+    if (!tutor) {
+      throw new NotFoundException("Tutor not found");
+    }
+
+    tutor.isverified = !tutor.isverified;
+    await tutor.save();
+
+    return success(
+      tutor.isverified
+        ? "Tutor verifies successfully"
+        : "Tutor unverified by admin.",
+      tutor,
+    );
+  }
 }

@@ -17,4 +17,25 @@ interface IUpdateUser extends UpdateUser{
     token:string
 }
 
-export {IRegister,ILogin,IUpdateUser}
+interface ICreateCertificate{
+    coursename:string,
+    tutor:string
+    studentid:string
+    courseid:string
+}
+
+type IUpdateEnrolledCourse=ICreateCertificate
+interface IUpdateTutor {
+    experience:string,
+    userid:string,
+    acedemics:string
+}
+
+interface IverifyTutor{
+    userid:string
+
+}
+
+
+
+export {IRegister,IverifyTutor,IUpdateTutor,ILogin,IUpdateUser,ICreateCertificate,IUpdateEnrolledCourse}

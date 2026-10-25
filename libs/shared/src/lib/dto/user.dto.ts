@@ -2,11 +2,13 @@ import {
   IsDefined,
   IsEmail,
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
   IsStrongPassword,
 } from "class-validator";
+import { Types } from "mongoose";
 
 export enum UserRole {
   STUDENT = "student",
@@ -81,15 +83,65 @@ export class GUpdateUserDto {
   password?: string;
 }
 
-export class UUpdateUserDto extends GUpdateUserDto{
+export class UUpdateUserDto extends GUpdateUserDto {
   @IsOptional()
-  @IsString({message:"Profile must be string."})
-  profile?:string
+  @IsString({ message: "Profile must be string." })
+  profile?: string;
+
+  @IsString({ message: "token must be string." })
+  token!: string;
+}
+
+export class CreateCerticateDto {
+  @IsString({ message: "Coursename must be string ." })
+  @IsNotEmpty({ message: "Coursename cannot be empty." })
+  @IsDefined({ message: "Coursename is required" })
+  coursename!: string;
+
+  @IsMongoId()
+  @IsNotEmpty({ message: "Tutor cannot be empty." })
+  @IsDefined({ message: "Tutor is required" })
+  tutor!: string;
+
+  @IsMongoId()
+  @IsNotEmpty({ message: "Student id  cannot be empty." })
+  @IsDefined({ message: "Student id  is required" })
+  studentid!: string;
 
 
+ @IsMongoId()
+  @IsNotEmpty({ message: "Course id  cannot be empty." })
+  @IsDefined({ message: "Course id  is required" })
+  courseid!:string
 
-  @IsString({message:"token must be string."})
-  token!:string
 
 
 }
+
+export class GUpdateTutorDto {
+  @IsString({ message: "Academics of Tutor  must be string ." })
+  @IsNotEmpty({ message: "Academics of Tutor  cannot be empty." })
+  @IsDefined({ message: "Academics of Tutor  is required" })
+  acedemics!: string;
+
+  @IsString({ message: "Experience of tutor must be string ." })
+  @IsNotEmpty({ message: "Experience of tutor cannot be empty." })
+  @IsDefined({ message: "Experience of tutor is required" })
+  experience!: string;
+}
+
+export class UUpdateTutorDto extends GUpdateTutorDto {
+  @IsMongoId()
+  @IsNotEmpty({ message: "User id  cannot be empty." })
+  @IsDefined({ message: "User id  is required" })
+  userid!: string;
+}
+
+export class VerifyTutorDto {
+  @IsMongoId()
+  @IsNotEmpty({ message: "User id  cannot be empty." })
+  @IsDefined({ message: "User id  is required" })
+  userid!: string;
+}
+
+export class UpdateEnrolledCourseDto extends CreateCerticateDto {}
