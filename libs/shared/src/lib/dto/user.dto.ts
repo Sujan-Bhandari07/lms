@@ -8,7 +8,7 @@ import {
   IsString,
   IsStrongPassword,
 } from "class-validator";
-import { Types } from "mongoose";
+
 
 export enum UserRole {
   STUDENT = "student",
@@ -108,9 +108,17 @@ export class GCreateCerticateDto {
   @IsDefined({ message: "Course id  is required" })
   courseid!: string;
 }
+export class GUpdateEnrolledCourseDto extends GCreateCerticateDto {}
 
 export class UCreateCerticateDto extends GCreateCerticateDto {
   @IsMongoId()
+  @IsNotEmpty({ message: "Student id  cannot be empty." })
+  @IsDefined({ message: "Student id  is required" })
+  studentid!: string;
+}
+export class UUpdateEnrolledCourseDto extends GUpdateEnrolledCourseDto {
+
+   @IsMongoId()
   @IsNotEmpty({ message: "Student id  cannot be empty." })
   @IsDefined({ message: "Student id  is required" })
   studentid!: string;
@@ -142,8 +150,7 @@ export class VerifyTutorDto {
   userid!: string;
 }
 
-export class GUpdateEnrolledCourseDto extends GCreateCerticateDto {}
-export class UUpdateEnrolledCourseDto extends UCreateCerticateDto {}
+
 
 export class GMakeCourseCompletedDto {
   @IsMongoId()
@@ -158,3 +165,5 @@ export class UMakeCourseCompletedDto extends GMakeCourseCompletedDto {
   @IsDefined({ message: "Student id  is required" })
   studentid!: string;
 }
+
+

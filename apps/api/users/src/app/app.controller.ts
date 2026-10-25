@@ -44,6 +44,7 @@ export class AppController {
 
   @MessagePattern("updateenrolledcourse")
   updateenrolledcourse(@Payload() data: UUpdateEnrolledCourseDto) {
+    console.log(data)
     return this.userService.updateenrolledcourse(data);
   }
 

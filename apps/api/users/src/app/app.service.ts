@@ -28,9 +28,11 @@ import { Tutors } from "./schema/tutorsprofie";
 import bcrypt from "bcryptjs";
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
 import { MediaClient } from "@lms/medias";
+import { ClientProxy } from "@nestjs/microservices";
 @Injectable()
 export class AppService {
   constructor(
+    @Inject("COURSES_SERVICE") private readonly coursesclient: ClientProxy,
     @Inject(REDIS_CLIENT) private readonly redis: Redis,
     @InjectModel(Users.name)
     private readonly userModel: Model<UserDocument>,
@@ -206,6 +208,7 @@ export class AppService {
 
   async updatecertificates(data: ICreateCertificate) {
     const { coursename, tutor, studentid, courseid } = data;
+    console.log(data);
 
     const body = {
       coursename,
@@ -221,12 +224,20 @@ export class AppService {
       throw new NotFoundException("Student not found.");
     }
 
-    const isenrolled = studentprofile.enrolledcourses.find(
-      (item) => item.courseid === body.courseid,
+    const isenrolled = studentprofile.enrolledcourses.find((item) =>
+      item.courseid.equals(body.courseid),
     );
 
     if (!isenrolled) {
       throw new BadRequestException("pls enrolled the course first.");
+    }
+
+    const isalreadygotcertifcate = studentprofile.certificates.find((item) =>
+      item.courseid.equals(body.courseid),
+    );
+
+    if (isalreadygotcertifcate) {
+      throw new ConflictException("You have already created a certificate.");
     }
 
     if (isenrolled.iscompleted) {
@@ -246,6 +257,7 @@ export class AppService {
 
   async updateenrolledcourse(data: IUpdateEnrolledCourse) {
     const { coursename, tutor, studentid, courseid } = data;
+    console.log(data);
     const body = {
       coursename,
       tutor: new Types.ObjectId(tutor),
@@ -253,12 +265,17 @@ export class AppService {
       courseid: new Types.ObjectId(courseid),
     };
 
+    const user = await this.userModel.findById(body.studentid);
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
     const student = await this.studentModel.findOne({ userid: body.studentid });
     if (!student) {
       throw new NotFoundException("Student profile is not found.");
     }
-    const isalreadyenrolled = student.enrolledcourses.find(
-      (item) => item.courseid === body.courseid,
+    const isalreadyenrolled = student.enrolledcourses.find((item) =>
+      item.courseid.equals(body.courseid),
     );
     if (isalreadyenrolled) {
       throw new ConflictException("You have already enrolled this course .");
@@ -271,6 +288,12 @@ export class AppService {
       iscompleted: false,
     });
     await student.save();
+
+    this.coursesclient.emit("updateenrolled", {
+      userid: String(studentid),
+      username: String(user.fullname),
+      courseid: String(courseid),
+    });
 
     return success("Enrolled to the course", student);
   }
@@ -297,15 +320,10 @@ export class AppService {
       throw new NotFoundException("Tutor not found");
     }
 
-    tutor.isverified = !tutor.isverified;
+    tutor.isverified = true;
     await tutor.save();
 
-    return success(
-      tutor.isverified
-        ? "Tutor verifies successfully"
-        : "Tutor unverified by admin.",
-      tutor,
-    );
+    return success("Tutor verifies successfully", tutor);
   }
 
   async makecousecomplete(data: ICompleteCourse) {
@@ -313,18 +331,29 @@ export class AppService {
       studentid: new Types.ObjectId(data.studentid),
       courseid: new Types.ObjectId(data.courseid),
     };
+    const user = await this.userModel.findById(body.studentid);
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
     const student = await this.studentModel.findOne({ userid: body.studentid });
     if (!student) {
       throw new NotFoundException("Student not found");
     }
-    const course = student.enrolledcourses.find(
-      (data) => data.courseid === body.courseid,
+    const course = student.enrolledcourses.find((data) =>
+      data.courseid.equals(body.courseid),
     );
     if (!course) {
       throw new BadRequestException("Pls enrolled the course first.");
     }
-    course.iscompleted = !course.iscompleted;
+    course.iscompleted = true;
     await student.save();
-    return success("Toggled iscompleted");
+
+    this.coursesclient.emit("updatecompletion", {
+      userid: data.studentid,
+      username: user.fullname,
+      courseid: data.courseid,
+    });
+    return success("Course completed");
   }
 }

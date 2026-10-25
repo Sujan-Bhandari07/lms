@@ -1,12 +1,13 @@
 import {
   AuthReq,
-  GCreateCerticateDto,
-  GMakeCourseCompletedDto,
-  GUpdateEnrolledCourseDto,
-  GUpdateTutorDto,
+  UCreateCerticateDto,
+  UMakeCourseCompletedDto,
+  UUpdateEnrolledCourseDto,
+  UUpdateTutorDto,
   GUpdateUserDto,
   LoginDto,
   RegisterDto,
+  VerifyTutorDto,
 } from "@lms/shared";
 import {
   BadRequestException,
@@ -132,24 +133,20 @@ export class UsersController {
 
   @Post("updateenrolledcourse")
   @UseGuards(AuthGuard)
-  updatecourse(@Body() data: GUpdateEnrolledCourseDto, @Req() req: AuthReq) {
+  updatecourse(@Body() data: UUpdateEnrolledCourseDto) {
+
+    
     return firstValueFrom(
-      this.usersClient.send("updateenrolledcourse", {
-        ...data,
-        studentid: req.user,
-      }),
+      this.usersClient.send("updateenrolledcourse",data),
     );
   }
 
 
  @Post("updatecertificate")
   @UseGuards(AuthGuard)
-  updatecertificate(@Body() data: GCreateCerticateDto, @Req() req: AuthReq) {
+  updatecertificate(@Body() data: UCreateCerticateDto) {
     return firstValueFrom(
-      this.usersClient.send("updatecertificate", {
-        ...data,
-        studentid: req.user,
-      }),
+      this.usersClient.send("updatecertificate",data),
     );
   }
 
@@ -158,35 +155,26 @@ export class UsersController {
 
   @Post("updatetutorprofile")
   @UseGuards(AuthGuard)
-  updatetutorprofile(@Body() data: GUpdateTutorDto, @Req() req: AuthReq) {
+  updatetutorprofile(@Body() data: UUpdateTutorDto) {
     return firstValueFrom(
-      this.usersClient.send("updatetutorprofile", {
-        ...data,
-        userid: req.user,
-      }),
+      this.usersClient.send("updatetutorprofile",data),
     );
   }
 
 
     @Post("verifytutor")
   @UseGuards(AuthGuard)
-  verifytutor( @Req() req: AuthReq) {
+  verifytutor( @Body() data:VerifyTutorDto) {
     return firstValueFrom(
-      this.usersClient.send("verifytutor", {
-        
-        userid: req.user,
-      }),
+      this.usersClient.send("verifytutor", data),
     );
   }
 
   @Post("toggleiscompleted")
   @UseGuards(AuthGuard)
-  toggleiscompleted( @Body() data:GMakeCourseCompletedDto, @Req() req: AuthReq) {
+  toggleiscompleted( @Body() data:UMakeCourseCompletedDto) {
     return firstValueFrom(
-      this.usersClient.send("toggleiscompleted", {
-        ...data,
-        studentidid: req.user,
-      }),
+      this.usersClient.send("toggleiscompleted",data),
     );
   }
 

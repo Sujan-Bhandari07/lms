@@ -1,17 +1,182 @@
-import { Inject, Injectable } from '@nestjs/common';
-import {REDIS_CLIENT} from "@lms/redis"
-import Redis from 'ioredis';
-import { InjectModel } from '@nestjs/mongoose';
-import { Courses, CoursesDocument } from './schema/course.schema';
-import { Model } from 'mongoose';
-import { MediaClient } from '@lms/medias';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from "@nestjs/common";
+import { REDIS_CLIENT } from "@lms/redis";
+import Redis from "ioredis";
+import { InjectModel } from "@nestjs/mongoose";
+import { Courses, CoursesDocument } from "./schema/course.schema";
+import { Model } from "mongoose";
+import { MediaClient } from "@lms/medias";
+import {
+  ICreateCourse,
+  IGetTutorCourse,
+  IProvideRating,
+  ISendComment,
+  IUploadpart,
+  IUserCourse,
+  IVerifyCourse,
+  ICourceCompletion,
+  success,
+} from "@lms/shared";
 
 @Injectable()
 export class AppService {
   constructor(
-    @Inject(REDIS_CLIENT) private readonly redis:Redis,
-    @InjectModel(Courses.name) private readonly coursesmodel:Model<CoursesDocument>,
-    private readonly media:MediaClient
-  ){}
- 
+    @Inject(REDIS_CLIENT) private readonly redis: Redis,
+    @InjectModel(Courses.name)
+    private readonly coursesmodel: Model<CoursesDocument>,
+    private readonly media: MediaClient,
+  ) {}
+
+  async createcourse(data: ICreateCourse) {
+    const {
+      title,
+      desc,
+      coursename,
+      price,
+      discount = 0,
+      techstack,
+      tutor,
+    } = data;
+    const priceAfterDiscount = price - (discount / 100) * price;
+    const course = await this.coursesmodel.create({
+      title,
+      desc,
+      coursename,
+      price: priceAfterDiscount,
+      discount,
+      techstack,
+      tutor,
+    });
+    if (!course) {
+      throw new InternalServerErrorException("Something went wrong.");
+    }
+    return success("Course created successfully.", course);
+  }
+
+  async verifyCourse(data: IVerifyCourse) {
+    const { verify, courseid } = data;
+    const course = await this.coursesmodel.findById(courseid);
+    if (!course) {
+      throw new NotFoundException("Course not found");
+    }
+
+    course.isverified = verify;
+    await course.save();
+    return success("Course verified Successfully");
+  }
+
+  async sendComment(data: ISendComment) {
+    const { comment, studentname, courseid } = data;
+    const course = await this.coursesmodel.findById(courseid);
+    if (!course) {
+      throw new NotFoundException("Course not found");
+    }
+    course.comments.push({
+      comment,
+      studentname,
+    });
+    await course.save();
+    return success("Commented !");
+  }
+
+  async provideRating(data: IProvideRating) {
+    const { rating, studentname, courseid } = data;
+    const course = await this.coursesmodel.findById(courseid);
+    if (!course) {
+      throw new NotFoundException("Course not found");
+    }
+    course.ratings.push({
+      rating,
+      studentname,
+    });
+    await course.save();
+    return success("Rated !");
+  }
+
+  async uploadPart(data: IUploadpart) {
+    const { courseid, videourl, title, partdesc } = data;
+    const course = await this.coursesmodel.findById(courseid);
+    if (!course) {
+      throw new NotFoundException("Course not found");
+    }
+    if (!course.isverified) {
+      throw new BadRequestException(
+        "Pls wait until the admin variify your course.",
+      );
+    }
+    const url = await this.media.upload(videourl, "courses");
+    if (!url) {
+      throw new InternalServerErrorException(
+        "Something wen t wrong with cloudinary.",
+      );
+    }
+    course.parts.push({
+      title,
+      partdesc,
+      videourl: url.url,
+    });
+    await course.save();
+    return success("Part updated successfully");
+  }
+
+  async getCoursesByTutor(data: IGetTutorCourse) {
+    const { tutorid, tutorname } = data;
+    const courses = await this.coursesmodel.find({
+      tutor: {
+        tutorid,
+        tutorname,
+      },
+    });
+
+    if (!courses) {
+      throw new NotFoundException("You havent created a course.");
+    }
+    return success("Course found", courses);
+  }
+
+  async updateenrolled(data: IUserCourse) {
+    const { userid, username, courseid } = data;
+    const course = await this.coursesmodel.findById(courseid);
+    if (!course) throw new NotFoundException("Course not found");
+    course.totalenrolledstudents.push({
+      userid,
+      username,
+    });
+    await course.save()
+  }
+
+
+
+  async updatecompletion(data: IUserCourse) {
+    const { userid, username, courseid } = data;
+    const course = await this.coursesmodel.findById(courseid);
+    if (!course) throw new NotFoundException("Course not found");
+    course.totalcoursecompletions.push({
+      userid,
+      username,
+    });
+    await course.save()
+  }
+
+
+  async providecompletionoption(data:ICourceCompletion){
+const course= await this.coursesmodel.findById(data.courseid)
+if(!course){
+  throw new NotFoundException("Course not found")
+}
+course.providecompletionoption=!course.providecompletionoption
+await course.save()
+return success("toggled")
+
+  }
+
+
+
+
+  
 }

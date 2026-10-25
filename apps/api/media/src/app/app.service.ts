@@ -15,7 +15,7 @@ export class AppService {
   upload(buffer: Buffer, folder = 'uploads'): Promise<UploadedImage> {
     return new Promise((resolve, reject) => {
       const stream = this.cloudinary.uploader.upload_stream(
-        { folder, resource_type: 'image' },
+        { folder, resource_type: "auto" },
         (error: any, result: any) => {
           if (error || !result) {
             return reject(
