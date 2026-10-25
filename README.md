@@ -1,273 +1,197 @@
- <div align="center">
+<div align="center">
 
-  <img src="assets/logo.svg" alt="Sikai Logo" width="120" />
+<img src="assets/logo.svg" alt="Ujyalo logo" width="360" />
 
-  # Sikai — सिकाइ
+# Ujyalo
 
-  ### Learn Smarter. Grow Together.
+**Illuminate Your Learning.**
 
-  **An AI-powered Learning Management System**
+An AI-powered Learning Management System built with an Nx monorepo, Next.js, and NestJS microservices.
 
-  <p>
-    <img src="https://img.shields.io/badge/Status-In%20Development-orange?style=for-the-badge" alt="In Development" />
-    <img src="https://img.shields.io/badge/Monorepo-Nx-143055?style=for-the-badge&logo=nx" alt="Nx" />
-    <img src="https://img.shields.io/badge/Frontend-Next.js-black?style=for-the-badge&logo=next.js" alt="Next.js" />
-    <img src="https://img.shields.io/badge/Backend-NestJS-E0234E?style=for-the-badge&logo=nestjs" alt="NestJS" />
-  </p>
+<br />
 
-  **Empowering learning through technology, intelligence, and innovation.**
+![Status](https://img.shields.io/badge/status-currently%20in%20development-F59E0B?style=for-the-badge)
+
+<br />
+
+![Nx](https://img.shields.io/badge/Nx-143055?style=flat-square&logo=nx&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=nestjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=flat-square&logo=rabbitmq&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=flat-square&logo=cloudinary&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=flat-square&logo=langchain&logoColor=white)
+![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=flat-square)
+![MCP](https://img.shields.io/badge/MCP-black?style=flat-square)
+![WebSockets](https://img.shields.io/badge/WebSockets-real--time-010101?style=flat-square)
 
 </div>
 
 ---
 
-> [!WARNING]
-> **Sikai is currently under active development.**
->
-> Features, APIs, architecture, and setup instructions are subject to change. This project is not yet a production-ready release.
+> [!NOTE]
+> 🚧 **Currently in Development.** Ujyalo is under active development. Features, APIs, and architecture may change, and the project is not yet production-ready.
 
-## About Sikai
+## 📖 About
 
-**Sikai (सिकाइ)** means *learning* in Nepali. It represents a vision of making education more accessible, interactive, and intelligent through modern web technologies and artificial intelligence.
+Ujyalo is a Learning Management System that combines traditional course and learner management with AI-assisted discovery and learning. Students can find courses and instructors using natural language, ask an AI assistant for explanations, and chat directly with their instructors.
 
-Sikai is a Learning Management System (LMS) being developed using **Next.js, NestJS, and Nx**, with a microservices-based backend architecture.
+The backend is a set of NestJS microservices that communicate asynchronously through RabbitMQ, all managed in a single Nx monorepo.
 
-Beyond traditional learning management, the project explores AI-powered learning experiences using Large Language Models (LLMs), LangChain, LangGraph, and the Model Context Protocol (MCP).
+## ✨ Features
 
-The goal is to build a scalable platform that brings together students, tutors, courses, real-time communication, and intelligent learning tools.
+| Feature | Description | Status |
+| --- | --- | --- |
+| 🔎 **AI course discovery** | Find relevant courses using natural language | 🚧 In development |
+| 🧑‍🏫 **AI instructor discovery** | Match students with instructors by interests and learning needs | 🚧 In development |
+| 🤖 **AI learning assistant** | Ask questions and get AI-generated explanations | 🚧 In development |
+| 💬 **Student–instructor chat** | Real-time direct messaging over WebSockets | 🚧 In development |
+| 🎓 **Management workflows** | Courses, students, tutors, and certificates | 🚧 In development |
+| 🧩 **Microservice backend** | Message-driven services communicating via RabbitMQ | 🚧 In development |
 
-## ✨ Key Features & Goals
+<!-- VERIFY: update each status to ✅ Available as features are completed. -->
 
-- 🎓 **Learning Management:** Course, student, tutor, and certificate workflows.
-- 🤖 **AI-Powered Learning:** Explore LLM-powered assistance and intelligent learning workflows.
-- 🧠 **AI Agents:** Build agentic workflows with LangChain and LangGraph.
-- 🔌 **MCP Integration:** Connect AI workflows to tools and external capabilities through MCP servers.
-- ⚡ **Real-Time Communication:** WebSockets for interactive, real-time experiences.
-- 🔐 **Session Management:** Redis-backed sessions and fast data access.
-- 📨 **Asynchronous Messaging:** RabbitMQ for communication between backend services.
-- ☁️ **Cloud Media Storage:** Cloudinary integration for image and media uploads.
-- 🏗️ **Microservices Architecture:** Separate backend services with clear responsibilities.
-- 🐳 **Containerized Infrastructure:** Docker for local development and supporting services.
-- 📦 **Monorepo Development:** Nx for organizing frontend, backend applications, and shared libraries.
+## 🧰 Tech Stack
 
-*These are project goals and integrations; implementation and completion may vary while development continues.*
+| Layer | Technologies |
+| --- | --- |
+| **Monorepo** | Nx, npm |
+| **Frontend** | Next.js, React, Tailwind CSS |
+| **Backend** | NestJS, TypeScript |
+| **Data** | MongoDB with Mongoose, Redis (sessions and caching) |
+| **Messaging** | RabbitMQ |
+| **Real-time** | WebSockets |
+| **AI** | LLMs, LangChain, LangGraph, MCP server integration |
+| **Media** | Cloudinary |
+| **Infrastructure** | Docker, Docker Compose |
 
-## 🛠️ Tech Stack
-
-| Category | Technologies |
-|---|---|
-| Monorepo | Nx |
-| Frontend | Next.js, React, Tailwind CSS |
-| Backend | NestJS, Node.js, TypeScript |
-| Database | MongoDB, Mongoose |
-| Caching & Sessions | Redis |
-| Message Broker | RabbitMQ |
-| AI & LLM | LLMs, LangChain, LangGraph |
-| AI Tool Integration | Model Context Protocol (MCP) |
-| Real-Time | WebSockets |
-| Media Management | Cloudinary |
-| Infrastructure | Docker, Docker Compose |
-| Package Manager | npm |
-
-## 🏛️ System Architecture
-
-Sikai uses an Nx monorepo to organize the frontend and backend services within a unified workspace.
+## 🏗️ Architecture
 
 ```mermaid
-flowchart TB
-    User["Learner / Tutor"] --> Web["Next.js Frontend"]
-    Web --> Gateway["NestJS API Gateway"]
+flowchart LR
+    Client["Next.js Frontend"]
+    Gateway["NestJS API Gateway"]
 
-    Gateway --> Users["Users Service"]
-    Gateway --> Courses["Courses Service"]
-    Gateway --> Media["Media Service"]
+    subgraph Services["NestJS Microservices"]
+        Course["Course Service"]
+        Student["Student Service"]
+        Tutor["Tutor Service"]
+        Cert["Certificate Service"]
+        Chat["Chat Service"]
+        AI["AI Service"]
+    end
 
-    Web <-->|"Real-time events"| WS["WebSocket Layer"]
+    subgraph AIStack["AI Layer"]
+        LC["LangChain"]
+        LG["LangGraph"]
+        MCP["MCP Server"]
+        LLM["LLMs"]
+    end
 
-    Users --> Mongo[("MongoDB")]
-    Courses --> Mongo
+    Mongo[("MongoDB")]
+    Redis[("Redis")]
+    MQ{{"RabbitMQ"}}
+    Cloud["Cloudinary"]
 
-    Gateway <--> Redis[("Redis")]
-    Gateway <--> RMQ["RabbitMQ"]
-    RMQ <--> Users
-    RMQ <--> Courses
-    RMQ <--> Media
+    Client -->|"HTTP"| Gateway
+    Client <-->|"WebSockets"| Chat
+    Gateway --> MQ
+    MQ <--> Course
+    MQ <--> Student
+    MQ <--> Tutor
+    MQ <--> Cert
+    MQ <--> Chat
+    MQ <--> AI
 
-    Media --> Cloudinary["Cloudinary"]
+    Gateway --> Redis
+    Course --> Mongo
+    Student --> Mongo
+    Tutor --> Mongo
+    Cert --> Mongo
+    Chat --> Mongo
+    Course --> Cloud
 
-    Gateway --> AI["LLM / LangChain"]
-    AI --> Graph["LangGraph"]
-    Graph <--> MCP["MCP Server"]
+    AI --> LC
+    LC --> LG
+    LG --> LLM
+    LG --> MCP
 ```
 
-*This diagram illustrates the intended high-level design and may differ from the current implementation.*
+<!-- VERIFY: service names, which services use Redis/Cloudinary/Mongo, and the WebSocket host service are inferred from the feature list. Adjust to match the actual code. -->
 
-### Why this architecture?
-
-- **Nx** — manages multiple applications and shared libraries in one repository.
-- **Next.js** — powers the frontend experience.
-- **NestJS** — provides a modular backend and microservice infrastructure.
-- **MongoDB** — stores application data.
-- **Redis** — supports session storage and caching.
-- **RabbitMQ** — enables asynchronous communication between services.
-- **LangChain & LangGraph** — provide building blocks for LLM applications and agent workflows.
-- **MCP** — enables AI applications to interact with supported tools and resources.
-- **WebSockets** — enable bidirectional, real-time communication.
-- **Cloudinary** — manages cloud-hosted media.
-- **Docker** — simplifies local infrastructure setup.
-
-## 📂 Project Structure
-
-The following is an illustrative structure. Adjust it to match the actual applications and libraries in your repository.
+## 📁 Project Structure
 
 ```text
-sikai/
-├── apps/
-│   ├── web/                  # Next.js frontend
-│   └── api/
-│       ├── gateway/          # API gateway
-│       ├── users/             # User microservice
-│       ├── courses/           # Course microservice
-│       └── media/             # Media microservice
-├── libs/                      # Shared libraries and clients
-├── assets/
-│   └── logo.svg               # Project logo
-├── docker-compose.yml         # Local infrastructure
+ujyalo/
+├── apps/          # Next.js frontend and NestJS applications
+├── libs/          # Shared libraries
+├── assets/        # Logo and static README assets
 ├── nx.json
-├── package.json
-├── tsconfig.base.json
-└── README.md
+└── package.json
 ```
+
+<!-- VERIFY: list actual app and lib names from the repository. -->
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-Make sure you have the following installed:
+- Node.js and npm
+- Docker and Docker Compose
 
-- [Node.js](https://nodejs.org/)
-- [npm](https://docs.npmjs.com/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- A MongoDB instance or MongoDB Atlas account
-- Cloudinary credentials if testing media uploads
-- API credentials for your configured LLM provider
-
-### 1. Clone the repository
+### Installation
 
 ```bash
 git clone <your-repository-url>
-cd <your-repository-folder>
-```
-
-### 2. Install dependencies
-
-```bash
+cd ujyalo
 npm install
 ```
 
-### 3. Configure environment variables
+### Configuration
 
-Create the required `.env` files for the applications and services that need them.
+<!-- VERIFY: document the real environment file and variables (e.g. from .env.example). None are listed here to avoid inaccuracies. -->
 
-Typical configuration includes:
+Create the required environment files for MongoDB, Redis, RabbitMQ, Cloudinary, and your LLM provider as described in the repository's example env files.
 
-- MongoDB connection URI
-- Redis connection settings
-- RabbitMQ connection URL and queue names
-- Cloudinary credentials
-- LLM provider API keys and model settings
-- Session configuration
-- MCP server configuration, where required
-
-Use your existing service configuration as the source of truth. Do not commit secrets or real `.env` files to Git.
-
-### 4. Start infrastructure
-
-If your repository includes a Docker Compose configuration:
+### Run
 
 ```bash
+# Start infrastructure and services (verify the Compose file path and service names)
 docker compose up -d
+
+# Serve an individual app with Nx (replace <app-name> with a project from apps/)
+npx nx serve <app-name>
 ```
 
-Check the Compose file to see which services are configured and which ports they expose.
+<!-- VERIFY: replace with the exact commands/scripts defined in package.json and project.json files. -->
 
-### 5. Run the applications
+## 🗺️ Roadmap
 
-First, inspect the projects available in your Nx workspace:
+- [ ] 🔎 AI course discovery
+- [ ] 🧑‍🏫 AI instructor discovery
+- [ ] 🤖 AI learning assistant
+- [ ] 💬 Student–instructor real-time chat
+- [ ] 🎓 Course, student, tutor, and certificate workflows
+- [ ] 🧪 Testing and CI/CD
+- [ ] 🚢 Production deployment
 
-```bash
-npx nx show projects
-```
-
-You can run a configured project with:
-
-```bash
-npx nx serve <project-name>
-```
-
-Alternatively, use the development scripts defined in your root `package.json`, for example:
-
-```bash
-npm run dev:web
-npm run dev:gateway
-npm run dev:users
-npm run dev:courses
-```
-
-These example scripts must exist in your repository before you can use them. Start the required dependencies and services according to your configuration.
-
-## 🗺️ Development Roadmap
-
-Sikai is a work in progress. The roadmap will evolve as features are implemented and tested.
-
-- [ ] Complete core student and tutor workflows
-- [ ] Develop course management functionality
-- [ ] Finalize authentication and session management
-- [ ] Complete media upload integration
-- [ ] Improve inter-service communication
-- [ ] Expand real-time communication features
-- [ ] Integrate AI-powered learning assistance
-- [ ] Develop LangGraph agent workflows
-- [ ] Integrate MCP tools and resources
-- [ ] Add comprehensive testing and validation
-- [ ] Improve logging, monitoring, and error handling
-- [ ] Prepare deployment and production infrastructure
-
-## 🔒 Security
-
-Security is an important part of Sikai's development.
-
-- Keep API keys and credentials in environment variables.
-- Never commit session secrets or database credentials.
-- Validate and sanitize incoming requests.
-- Apply authentication and authorization to protected endpoints.
-- Restrict AI tools and MCP integrations to explicitly permitted operations.
-- Protect user data and uploaded media.
-
-## 🤝 Contributing
-
-Sikai is currently under development. Contributions, ideas, and constructive feedback are welcome.
-
-1. Open an issue to discuss a proposed change.
-2. Fork the repository and create a feature branch.
-3. Make focused changes consistent with the existing Nx workspace.
-4. Run the available checks and tests.
-5. Submit a pull request describing your changes.
-
-Please avoid sharing credentials, personal information, or sensitive security details in public issues.
+<!-- VERIFY: tick items that are complete and add or remove items to match your plans. -->
 
 ## 📄 License
 
-A license has not yet been specified. Until a license is added to the repository, do not assume that the project is available for unrestricted reuse or distribution.
+A license has not yet been specified for this project.
+
+<!-- VERIFY: if a LICENSE file exists in the repository, replace this section with its name and a link. -->
 
 ---
 
 <div align="center">
 
-  **सिकाइ — Learn today. Build tomorrow.**
-
-  *Proudly inspired by the Nepali spirit of learning and growth.*
-
-  **Status: Currently in Development 🚧**
+**Ujyalo** · Illuminate Your Learning.
 
 </div>
