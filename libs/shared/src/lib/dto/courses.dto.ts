@@ -180,12 +180,17 @@ export class CouseCompletionDto {
   courseid!: string;
 }
 
-
-enum Role{
-  STUDENT="student",
-  TUTOR= "tutor"
+enum Role {
+  STUDENT = "student",
+  TUTOR = "tutor",
 }
 
+export class GetAllStudentsDto {
+  @IsString({ message: "Tutor id must be a string." })
+  @IsDefined({ message: "Tutor id is required" })
+  @IsNotEmpty({ message: "Tutor id cant be empty." })
+  tutorid!: string;
+}
 
 export class UpdateStudentInCourseDto {
   @IsString({ message: "User's name   must be string ." })
@@ -193,16 +198,12 @@ export class UpdateStudentInCourseDto {
   @IsDefined({ message: "User's name   is required" })
   username!: string;
 
- 
-
   @IsString({ message: "User id  must be string ." })
   @IsNotEmpty({ message: "User id  cannot be empty." })
   @IsDefined({ message: "User id  is required" })
   userid!: string;
-  
-
 
   @IsEnum(Role)
   @IsDefined({ message: "User id  is required" })
-  role!:Role;
+  role!: Role;
 }

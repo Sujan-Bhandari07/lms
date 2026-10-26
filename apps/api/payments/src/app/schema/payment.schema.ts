@@ -4,7 +4,6 @@ import { HydratedDocument } from "mongoose";
 
 enum Status{
     PENDING="pending",
-
     SUCCESS="success",
     FAILED="failed"
 }
@@ -38,10 +37,10 @@ export class Payments {
 
 
    @Prop({ type: String, required: true })
-  esewaid: string;
+  transaction_uuid: string;
 
 
-   @Prop({ type: String, required: true,enum:["success","pending","failed"] })
+   @Prop({ type: String, required: true,enum:["success","pending","failed"],default:"pending" })
   status: Status;
 
 

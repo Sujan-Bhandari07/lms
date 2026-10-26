@@ -1,4 +1,5 @@
 import {
+  GetAllStudentsDto,
   LoginDto,
   LogoutDto,
   RegisterDto,
@@ -66,5 +67,10 @@ export class AppController {
   @MessagePattern("toggleiscompleted")
   toggleiscompleted(@Payload() data: UMakeCourseCompletedDto) {
     return this.userService.makecousecomplete(data);
+  }
+
+  @MessagePattern("getstudents")
+  getstudents(@Payload() data:GetAllStudentsDto){
+return this.userService.getstudents(data)
   }
 }

@@ -30,6 +30,7 @@ import bcrypt from "bcryptjs";
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
 import { MediaClient } from "@lms/medias";
 import { ClientProxy } from "@nestjs/microservices";
+import { firstValueFrom } from "rxjs";
 @Injectable()
 export class AppService {
   constructor(
@@ -363,6 +364,25 @@ export class AppService {
     });
     return success("Course completed");
   }
+
+ async getstudents(data:{tutorid:string}){
+  const std= await firstValueFrom(this.coursesclient.send("getstudents",data))
+const students = await Promise.all(
+  std.payload.map(async (item) => {
+    const user = await this.userModel.findById(item);
+
+    if (!user) return null;
+
+    return {
+      username: user.fullname,
+      userid: user._id,
+    };
+  }),
+);
+
+return students.filter((student) => student !== null);
+
+ }
 
 
 }

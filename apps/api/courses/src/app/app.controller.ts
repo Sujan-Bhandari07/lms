@@ -7,7 +7,8 @@ import {
   UserCourseDto,
   VerifyCourseDto,
   CouseCompletionDto,
-  UpdateStudentInCourseDto
+  UpdateStudentInCourseDto,
+  GetAllStudentsDto
 } from "@lms/shared";
 import { Controller } from "@nestjs/common";
 import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
@@ -48,14 +49,14 @@ export class AppController {
   }
 
   @EventPattern("updateenrolled")
-  updateenrolled(data:UserCourseDto){
+  updateenrolled(@Payload() data:UserCourseDto){
      this.coursesService.updateenrolled(data)
 
 
   }
 
   @EventPattern("updatecompletion")
-  updatecompletion(data:UserCourseDto){
+  updatecompletion(@Payload() data:UserCourseDto){
      this.coursesService.updatecompletion(data)
 
 
@@ -70,9 +71,15 @@ export class AppController {
 
 
   @EventPattern("updateprofile")
-  updateprofile(data:UpdateStudentInCourseDto){
+  updateprofile(@Payload() data:UpdateStudentInCourseDto){
      this.coursesService.updateprofile(data)
 
+
+  }
+
+  @MessagePattern("getstudents")
+  getallstudents(@Payload() data:GetAllStudentsDto){
+    return this.coursesService.getallstudents(data)
 
   }
 

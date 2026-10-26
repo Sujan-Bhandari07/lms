@@ -1,7 +1,7 @@
 import { BadRequestException, Body, Controller, Get, Inject, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { AuthGuard } from '../guards/auth.guard';
-import { CreateCourseDto, GetCourseTutorDto, GUploadPartDto, ProvideRatingDto, CouseCompletionDto,SendCommentDto, VerifyCourseDto } from '@lms/shared';
+import { CreateCourseDto, GetCourseTutorDto, GUploadPartDto, ProvideRatingDto, CouseCompletionDto,SendCommentDto, VerifyCourseDto, GetAllStudentsDto } from '@lms/shared';
 import { firstValueFrom } from 'rxjs';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -63,6 +63,16 @@ return firstValueFrom(this.coursesClient.send("providecompletionoption",data))
     const buffer=file?.buffer.toString("base64")
 return firstValueFrom(this.coursesClient.send("uploadpart",{...data,videourl:buffer}))
  }
+
+
+ @Post("getstudents")
+ getstudents(@Body() data:GetAllStudentsDto){
+return firstValueFrom(this.coursesClient.send("getstudents",data))
+ }
+
+
+
+
 
 
 

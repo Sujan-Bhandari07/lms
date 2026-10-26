@@ -1,60 +1,79 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import {ConfigModule, ConfigService} from "@nestjs/config"
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { UsersController } from './controllers/user.controller';
-import { CourseController } from './controllers/course.controller';
-import { PaymentController } from './controllers/payment.controller';
+import { Module } from "@nestjs/common";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ClientsModule, Transport } from "@nestjs/microservices";
+import { UsersController } from "./controllers/user.controller";
+import { CourseController } from "./controllers/course.controller";
+import { PaymentController } from "./controllers/payment.controller";
+import { ChatGateway } from "./sockets/chat.gateway";
 
 @Module({
   imports: [
-     ConfigModule.forRoot({ isGlobal: true }),
-     ClientsModule.registerAsync([
+    ConfigModule.forRoot({ isGlobal: true }),
+    ClientsModule.registerAsync([
       {
-        name: 'USERS_SERVICE',
+        name: "USERS_SERVICE",
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: (config: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [config.getOrThrow<string>('RABBITMQ_URL')],
+            urls: [config.getOrThrow<string>("RABBITMQ_URL")],
             queue: config.getOrThrow<string>("USERS_QUEUE"),
             queueOptions: { durable: true },
           },
         }),
       },
       {
-        name: 'COURSES_SERVICE',
+        name: "COURSES_SERVICE",
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: (config: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [config.getOrThrow<string>('RABBITMQ_URL')],
+            urls: [config.getOrThrow<string>("RABBITMQ_URL")],
             queue: config.getOrThrow<string>("COURSES_QUEUE"),
             queueOptions: { durable: true },
           },
         }),
       },
+
       {
-        name: 'PAYMENTS_SERVICE',
+        name: "CHAT_SERVICE",
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: (config: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [config.getOrThrow<string>('RABBITMQ_URL')],
+            urls: [config.getOrThrow<string>("RABBITMQ_URL")],
+            queue: config.getOrThrow<string>("CHAT_QUEUE"),
+            queueOptions: { durable: true },
+          },
+        }),
+      },
+
+      {
+        name: "PAYMENTS_SERVICE",
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [config.getOrThrow<string>("RABBITMQ_URL")],
             queue: config.getOrThrow<string>("PAYMENTS_QUEUE"),
             queueOptions: { durable: true },
           },
         }),
       },
-     
     ]),
-
   ],
-  controllers: [AppController,UsersController,CourseController,PaymentController],
-  providers: [AppService],
+  controllers: [
+    AppController,
+    UsersController,
+    CourseController,
+    PaymentController,
+  ],
+  providers: [AppService, ChatGateway],
 })
 export class AppModule {}

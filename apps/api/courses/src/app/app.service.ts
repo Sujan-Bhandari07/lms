@@ -173,35 +173,48 @@ export class AppService {
   }
 
   async updateprofile(data: IUpdateUserInCourse) {
-  const { userid, username, role } = data;
+    const { userid, username, role } = data;
 
-  if (role === "tutor") {
-    await this.coursesmodel.updateMany(
-      { "tutor.tutorid": userid },
-      { $set: { "tutor.tutorname": username } },
-    );
-  } else if (role === "student") {
-    await this.coursesmodel.updateMany(
-      {
-        $or: [
-          { "totalcoursecompletions.userid": userid },
-          { "totalenrolledstudents.userid": userid },
-        ],
-      },
-      {
-        $set: {
-          "totalcoursecompletions.$[student1].username": username,
-          "totalenrolledstudents.$[student2].username": username,
+    if (role === "tutor") {
+      await this.coursesmodel.updateMany(
+        { "tutor.tutorid": userid },
+        { $set: { "tutor.tutorname": username } },
+      );
+    } else if (role === "student") {
+      await this.coursesmodel.updateMany(
+        {
+          $or: [
+            { "totalcoursecompletions.userid": userid },
+            { "totalenrolledstudents.userid": userid },
+          ],
         },
-      },
-      {
-        arrayFilters: [
-          { "student1.userid": userid },
-          { "student2.userid": userid },
-        ],
-      },
-    );
+        {
+          $set: {
+            "totalcoursecompletions.$[student1].username": username,
+            "totalenrolledstudents.$[student2].username": username,
+          },
+        },
+        {
+          arrayFilters: [
+            { "student1.userid": userid },
+            { "student2.userid": userid },
+          ],
+        },
+      );
+    }
   }
-}
 
+  async getallstudents(data: { tutorid: string }) {
+    const course = await this.coursesmodel.find({
+      "tutor.tutorid": data.tutorid,
+    });
+    if (!course) throw new NotFoundException("No course is found.");
+
+    const students = course.map((item) => item.totalenrolledstudents);
+    if (!students) {
+      throw new NotFoundException("No students has enrolled your course");
+    }
+    const flatten = students.flat(Infinity)
+    return success("students",flatten)
+  }
 }
