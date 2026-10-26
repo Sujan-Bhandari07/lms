@@ -1,6 +1,7 @@
 import {
   IsBoolean,
   IsDefined,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -120,67 +121,88 @@ export class SendCommentDto {
   studentname!: string;
 }
 
-
-export class GUploadPartDto{
-@IsString({ message: "Course id must be a string." })
+export class GUploadPartDto {
+  @IsString({ message: "Course id must be a string." })
   @IsDefined({ message: "Course id is required" })
   @IsNotEmpty({ message: "Course id cant be empty." })
-    courseid!:string
+  courseid!: string;
 
-
-    @IsString({ message: "Part title must be a string." })
+  @IsString({ message: "Part title must be a string." })
   @IsDefined({ message: "Part title is required" })
   @IsNotEmpty({ message: "Part title cant be empty." })
-    title!:string
+  title!: string;
 
-
-    @IsString({ message: "Part Description must be a string." })
+  @IsString({ message: "Part Description must be a string." })
   @IsDefined({ message: "Part Description is required" })
   @IsNotEmpty({ message: "Part Description cant be empty." })
-    partdesc!:string
+  partdesc!: string;
 }
 
-export class CUploadPartDto extends GUploadPartDto{
-    @IsString({ message: "Tutor id must be a string." })
+export class CUploadPartDto extends GUploadPartDto {
+  @IsString({ message: "Tutor id must be a string." })
   @IsDefined({ message: "Video Url is required" })
   @IsNotEmpty({ message: "Video Url cant be empty." })
-    videourl!:string
-
+  videourl!: string;
 }
 
-export class GetCourseTutorDto{
- @IsString({ message: "Tutor id must be a string." })
+export class GetCourseTutorDto {
+  @IsString({ message: "Tutor id must be a string." })
   @IsDefined({ message: "Tutor id is required" })
   @IsNotEmpty({ message: "Tutor id cant be empty." })
-    tutorid!:string
+  tutorid!: string;
 
-     @IsString({ message: "Tutor name must be a string." })
+  @IsString({ message: "Tutor name must be a string." })
   @IsDefined({ message: "Tutor name is required" })
   @IsNotEmpty({ message: "Tutor name cant be empty." })
-    tutorname!:string
-
+  tutorname!: string;
 }
 
-
-export class UserCourseDto{
- @IsString({ message: "User id  must be string ." })
+export class UserCourseDto {
+  @IsString({ message: "User id  must be string ." })
   @IsNotEmpty({ message: "User id  cannot be empty." })
   @IsDefined({ message: "User id  is required" })
-  userid!:string
-   @IsString({ message: "User name  must be string ." })
+  userid!: string;
+  @IsString({ message: "User name  must be string ." })
   @IsNotEmpty({ message: "User name  cannot be empty." })
   @IsDefined({ message: "User name  is required" })
-  username!:string
+  username!: string;
 
   @IsString({ message: "Course id  must be string ." })
   @IsNotEmpty({ message: "Course id  cannot be empty." })
   @IsDefined({ message: "Course id  is required" })
-  courseid!:string
+  courseid!: string;
 }
 
-export class CouseCompletionDto{
-   @IsString({ message: "Course id  must be string ." })
+export class CouseCompletionDto {
+  @IsString({ message: "Course id  must be string ." })
   @IsNotEmpty({ message: "Course id  cannot be empty." })
   @IsDefined({ message: "Course id  is required" })
-  courseid!:string
+  courseid!: string;
+}
+
+
+enum Role{
+  STUDENT="student",
+  TUTOR= "tutor"
+}
+
+
+export class UpdateStudentInCourseDto {
+  @IsString({ message: "User's name   must be string ." })
+  @IsNotEmpty({ message: "User's name   cannot be empty." })
+  @IsDefined({ message: "User's name   is required" })
+  username!: string;
+
+ 
+
+  @IsString({ message: "User id  must be string ." })
+  @IsNotEmpty({ message: "User id  cannot be empty." })
+  @IsDefined({ message: "User id  is required" })
+  userid!: string;
+  
+
+
+  @IsEnum(Role)
+  @IsDefined({ message: "User id  is required" })
+  role!:Role;
 }

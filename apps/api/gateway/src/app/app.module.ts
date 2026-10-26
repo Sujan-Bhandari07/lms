@@ -5,6 +5,7 @@ import {ConfigModule, ConfigService} from "@nestjs/config"
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { UsersController } from './controllers/user.controller';
 import { CourseController } from './controllers/course.controller';
+import { PaymentController } from './controllers/payment.controller';
 
 @Module({
   imports: [
@@ -53,7 +54,7 @@ import { CourseController } from './controllers/course.controller';
     ]),
 
   ],
-  controllers: [AppController,UsersController,CourseController],
+  controllers: [AppController,UsersController,CourseController,PaymentController],
   providers: [AppService],
 })
 export class AppModule {}

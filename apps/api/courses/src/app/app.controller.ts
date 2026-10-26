@@ -6,7 +6,8 @@ import {
   SendCommentDto,
   UserCourseDto,
   VerifyCourseDto,
-  CouseCompletionDto
+  CouseCompletionDto,
+  UpdateStudentInCourseDto
 } from "@lms/shared";
 import { Controller } from "@nestjs/common";
 import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
@@ -65,6 +66,18 @@ export class AppController {
   providecompletionoption(@Payload() data:CouseCompletionDto) {
     return this.coursesService.providecompletionoption(data);
   }
+
+
+
+  @EventPattern("updateprofile")
+  updateprofile(data:UpdateStudentInCourseDto){
+     this.coursesService.updateprofile(data)
+
+
+  }
+
+
+  
 
 
   

@@ -17,6 +17,7 @@ import {
   IUpdateEnrolledCourse,
   IUpdateTutor,
   IUpdateUser,
+  IUpdateUserInCourse,
   IverifyTutor,
   success,
 } from "@lms/shared";
@@ -203,6 +204,12 @@ export class AppService {
     await dbuser.save();
     await this.redis.set(`session-${token}`, JSON.stringify(user), "KEEPTTL");
 
+    this.coursesclient.emit("updateprofile", {
+      userid: dbuser._id,
+      username: dbuser.fullname,
+      role: dbuser.role,
+    });
+
     return success("User updated successfully ", user);
   }
 
@@ -356,4 +363,6 @@ export class AppService {
     });
     return success("Course completed");
   }
+
+
 }

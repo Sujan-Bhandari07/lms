@@ -21,6 +21,7 @@ import {
   IVerifyCourse,
   ICourceCompletion,
   success,
+  IUpdateUserInCourse,
 } from "@lms/shared";
 
 @Injectable()
@@ -147,10 +148,8 @@ export class AppService {
       userid,
       username,
     });
-    await course.save()
+    await course.save();
   }
-
-
 
   async updatecompletion(data: IUserCourse) {
     const { userid, username, courseid } = data;
@@ -160,23 +159,49 @@ export class AppService {
       userid,
       username,
     });
-    await course.save()
+    await course.save();
   }
 
+  async providecompletionoption(data: ICourceCompletion) {
+    const course = await this.coursesmodel.findById(data.courseid);
+    if (!course) {
+      throw new NotFoundException("Course not found");
+    }
+    course.providecompletionoption = !course.providecompletionoption;
+    await course.save();
+    return success("toggled");
+  }
 
-  async providecompletionoption(data:ICourceCompletion){
-const course= await this.coursesmodel.findById(data.courseid)
-if(!course){
-  throw new NotFoundException("Course not found")
+  async updateprofile(data: IUpdateUserInCourse) {
+  const { userid, username, role } = data;
+
+  if (role === "tutor") {
+    await this.coursesmodel.updateMany(
+      { "tutor.tutorid": userid },
+      { $set: { "tutor.tutorname": username } },
+    );
+  } else if (role === "student") {
+    await this.coursesmodel.updateMany(
+      {
+        $or: [
+          { "totalcoursecompletions.userid": userid },
+          { "totalenrolledstudents.userid": userid },
+        ],
+      },
+      {
+        $set: {
+          "totalcoursecompletions.$[student1].username": username,
+          "totalenrolledstudents.$[student2].username": username,
+        },
+      },
+      {
+        arrayFilters: [
+          { "student1.userid": userid },
+          { "student2.userid": userid },
+        ],
+      },
+    );
+  }
 }
-course.providecompletionoption=!course.providecompletionoption
-await course.save()
-return success("toggled")
 
-  }
-
-
-
-
-  
 }

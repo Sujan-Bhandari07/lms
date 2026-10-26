@@ -54,4 +54,20 @@ interface ICourceCompletion{
     courseid:string
 }
 
-export {ICreateCourse,ICourceCompletion,IVerifyCourse,IUserCourse,IProvideRating,ISendComment,IUploadpart,IGetTutorCourse}
+
+
+interface IUpdateUserInCourse{
+
+    userid:string
+    username:string
+    role:Role
+}
+
+enum Role{
+  STUDENT="student",
+  TUTOR= "tutor"
+}
+
+
+
+export { ICourceCompletion, ICreateCourse, IGetTutorCourse, IProvideRating, ISendComment, IUpdateUserInCourse, IUploadpart, IUserCourse, IVerifyCourse }
