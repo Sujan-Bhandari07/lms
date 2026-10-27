@@ -1,5 +1,6 @@
 import { QdrantVectorStore } from "@langchain/qdrant";
 import { embeddings } from "../models/embedding.llm";
+import { groqllm } from "../models/groq.llm";
 
 
 export async function askDocuments(question: string,collection:string) {
@@ -17,24 +18,7 @@ export async function askDocuments(question: string,collection:string) {
     .map((doc) => doc.pageContent)
     .join("\n\n");
 
-  // Ask Groq using the retrieved context
-//   const answer = await llm.invoke([
-//     {
-//       role: "system",
-//       content: `
-//         Answer the user's question using the supplied context.
-//         If the answer cannot be found in the context,
-//         say you could not find it in the provided documents.
 
-//         Context:
-//         ${context}
-//       `,
-//     },
-//     {
-//       role: "user",
-//       content: question,
-//     },
-//   ]);
 
   return {
     context: context,

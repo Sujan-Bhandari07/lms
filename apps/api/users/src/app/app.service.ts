@@ -403,4 +403,11 @@ export class AppService {
     tutorid: tutor._id,
   }));
   }
+
+
+  async gettutorstool(){
+    const tutors= await this.tutorModel.find({}).populate("userid").select("fullname")
+    if(!tutors.length)return "No tutors found"
+    return tutors
+  }
 }

@@ -226,4 +226,31 @@ export class AppService {
     }
 return courses
   }
+
+
+  async getspecificcourse(data:{
+    name:string
+  }){
+
+  const words =data.name.trim().split(/\s+/);
+
+  const courses = await this.coursesmodel.find({
+    $or: words.flatMap((word) => {
+      const regex = new RegExp(
+        word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+        "i",
+      );
+
+      return [
+        { coursename: regex },
+        { title: regex },
+        { description: regex },
+      ];
+    }),
+  });
+  if(!courses)return "No course was found"
+
+  return courses;
+
+  }
 }

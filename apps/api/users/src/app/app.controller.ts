@@ -80,6 +80,13 @@ return this.userService.getstudents(data)
 return this.userService.getalltutors(data)
   }
 
+    @MessagePattern("gettutorstool")
+  gettutorstool(){
+return this.userService.gettutorstool()
+  }
+ 
+  
+
 
   
 }

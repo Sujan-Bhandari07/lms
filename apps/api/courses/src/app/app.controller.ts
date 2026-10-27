@@ -1,16 +1,17 @@
 import {
+  CouseCompletionDto,
   CreateCourseDto,
   CUploadPartDto,
+  GetAllStudentsDto,
   GetCourseTutorDto,
+  GetSpecificCourseDto,
   ProvideRatingDto,
   SendCommentDto,
-  UserCourseDto,
-  VerifyCourseDto,
-  CouseCompletionDto,
   UpdateStudentInCourseDto,
-  GetAllStudentsDto
+  UserCourseDto,
+  VerifyCourseDto
 } from "@lms/shared";
-import { Controller, Get } from "@nestjs/common";
+import { Controller } from "@nestjs/common";
 import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
 import { AppService } from "./app.service";
 
@@ -84,10 +85,17 @@ export class AppController {
   }
 
 
-  @Get("getallcourse")
+ @MessagePattern("getallcourse")
   getAllCourse(){
 
     return this.coursesService.getAllCourse()
+  }
+
+
+    @MessagePattern("getspecificcourse")
+  getspecificcourse( @Payload() data:GetSpecificCourseDto){
+
+    return this.coursesService.getspecificcourse(data)
   }
 
 

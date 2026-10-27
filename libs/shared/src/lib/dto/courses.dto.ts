@@ -207,3 +207,10 @@ export class UpdateStudentInCourseDto {
   @IsDefined({ message: "User id  is required" })
   role!: Role;
 }
+
+export class GetSpecificCourseDto{
+ @IsString({ message: "Name of course  must be string ." })
+  @IsNotEmpty({ message: "Name of course  cannot be empty." })
+  @IsDefined({ message: "Name of course  is required" })
+  name!:string
+}
