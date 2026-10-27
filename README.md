@@ -1,5 +1,4 @@
-<div align="center">
-
+ <div align="center">
 
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
   <defs>
@@ -17,18 +16,13 @@
   <path d="M64 82 V101" stroke="#F59E0B" stroke-width="3" fill="none"/>
 </svg>
 
-
 # Ujyalo
 
 **Illuminate Your Learning.**
 
 An AI-powered Learning Management System built with an Nx monorepo, Next.js, and NestJS microservices.
 
-<br />
-
 ![Status](https://img.shields.io/badge/status-currently%20in%20development-F59E0B?style=for-the-badge)
-
-<br />
 
 ![Nx](https://img.shields.io/badge/Nx-143055?style=flat-square&logo=nx&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
@@ -43,7 +37,6 @@ An AI-powered Learning Management System built with an Nx monorepo, Next.js, and
 ![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=flat-square&logo=cloudinary&logoColor=white)
 ![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=flat-square&logo=langchain&logoColor=white)
 ![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=flat-square)
-![MCP](https://img.shields.io/badge/MCP-black?style=flat-square)
 ![WebSockets](https://img.shields.io/badge/WebSockets-real--time-010101?style=flat-square)
 
 </div>
@@ -70,8 +63,6 @@ The backend is a set of NestJS microservices that communicate asynchronously thr
 | 🎓 **Management workflows** | Courses, students, tutors, and certificates | 🚧 In development |
 | 🧩 **Microservice backend** | Message-driven services communicating via RabbitMQ | 🚧 In development |
 
-<!-- VERIFY: update each status to ✅ Available as features are completed. -->
-
 ## 🧰 Tech Stack
 
 | Layer | Technologies |
@@ -82,7 +73,7 @@ The backend is a set of NestJS microservices that communicate asynchronously thr
 | **Data** | MongoDB with Mongoose, Redis (sessions and caching) |
 | **Messaging** | RabbitMQ |
 | **Real-time** | WebSockets |
-| **AI** | LLMs, LangChain, LangGraph, MCP server integration |
+| **AI** | LLMs, LangChain, LangGraph |
 | **Media** | Cloudinary |
 | **Infrastructure** | Docker, Docker Compose |
 
@@ -99,13 +90,12 @@ flowchart LR
         Tutor["Tutor Service"]
         Cert["Certificate Service"]
         Chat["Chat Service"]
-        AI["AI Service"]
+        AI["Agents Service"]
     end
 
     subgraph AIStack["AI Layer"]
         LC["LangChain"]
         LG["LangGraph"]
-        MCP["MCP Server"]
         LLM["LLMs"]
     end
 
@@ -135,10 +125,11 @@ flowchart LR
     AI --> LC
     LC --> LG
     LG --> LLM
-    LG --> MCP
+    LG -->|"Tool calls"| MQ
+    MQ --> Course
+    MQ --> Tutor
+    MQ --> Student
 ```
-
-<!-- VERIFY: service names, which services use Redis/Cloudinary/Mongo, and the WebSocket host service are inferred from the feature list. Adjust to match the actual code. -->
 
 ## 📁 Project Structure
 
@@ -150,8 +141,6 @@ ujyalo/
 ├── nx.json
 └── package.json
 ```
-
-<!-- VERIFY: list actual app and lib names from the repository. -->
 
 ## 🚀 Getting Started
 
@@ -170,21 +159,17 @@ npm install
 
 ### Configuration
 
-<!-- VERIFY: document the real environment file and variables (e.g. from .env.example). None are listed here to avoid inaccuracies. -->
-
 Create the required environment files for MongoDB, Redis, RabbitMQ, Cloudinary, and your LLM provider as described in the repository's example env files.
 
 ### Run
 
 ```bash
-# Start infrastructure and services (verify the Compose file path and service names)
+# Start infrastructure and services
 docker compose up -d
 
-# Serve an individual app with Nx (replace <app-name> with a project from apps/)
+# Serve an individual app with Nx
 npx nx serve <app-name>
 ```
-
-<!-- VERIFY: replace with the exact commands/scripts defined in package.json and project.json files. -->
 
 ## 🗺️ Roadmap
 
@@ -196,13 +181,9 @@ npx nx serve <app-name>
 - [ ] 🧪 Testing and CI/CD
 - [ ] 🚢 Production deployment
 
-<!-- VERIFY: tick items that are complete and add or remove items to match your plans. -->
-
 ## 📄 License
 
 A license has not yet been specified for this project.
-
-<!-- VERIFY: if a LICENSE file exists in the repository, replace this section with its name and a link. -->
 
 ---
 
