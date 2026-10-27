@@ -8,6 +8,7 @@ import {
   LoginDto,
   RegisterDto,
   VerifyTutorDto,
+  GetAllStudentsDto,
 } from "@lms/shared";
 import {
   BadRequestException,
@@ -28,6 +29,7 @@ import { ClientProxy } from "@nestjs/microservices";
 import type { Request, Response } from "express";
 import { firstValueFrom } from "rxjs";
 import { AuthGuard } from "../guards/auth.guard";
+import { Throttle } from "@nestjs/throttler";
 
 @Controller("users")
 export class UsersController {
@@ -35,6 +37,12 @@ export class UsersController {
     @Inject("USERS_SERVICE") private readonly usersClient: ClientProxy,
   ) {}
   @Post("register")
+  @Throttle({
+    default:{
+      limit:5,
+      ttl:5 * 60 * 1000,
+    }
+  })
   async createuser(
     @Body() data: RegisterDto,
     @Res({ passthrough: true }) res: Response,
@@ -59,6 +67,12 @@ export class UsersController {
   }
 
   @Post("login")
+    @Throttle({
+    default:{
+      limit:3,
+      ttl:5 * 60 * 1000,
+    }
+  })
   async login(
     @Body() data: LoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -178,7 +192,20 @@ export class UsersController {
     );
   }
 
+
+   @Post("getstudents")
+ getstudents(@Body() data:GetAllStudentsDto){
+return firstValueFrom(this.usersClient.send("getstudents",data))
+ }
+
+
+
+   @Post("getalltutors")
+ getalltutors(@Body() data:GetAllStudentsDto){
+return firstValueFrom(this.usersClient.send("getalltutors",data))
+ }
   
+ 
 
 
   

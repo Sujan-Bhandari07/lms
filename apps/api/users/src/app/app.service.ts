@@ -365,24 +365,42 @@ export class AppService {
     return success("Course completed");
   }
 
- async getstudents(data:{tutorid:string}){
-  const std= await firstValueFrom(this.coursesclient.send("getstudents",data))
-const students = await Promise.all(
-  std.payload.map(async (item) => {
-    const user = await this.userModel.findById(item);
+  async getstudents(data: { tutorid: string }) {
+    const std = await firstValueFrom(
+      this.coursesclient.send("getstudents", data),
+    );
+    const students = await Promise.all(
+      std.payload.map(async (item) => {
+        const user = await this.userModel.findById(item);
 
-    if (!user) return null;
+        if (!user) return null;
 
-    return {
-      username: user.fullname,
-      userid: user._id,
-    };
-  }),
-);
+        return {
+          username: user.fullname,
+          userid: user._id,
+        };
+      }),
+    );
 
-return students.filter((student) => student !== null);
+    const final = students.filter((student) => student !== null);
+    return success("Found", final);
+  }
 
- }
+  async getalltutors(data: { studentid: string }) {
+    const user = await this.studentModel.findOne({ userid: data.studentid });
+    if (!user) throw new NotFoundException("Student not found");
+    const final=user.enrolledcourses.map((data)=>data.tutor)
+    if(!final.length){
+      throw new NotFoundException("No tutors for chat")
+    }
+   const tutors = await this.userModel
+    .find({ _id: { $in: final } })
+    .select('fullname')
+    .lean();
 
-
+  return tutors.map((tutor) => ({
+    tutorname: tutor.fullname,
+    tutorid: tutor._id,
+  }));
+  }
 }

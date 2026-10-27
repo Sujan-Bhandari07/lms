@@ -65,10 +65,7 @@ return firstValueFrom(this.coursesClient.send("uploadpart",{...data,videourl:buf
  }
 
 
- @Post("getstudents")
- getstudents(@Body() data:GetAllStudentsDto){
-return firstValueFrom(this.coursesClient.send("getstudents",data))
- }
+
 
 
 

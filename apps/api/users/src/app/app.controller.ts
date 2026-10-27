@@ -1,5 +1,6 @@
 import {
   GetAllStudentsDto,
+  GetAllTutorsDto,
   LoginDto,
   LogoutDto,
   RegisterDto,
@@ -73,4 +74,12 @@ export class AppController {
   getstudents(@Payload() data:GetAllStudentsDto){
 return this.userService.getstudents(data)
   }
+
+   @MessagePattern("getalltutors")
+  getalltutors(@Payload() data:GetAllTutorsDto){
+return this.userService.getalltutors(data)
+  }
+
+
+  
 }

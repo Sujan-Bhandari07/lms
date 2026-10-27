@@ -7,10 +7,26 @@ import { UsersController } from "./controllers/user.controller";
 import { CourseController } from "./controllers/course.controller";
 import { PaymentController } from "./controllers/payment.controller";
 import { ChatGateway } from "./sockets/chat.gateway";
+import { APP_GUARD } from "@nestjs/core";
+import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
+import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+
+     ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          name: "default",
+          ttl: 60_000,
+          limit: 100,
+        },
+      ],
+      storage: new ThrottlerStorageRedisService(
+        process.env.REDIS_URL || "redis://localhost:6379",
+      ),
+    }),
     ClientsModule.registerAsync([
       {
         name: "USERS_SERVICE",
@@ -74,6 +90,9 @@ import { ChatGateway } from "./sockets/chat.gateway";
     CourseController,
     PaymentController,
   ],
-  providers: [AppService, ChatGateway],
+  providers: [AppService, ChatGateway, {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },],
 })
 export class AppModule {}

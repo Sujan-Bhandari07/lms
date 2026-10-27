@@ -166,4 +166,11 @@ export class UMakeCourseCompletedDto extends GMakeCourseCompletedDto {
   studentid!: string;
 }
 
+export class GetAllTutorsDto{
+@IsString({ message: "Student id  must be string ." })
+  @IsNotEmpty({ message: "Student id  cannot be empty." })
+  @IsDefined({ message: "Student id  is required" })
+  studentid!:string
+}
+
 
