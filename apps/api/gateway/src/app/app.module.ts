@@ -29,6 +29,20 @@ import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis"
     }),
     ClientsModule.registerAsync([
       {
+        name: "AGENTS_SERVICE",
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [config.getOrThrow<string>("RABBITMQ_URL")],
+            queue: config.getOrThrow<string>("AGENTS_QUEUE"),
+            queueOptions: { durable: true },
+          },
+        }),
+      },
+
+  {
         name: "USERS_SERVICE",
         imports: [ConfigModule],
         inject: [ConfigService],
@@ -41,6 +55,8 @@ import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis"
           },
         }),
       },
+
+
       {
         name: "COURSES_SERVICE",
         imports: [ConfigModule],

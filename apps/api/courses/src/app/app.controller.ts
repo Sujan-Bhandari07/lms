@@ -10,7 +10,7 @@ import {
   UpdateStudentInCourseDto,
   GetAllStudentsDto
 } from "@lms/shared";
-import { Controller } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
 import { AppService } from "./app.service";
 
@@ -81,6 +81,13 @@ export class AppController {
   getallstudents(@Payload() data:GetAllStudentsDto){
     return this.coursesService.getallstudents(data)
 
+  }
+
+
+  @Get("getallcourse")
+  getAllCourse(){
+
+    return this.coursesService.getAllCourse()
   }
 
 

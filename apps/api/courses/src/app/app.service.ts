@@ -214,7 +214,16 @@ export class AppService {
     if (!students) {
       throw new NotFoundException("No students has enrolled your course");
     }
-    const flatten = students.flat(Infinity)
-    return success("students",flatten)
+    const flatten = students.flat(Infinity);
+    return success("students", flatten);
+  }
+
+  async getAllCourse() {
+    const courses = await this.coursesmodel.find({});
+    if (!courses.length){
+
+      return "No courses is currently available. Pls satye tuned for upcoming updates";
+    }
+return courses
   }
 }
