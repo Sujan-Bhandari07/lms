@@ -35,6 +35,8 @@ import { firstValueFrom } from "rxjs";
 export class AppService {
   constructor(
     @Inject("COURSES_SERVICE") private readonly coursesclient: ClientProxy,
+    @Inject("NOTIFICATION_SERVICE")
+    private readonly notificationclient: ClientProxy,
     @Inject(REDIS_CLIENT) private readonly redis: Redis,
     @InjectModel(Users.name)
     private readonly userModel: Model<UserDocument>,
@@ -92,6 +94,12 @@ export class AppService {
 
     this.eventemitter.emit("createprofile", {
       userid: user._id,
+      role: user.role,
+    });
+
+    this.notificationclient.emit("signupemaail", {
+      fullname: user.fullname,
+      email: user.email,
       role: user.role,
     });
 
@@ -256,6 +264,13 @@ export class AppService {
       });
 
       await studentprofile.save();
+      const user = await this.userModel.findById(studentid)
+
+      this.notificationclient.emit("coursecertificateemail",{
+        coursename,
+        fullname:user.fullname,
+        emai:user.email
+      })
 
       return success("Certifacte added to student profile", studentprofile);
     } else {
@@ -303,6 +318,15 @@ export class AppService {
       courseid: String(courseid),
     });
 
+    const tutors = await this.userModel.findById(tutor)
+
+    this.notificationclient.emit("courseenrolledemail",{
+      fullname:user.fullname,
+      coursename,
+      email:user.email,
+      tutorname:tutors.fullname
+    })
+
     return success("Enrolled to the course", student);
   }
 
@@ -330,6 +354,11 @@ export class AppService {
 
     tutor.isverified = true;
     await tutor.save();
+    const user = await this.userModel.findById(data.userid);
+    this.notificationclient.emit("verifiedtutoremail", {
+      fullname: user.fullname,
+      email: user.email,
+    });
 
     return success("Tutor verifies successfully", tutor);
   }
@@ -389,25 +418,37 @@ export class AppService {
   async getalltutors(data: { studentid: string }) {
     const user = await this.studentModel.findOne({ userid: data.studentid });
     if (!user) throw new NotFoundException("Student not found");
-    const final=user.enrolledcourses.map((data)=>data.tutor)
-    if(!final.length){
-      throw new NotFoundException("No tutors for chat")
+    const final = user.enrolledcourses.map((data) => data.tutor);
+    if (!final.length) {
+      throw new NotFoundException("No tutors for chat");
     }
-   const tutors = await this.userModel
-    .find({ _id: { $in: final } })
-    .select('fullname')
-    .lean();
+    const tutors = await this.userModel
+      .find({ _id: { $in: final } })
+      .select("fullname")
+      .lean();
 
-  return tutors.map((tutor) => ({
-    tutorname: tutor.fullname,
-    tutorid: tutor._id,
-  }));
+    return tutors.map((tutor) => ({
+      tutorname: tutor.fullname,
+      tutorid: tutor._id,
+    }));
   }
 
+  async gettutorstool() {
+    const tutors = await this.tutorModel
+      .find({})
+      .populate("userid")
+      .select("fullname");
+    if (!tutors.length) return "No tutors found";
+    return tutors;
+  }
 
-  async gettutorstool(){
-    const tutors= await this.tutorModel.find({}).populate("userid").select("fullname")
-    if(!tutors.length)return "No tutors found"
-    return tutors
+  async getusernotification(data:{userid:string}){
+
+    const user = await this.userModel.findById(data.userid)
+    return {
+      fullname:user.fullname,
+      email:user.email
+    }
+
   }
 }

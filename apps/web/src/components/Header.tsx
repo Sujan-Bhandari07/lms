@@ -12,9 +12,9 @@ export const NAV = [
   { label: 'Become an Instructor', href: '/#instructors' },
 ]
 
-export function Logo() {
+export function Logo({ href = '/' }: { href?: string }) {
   return (
-    <Link href="/" aria-label="Ujyalo home" className="flex items-center gap-2.5 font-display text-[22px] leading-none font-bold tracking-[-0.02em]">
+    <Link href={href} aria-label="Ujyalo home" className="flex items-center gap-2.5 font-display text-[22px] leading-none font-bold tracking-[-0.02em]">
       <b className="relative grid size-7 place-items-center rounded-ui bg-btn text-[15px] text-btn-fg after:absolute after:top-[5px] after:right-[5px] after:size-[5px] after:rounded-full after:bg-gold after:content-['']">U</b>
       Ujyalo
     </Link>

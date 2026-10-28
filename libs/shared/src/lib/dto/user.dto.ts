@@ -173,4 +173,11 @@ export class GetAllTutorsDto{
   studentid!:string
 }
 
+export class GetUserNotificationDto {
+  @IsString({ message: "User id  must be string ." })
+  @IsNotEmpty({ message: "User id  cannot be empty." })
+  @IsDefined({ message: "User id  is required" })
+  userid!:string
+}
+
 

@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import Header from "@/src/components/Header"
-import Footer from '@/src/components/Footer'
 import { Sprite } from '@/src/components/Icon'
 
 export const metadata: Metadata = {
@@ -20,9 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <Sprite />
-        <Header />
         {children}
-        <Footer />
       </body>
     </html>
   )

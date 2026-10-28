@@ -27,6 +27,18 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
             queueOptions: { durable: true },
           },
         }),
+      },  {
+        name: 'NOTIFICATION_SERVICE',
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [config.getOrThrow<string>('RABBITMQ_URL')],
+            queue: config.getOrThrow<string>("NOTIFICATION_QUEUE"),
+            queueOptions: { durable: true },
+          },
+        }),
       }
     ]),
     MediaClientModule,

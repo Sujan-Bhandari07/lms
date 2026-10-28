@@ -20,7 +20,7 @@ export default function CourseDetail({ c, content }: { c: Course; content: Conte
   const lessons = curriculum.reduce((a, s) => a + s.lessons.length, 0)
   const total = curriculum.reduce((a, s) => a + s.lessons.reduce((x, l) => x + l[1], 0), 0)
   const off = c.was ? Math.round((1 - c.price / c.was) * 100) : 0
-  const title = c.id === 'nestjs-backend-development' ? 'NestJS Backend Development: Build Production-Ready APIs' : c.title
+  const title = c.slug === 'nestjs-backend-development' ? 'NestJS Backend Development: Build Production-Ready APIs' : c.title
   const price = c.price ? `$${c.price}` : 'Free'
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function CourseDetail({ c, content }: { c: Course; content: Conte
 
   /** The single gold accent per page: Enroll Now. Turns into "Go to Course" once enrolled. */
   const cta = (cls: string) => enrolled
-    ? <Link className={`btn btn-p ${cls}`} href={`/learn/${c.id}`}>Go to Course</Link>
+    ? <Link className={`btn btn-p ${cls}`} href={`/learn/${c.slug}`}>Go to Course</Link>
     : <button className={`btn btn-a ${cls}`} onClick={() => setModal(true)}>Enroll Now</button>
 
   return (
@@ -203,7 +203,7 @@ export default function CourseDetail({ c, content }: { c: Course; content: Conte
                 <div className="mb-5 grid size-14 place-items-center rounded-full bg-gold-tint text-gold-deep"><I n="check" c="l" /></div>
                 <h3 id="mt" className="t-h3 mb-2">You’re enrolled!</h3>
                 <p className="text-[15px] text-muted">Lifetime access is unlocked. Start with lesson 1 whenever you’re ready, and ask Ujyalo AI if you get stuck.</p>
-                <div className="mt-7 flex justify-end gap-3"><button className="btn btn-s h-11 max-sm:flex-1" onClick={() => setModal(false)}>Stay on this page</button><Link className="btn btn-p h-11 max-sm:flex-1" href={`/learn/${c.id}`}>Go to Course</Link></div>
+                <div className="mt-7 flex justify-end gap-3"><button className="btn btn-s h-11 max-sm:flex-1" onClick={() => setModal(false)}>Stay on this page</button><Link className="btn btn-p h-11 max-sm:flex-1" href={`/learn/${c.slug}`}>Go to Course</Link></div>
               </>
             )}
           </div>

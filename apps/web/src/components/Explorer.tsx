@@ -111,7 +111,7 @@ export default function Explorer({ initialQuery, initialCategory }: { initialQue
             </div>
           </div>
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {visible.length ? visible.map((c) => <CourseCard key={c.id} c={c} />) : (
+            {visible.length ? visible.map((c) => <CourseCard key={c.slug} c={c} />) : (
               <div className="col-span-full rounded-card border border-line bg-surface px-6 py-20 text-center">
                 <I n="search" c="l mx-auto" /><h3 className="t-h3 mt-3 mb-2">No courses match your filters</h3>
                 <p className="mb-6 text-muted">Try removing a filter or searching with a different keyword.</p>

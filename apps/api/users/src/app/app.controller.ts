@@ -1,6 +1,7 @@
 import {
   GetAllStudentsDto,
   GetAllTutorsDto,
+  GetUserNotificationDto,
   LoginDto,
   LogoutDto,
   RegisterDto,
@@ -84,6 +85,14 @@ return this.userService.getalltutors(data)
   gettutorstool(){
 return this.userService.gettutorstool()
   }
+
+    @MessagePattern("getusernotification")
+  getusernotification(@Payload() data:GetUserNotificationDto){
+return this.userService.getusernotification(data)
+  }
+
+
+  
  
   
 

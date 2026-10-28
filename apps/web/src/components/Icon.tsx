@@ -1,7 +1,8 @@
 import { SPRITE } from './sprite'
+import { EXTRA } from './sprite-extra'
 
 export function Sprite() {
-  return <svg width="0" height="0" className="absolute" aria-hidden="true" dangerouslySetInnerHTML={{ __html: SPRITE }} />
+  return <svg width="0" height="0" className="absolute" aria-hidden="true" dangerouslySetInnerHTML={{ __html: SPRITE + EXTRA }} />
 }
 
 /** n = symbol id, c = size shortcut ('s' 16px, 'l' 24px) or any Tailwind utilities */

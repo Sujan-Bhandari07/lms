@@ -3,14 +3,14 @@
 /* ---- Ujyalo design tokens (light + dark) ---- */
 :root {
   --bg: #fff; --surface: #F5F2EC; --ink: #111; --ink2: #6B6B6B; --line: #E7E5E0;
-  --gold: #D6B779; --gold-tint: #F3EBD9; --gold-deep: #8A6D2F; --ok: #3F7D5C;
+  --gold: #D6B779; --gold-tint: #F3EBD9; --gold-deep: #8A6D2F; --ok: #3F7D5C; --error: #B3433A;
   --btn: #111; --btn-fg: #fff; --btn-h: #2A2A2A; --panel: #111;
   --ph1: #F5F2EC; --ph2: #EDE7DA; --ph3: #E6DFCF; color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0E0E0E; --surface: #1A1917; --ink: #F5F2EC; --ink2: #A09C94; --line: #2C2A27;
-    --gold-tint: #2B2518; --gold-deep: #D6B779; --ok: #6DB48F; --btn: #F5F2EC; --btn-fg: #111; --btn-h: #fff;
+    --gold-tint: #2B2518; --gold-deep: #D6B779; --ok: #6DB48F; --error: #E58A80; --btn: #F5F2EC; --btn-fg: #111; --btn-h: #fff;
     --panel: #1A1917; --ph1: #1A1917; --ph2: #211F1C; --ph3: #282520; color-scheme: dark;
   }
 }
@@ -18,7 +18,7 @@
 @theme inline {
   --color-page: var(--bg); --color-surface: var(--surface); --color-ink: var(--ink); --color-muted: var(--ink2);
   --color-line: var(--line); --color-gold: var(--gold); --color-gold-tint: var(--gold-tint); --color-gold-deep: var(--gold-deep);
-  --color-ok: var(--ok); --color-btn: var(--btn); --color-btn-fg: var(--btn-fg); --color-btn-h: var(--btn-h); --color-panel: var(--panel);
+  --color-ok: var(--ok); --color-error: var(--error); --color-btn: var(--btn); --color-btn-fg: var(--btn-fg); --color-btn-h: var(--btn-h); --color-panel: var(--panel);
   --color-ph1: var(--ph1); --color-ph2: var(--ph2); --color-ph3: var(--ph3);
   --font-sans: Geist, system-ui, sans-serif; --font-display: 'Plus Jakarta Sans', Geist, system-ui, sans-serif;
   --radius-ui: 8px; --radius-card: 16px;

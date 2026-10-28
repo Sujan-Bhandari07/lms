@@ -23,10 +23,14 @@ import {
   success,
   IUpdateUserInCourse,
 } from "@lms/shared";
+import { ClientProxy } from "@nestjs/microservices";
+import { firstValueFrom } from "rxjs";
 
 @Injectable()
 export class AppService {
   constructor(
+    @Inject("NOTIFICATION_SERVICE") private readonly notificationClient:ClientProxy,
+    @Inject("USERS_SERVICE") private readonly usersClient:ClientProxy,
     @Inject(REDIS_CLIENT) private readonly redis: Redis,
     @InjectModel(Courses.name)
     private readonly coursesmodel: Model<CoursesDocument>,
@@ -67,7 +71,15 @@ export class AppService {
     }
 
     course.isverified = verify;
+
     await course.save();
+    const user = await firstValueFrom(this.usersClient.send("getusernotification",{userid:course.tutor.tutorid}))
+    this.notificationClient.emit("verifiedcourseemail",{
+      fullname:user.fullname,
+      email:user.email,
+      coursename:course.coursename
+
+    })
     return success("Course verified Successfully");
   }
 
