@@ -1,26 +1,29 @@
-import type { Metadata } from 'next';
-import './global.css';
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
-
-
+import type { Metadata, Viewport } from 'next'
+import './globals.css'
+import Header from "@/src/components/Header"
+import Footer from '@/src/components/Footer'
+import { Sprite } from '@/src/components/Icon'
 
 export const metadata: Metadata = {
-  title: "Ujyalo",
-  description: "An AI-powered learning platform",
-};
+  title: { default: 'Ujyalo — Learn Skills That Move You Forward', template: '%s — Ujyalo' },
+  description: 'Structured online courses, recorded video lessons, certificates and AI-powered learning support.',
+}
+export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover' }
 
-
-
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body  className={`${GeistSans.className} ${GeistMono.variable} antialiased`}>{children}</body>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet" />
+      </head>
+      <body>
+        <Sprite />
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   )
 }

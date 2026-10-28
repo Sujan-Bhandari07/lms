@@ -1,0 +1,75 @@
+@import 'tailwindcss';
+
+/* ---- Ujyalo design tokens (light + dark) ---- */
+:root {
+  --bg: #fff; --surface: #F5F2EC; --ink: #111; --ink2: #6B6B6B; --line: #E7E5E0;
+  --gold: #D6B779; --gold-tint: #F3EBD9; --gold-deep: #8A6D2F; --ok: #3F7D5C;
+  --btn: #111; --btn-fg: #fff; --btn-h: #2A2A2A; --panel: #111;
+  --ph1: #F5F2EC; --ph2: #EDE7DA; --ph3: #E6DFCF; color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0E0E0E; --surface: #1A1917; --ink: #F5F2EC; --ink2: #A09C94; --line: #2C2A27;
+    --gold-tint: #2B2518; --gold-deep: #D6B779; --ok: #6DB48F; --btn: #F5F2EC; --btn-fg: #111; --btn-h: #fff;
+    --panel: #1A1917; --ph1: #1A1917; --ph2: #211F1C; --ph3: #282520; color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-page: var(--bg); --color-surface: var(--surface); --color-ink: var(--ink); --color-muted: var(--ink2);
+  --color-line: var(--line); --color-gold: var(--gold); --color-gold-tint: var(--gold-tint); --color-gold-deep: var(--gold-deep);
+  --color-ok: var(--ok); --color-btn: var(--btn); --color-btn-fg: var(--btn-fg); --color-btn-h: var(--btn-h); --color-panel: var(--panel);
+  --color-ph1: var(--ph1); --color-ph2: var(--ph2); --color-ph3: var(--ph3);
+  --font-sans: Geist, system-ui, sans-serif; --font-display: 'Plus Jakarta Sans', Geist, system-ui, sans-serif;
+  --radius-ui: 8px; --radius-card: 16px;
+  --shadow-sm: 0 1px 2px rgba(17, 17, 17, 0.04); --shadow-md: 0 8px 24px rgba(17, 17, 17, 0.06); --shadow-lg: 0 24px 64px rgba(17, 17, 17, 0.12);
+  --ease-ujyalo: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@layer base {
+  *, ::before, ::after { border-color: var(--line); }
+  html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+  body { @apply bg-page font-sans text-base leading-[26px] text-ink antialiased; }
+  body::before { content: ''; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 19; background: var(--bg); }
+  h1, h2, h3, h4 { @apply font-display text-ink; }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 8px; }
+  @media (prefers-reduced-motion: reduce) { *, ::before, ::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+}
+
+@keyframes up { from { opacity: 0; transform: translateY(8px); } }
+
+/* ---- Reusable design-system primitives ---- */
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-[1200px] px-5 sm:px-6; }
+  .i { @apply size-5 shrink-0 fill-none stroke-current; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .over { @apply text-xs leading-4 font-semibold tracking-[0.08em] text-gold-deep uppercase; }
+
+  /* typography scale */
+  .t-display { @apply font-display text-[36px] leading-[44px] font-bold tracking-[-0.03em] sm:text-[56px] sm:leading-[64px]; }
+  .t-h1 { @apply font-display text-[30px] leading-[38px] font-bold tracking-[-0.02em] sm:text-[40px] sm:leading-[48px]; }
+  .t-h2 { @apply font-display text-[26px] leading-[34px] font-semibold tracking-[-0.02em] sm:text-[32px] sm:leading-[40px]; }
+  .t-h3 { @apply font-display text-2xl leading-8 font-semibold tracking-[-0.01em]; }
+  .t-h4 { @apply font-display text-xl leading-7 font-semibold; }
+  .t-lead { @apply text-base leading-[26px] text-muted sm:text-lg sm:leading-[30px]; }
+
+  /* buttons */
+  .btn { @apply inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-ui border border-transparent px-[18px] text-sm leading-none font-medium whitespace-nowrap transition-colors duration-200 disabled:opacity-40; }
+  .btn-lg { @apply h-[52px] px-7 text-[15px]; }
+  .btn-p { @apply bg-btn text-btn-fg hover:bg-btn-h; }
+  .btn-s { @apply border-ink bg-page text-ink hover:bg-surface; }
+  .btn-g { @apply bg-transparent text-ink hover:bg-surface; }
+  .btn-a { @apply bg-gold text-[#111] hover:bg-[#CBAA68]; }
+
+  /* badges */
+  .bdg { @apply inline-flex h-6 w-max items-center gap-1 rounded-full bg-surface px-2.5 text-xs leading-none font-semibold text-muted; }
+  .bdg-gold { @apply bg-gold-tint text-gold-deep; }
+  .bdg-dark { @apply bg-btn text-btn-fg; }
+  .bdg-out { @apply border border-line bg-transparent; }
+
+  /* surfaces */
+  .card { @apply rounded-card border border-line bg-page shadow-sm; }
+  .lift { @apply transition duration-200 ease-ujyalo hover:-translate-y-0.5 hover:shadow-md; }
+  .select-arrow { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='1.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 12px center / 16px no-repeat; }
+  .link-gold { @apply cursor-pointer underline decoration-gold underline-offset-4; }
+}
