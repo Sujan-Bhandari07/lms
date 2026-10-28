@@ -1,4 +1,5 @@
- <div align="center">
+
+<div align="center">
 
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
   <defs>
@@ -50,7 +51,7 @@ An AI-powered Learning Management System built with an Nx monorepo, Next.js, and
 
 Ujyalo is a Learning Management System that combines traditional course and learner management with AI-assisted discovery and learning. Students can find courses and instructors using natural language, ask an AI assistant for explanations, and chat directly with their instructors.
 
-The backend is a set of NestJS microservices that communicate asynchronously through RabbitMQ, all managed in a single Nx monorepo.
+The backend consists of eight NestJS applications: a gateway, users, notification, courses, payments, agents, chat, and media. These applications are managed in a single Nx monorepo and communicate through RabbitMQ where appropriate. The gateway also hosts the WebSocket gateway for real-time communication.
 
 ## ✨ Features
 
@@ -82,15 +83,21 @@ The backend is a set of NestJS microservices that communicate asynchronously thr
 ```mermaid
 flowchart LR
     Client["Next.js Frontend"]
-    Gateway["NestJS API Gateway"]
+
+    subgraph GatewayApp["Gateway Application"]
+        Gateway["NestJS API Gateway"]
+        WS["WebSocket Gateway"]
+        Gateway <--> WS
+    end
 
     subgraph Services["NestJS Microservices"]
-        Course["Course Service"]
-        Student["Student Service"]
-        Tutor["Tutor Service"]
-        Cert["Certificate Service"]
+        Users["Users Service"]
+        Courses["Courses Service"]
+        Payments["Payments Service"]
+        Notification["Notification Service"]
+        Agents["Agents Service"]
         Chat["Chat Service"]
-        AI["Agents Service"]
+        Media["Media Service"]
     end
 
     subgraph AIStack["AI Layer"]
@@ -105,39 +112,49 @@ flowchart LR
     Cloud["Cloudinary"]
 
     Client -->|"HTTP"| Gateway
-    Client <-->|"WebSockets"| Chat
-    Gateway --> MQ
-    MQ <--> Course
-    MQ <--> Student
-    MQ <--> Tutor
-    MQ <--> Cert
-    MQ <--> Chat
-    MQ <--> AI
+    Client <-->|"WebSockets"| WS
 
     Gateway --> Redis
-    Course --> Mongo
-    Student --> Mongo
-    Tutor --> Mongo
-    Cert --> Mongo
-    Chat --> Mongo
-    Course --> Cloud
+    Gateway <--> MQ
 
-    AI --> LC
+    MQ <--> Users
+    MQ <--> Courses
+    MQ <--> Payments
+    MQ <--> Notification
+    MQ <--> Agents
+    MQ <--> Chat
+    MQ <--> Media
+
+    Users --> Mongo
+    Courses --> Mongo
+    Payments --> Mongo
+    Chat --> Mongo
+
+    Media --> Cloud
+
+    Agents --> LC
     LC --> LG
     LG --> LLM
     LG -->|"Tool calls"| MQ
-    MQ --> Course
-    MQ --> Tutor
-    MQ --> Student
 ```
 
 ## 📁 Project Structure
 
 ```text
 ujyalo/
-├── apps/          # Next.js frontend and NestJS applications
-├── libs/          # Shared libraries
-├── assets/        # Logo and static README assets
+├── apps/
+│   ├── web/                 # Next.js frontend
+│   └── api/
+│       ├── gateway/         # HTTP API and WebSocket gateway
+│       ├── users/           # User management and authentication
+│       ├── notification/    # Email and notification workflows
+│       ├── courses/         # Course management
+│       ├── payments/        # Payment processing
+│       ├── agents/          # AI agents and LangGraph workflows
+│       ├── chat/            # Chat service
+│       └── media/           # Media uploads and Cloudinary
+├── libs/                    # Shared libraries and modules
+├── assets/                  # Logo and static README assets
 ├── nx.json
 └── package.json
 ```
