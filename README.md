@@ -32,6 +32,7 @@ An AI-powered Learning Management System built with an Nx monorepo, Next.js, and
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)
+![Qdrant](https://img.shields.io/badge/Qdrant-DC244C?style=flat-square&logo=qdrant&logoColor=white)
 ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=flat-square&logo=rabbitmq&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=flat-square&logo=cloudinary&logoColor=white)
@@ -71,6 +72,7 @@ The backend consists of eight NestJS applications: a gateway, users, notificatio
 | **Frontend** | Next.js, React, Tailwind CSS |
 | **Backend** | NestJS, TypeScript |
 | **Database** | MongoDB with Mongoose, Redis (sessions and caching) |
+| **Vector Database** | Qdrant |
 | **Messaging** | RabbitMQ |
 | **Real-time** | WebSockets |
 | **AI** | LLMs, LangChain, LangGraph |
@@ -107,6 +109,7 @@ flowchart LR
 
     Mongo[("MongoDB")]
     Redis[("Redis")]
+    Qdrant[("Qdrant")]
     MQ{{"RabbitMQ"}}
     Cloud["Cloudinary"]
 
@@ -132,6 +135,7 @@ flowchart LR
     Media --> Cloud
 
     Agents --> LC
+    Agents --> Qdrant
     LC --> LG
     LG --> LLM
     LG -->|"Tool calls"| MQ
@@ -175,7 +179,7 @@ npm install
 
 ### Configuration
 
-Create the required environment files for MongoDB, Redis, RabbitMQ, Cloudinary, and your LLM provider as described in the repository's example env files.
+Create the required environment files for MongoDB, Redis, RabbitMQ, Qdrant, Cloudinary, and your LLM provider as described in the repository's example env files.
 
 For administrator sign-in, add `ADMIN_EMAIL` and `ADMIN_PASSWORD` from `apps/api/users/.env.example` to the users service environment (`apps/api/users/.env`). Use a unique, strong password. These values are read only by the users service; do not add `NEXT_PUBLIC_` prefixes or commit actual credentials. Admin sign-in is disabled when either value is missing.
 
