@@ -8,8 +8,8 @@ import { Course, categories, courses } from '@/src/lib/courses'
 
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced']
 const PRICE: [string, string, (c: Course) => boolean][] = [
-  ['any', 'Any price', () => true], ['free', 'Free', (c) => c.price === 0], ['u50', 'Under $50', (c) => c.price > 0 && c.price < 50],
-  ['m', '$50 – $75', (c) => c.price >= 50 && c.price <= 75], ['o', 'Over $75', (c) => c.price > 75],
+  ['any', 'Any price', () => true], ['free', 'Free', (c) => c.price === 0], ['u50', 'Under रु 50', (c) => c.price > 0 && c.price < 50],
+  ['m', 'रु 50 – रु 75', (c) => c.price >= 50 && c.price <= 75], ['o', 'Over रु 75', (c) => c.price > 75],
 ]
 const RATING: [string, string][] = [['0', 'Any rating'], ['4.5', '4.5 & up'], ['4.0', '4.0 & up']]
 const DUR: [string, string, (c: Course) => boolean][] = [

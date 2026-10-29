@@ -109,7 +109,14 @@ export default function CoursePlayer() {
               <li key={`${part.title}-${index}`} className="card overflow-hidden">
                 <div className="aspect-video bg-black">
                   {part.videourl ? (
-                    <video controls playsInline preload="metadata" className="size-full" src={part.videourl}>
+                    <video
+                      controls
+                      playsInline
+                      preload="metadata"
+                      muted={false}
+                      className="size-full"
+                      src={part.videourl}
+                    >
                       Your browser does not support embedded video.
                     </video>
                   ) : <div className="grid size-full place-items-center text-sm text-white">This lesson has no video available.</div>}

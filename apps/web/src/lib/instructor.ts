@@ -13,7 +13,7 @@ export const instructorStats = [
   { label: 'Published courses', value: '2', note: '1 pending review · 1 draft', icon: 'bookopen' },
   { label: 'Total enrollments', value: '20,820', note: '+312 this week', icon: 'users' },
   { label: 'Course engagement', value: '71%', note: 'Avg. completion rate, +4%', icon: 'trend' },
-  { label: 'Revenue this month', value: '$9,860', note: 'After platform fees', icon: 'dollar' },
+  { label: 'Revenue this month', value: 'रु 9,860', note: 'After platform fees', icon: 'rupee' },
 ]
 export const instructorActivity = [
   { icon: 'users', text: '24 new students enrolled in NestJS Backend Development', when: 'Today' },

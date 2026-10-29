@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { Course, categoryIcon, fmtDur } from '@/src/lib/courses'
+import { formatNpr } from '@/src/lib/currency'
 import { I } from './Icon'
 
 const TONES = ['bg-ph1', 'bg-ph2', 'bg-ph3']
@@ -33,7 +34,7 @@ export default function CourseCard({ c }: { c: Course }) {
           <span className="inline-flex items-center gap-1.5"><I n="clock" c="s" />{fmtDur(c.minutes)}</span>
         </div>
         <div className="group mt-auto flex items-center justify-between border-t border-line pt-4">
-          <span className="font-display text-xl leading-none font-bold">{c.price ? <>${c.price}{c.was && <s className="ml-1.5 font-sans text-sm font-normal text-muted">${c.was}</s>}</> : 'Free'}</span>
+          <span className="font-display text-xl leading-none font-bold">{c.price ? <>{formatNpr(c.price)}{c.was && <s className="ml-1.5 font-sans text-sm font-normal text-muted">{formatNpr(c.was)}</s>}</> : 'Free'}</span>
           <Link href={href} className="inline-flex items-center gap-1.5 py-2 text-sm font-medium">View course<I n="arrow" c="size-4 transition-transform duration-200 ease-ujyalo group-hover:translate-x-[3px]" /></Link>
         </div>
       </div>

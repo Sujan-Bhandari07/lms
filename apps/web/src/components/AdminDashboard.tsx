@@ -11,6 +11,7 @@ import {
   useVerifyTutorApplicationMutation,
 } from '@/src/services/api/Userapi'
 import { getApiErrorMessage, getApiSuccessMessage } from '@/src/lib/apiFeedback'
+import { formatNpr } from '@/src/lib/currency'
 
 function submittedDate(value?: string) {
   if (!value) return 'Date unavailable'
@@ -171,7 +172,7 @@ export default function AdminDashboard() {
                   <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted">
                     <span>Instructor: <b className="text-ink">{course.tutor.tutorname}</b></span>
                     <span>Submitted: {submittedDate(course.createdAt)}</span>
-                    <span>Price: <b className="text-ink">{course.price === 0 ? 'Free' : `$${course.price.toFixed(2)}`}</b></span>
+                    <span>Price: <b className="text-ink">{course.price === 0 ? 'Free' : formatNpr(course.price)}</b></span>
                   </div>
                   <div className="mt-5 flex justify-end border-t border-line pt-4">
                     <button

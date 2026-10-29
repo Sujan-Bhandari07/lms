@@ -13,7 +13,7 @@ describe('MarkdownContent', () => {
           '',
           '\\| Course \\| Image \\| Tech Stack \\| Price \\|',
           '\\| --- \\| --- \\| --- \\| --- \\|',
-          '\\| Full Stack \\| [![Course image](https://res.cloudinary.com/demo/image/upload/course.jpg)](https://example.com/course) \\| TypeScript, NestJS, and a long description \\| ₹111.23 \\|',
+          '\\| Full Stack \\| [![Course image](https://res.cloudinary.com/demo/image/upload/course.jpg)](https://example.com/course) \\| TypeScript, NestJS, and a long description \\| NPR 111.23 \\|',
           '',
           '&#x20;Courses are available.',
         ].join('\n')}

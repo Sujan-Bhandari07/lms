@@ -71,7 +71,7 @@ export default function CourseWizard() {
       return
     }
     if (!Number.isFinite(parsedPrice) || parsedPrice < 0 || !Number.isFinite(parsedDiscount) || parsedDiscount < 0 || parsedDiscount > 100) {
-      setError('Enter a non-negative price and a discount between 0 and 100.')
+      setError('Enter a non-negative price in NPR and a discount between 0 and 100.')
       return
     }
 
@@ -122,7 +122,7 @@ export default function CourseWizard() {
         </div>
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
-            <label htmlFor="price" className="mb-2 block text-sm font-medium">Price</label>
+            <label htmlFor="price" className="mb-2 block text-sm font-medium">Price (NPR)</label>
             <input id="price" type="number" min="0" step="0.01" required value={price} onChange={(event) => setPrice(event.target.value)} className={`${INPUT} h-12`} />
           </div>
           <div>

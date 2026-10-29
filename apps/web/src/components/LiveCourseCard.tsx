@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { I } from './Icon'
 import Avatar from './Avatar'
 import type { Course } from '@/src/services/api/Userapi'
+import { formatNpr } from '@/src/lib/currency'
 
 export default function LiveCourseCard({ course }: { course: Course }) {
   return (
@@ -41,7 +42,7 @@ export default function LiveCourseCard({ course }: { course: Course }) {
         <p className="line-clamp-2 min-h-12 text-sm leading-6 text-muted">{course.desc}</p>
         <div className="mt-auto flex items-center justify-between border-t border-line pt-4">
           <span className="font-display text-xl leading-none font-bold">
-            {course.price === 0 ? 'Free' : `$${course.price.toFixed(2)}`}
+            {course.price === 0 ? 'Free' : formatNpr(course.price)}
           </span>
           <Link href={`/courses/${course._id}`} className="btn btn-s h-9">View course</Link>
         </div>

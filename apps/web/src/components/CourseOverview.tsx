@@ -15,6 +15,7 @@ import {
   usePostCourseRatingMutation,
 } from '@/src/services/api/Userapi'
 import { toast } from 'sonner'
+import { formatNpr } from '@/src/lib/currency'
 
 export default function CourseOverview() {
   const { slug } = useParams<{ slug: string }>()
@@ -226,7 +227,7 @@ export default function CourseOverview() {
               ? <div role="img" aria-label={`${course.coursename} course photo`} className="size-full bg-cover bg-center" style={{ backgroundImage: `url("${course.title.replaceAll('"', '%22')}")` }} />
               : <div className="grid size-full place-items-center text-muted"><I n="bookopen" c="l" /></div>}
           </div>
-          <p className="mt-5 font-display text-3xl font-bold">{course.price === 0 ? 'Free' : `$${course.price.toFixed(2)}`}</p>
+          <p className="mt-5 font-display text-3xl font-bold">{course.price === 0 ? 'Free' : formatNpr(course.price)}</p>
           {course.discount > 0 && <p className="mt-1 text-sm text-muted">{course.discount}% discount applied</p>}
           <button type="button" onClick={() => void enterCourse()} disabled={startingEnrollment || enrollState.isLoading || paymentState.isLoading} className="btn btn-p btn-lg mt-5 w-full disabled:opacity-50">
             {startingEnrollment || enrollState.isLoading || paymentState.isLoading

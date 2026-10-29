@@ -20,6 +20,6 @@ export const adminActivity = [
   { event: 'Instructor application', who: 'Omar Haddad', detail: 'Design · 4 sample lessons attached', when: '48 min ago', icon: 'user' },
   { event: 'Course submitted', who: 'Daniel Reyes', detail: 'GraphQL APIs with NestJS', when: 'Yesterday, 4:12 PM', icon: 'shield' },
   { event: 'Content report', who: 'Student #20481', detail: 'Reported lesson audio quality', when: 'Yesterday, 11:30 AM', icon: 'flag' },
-  { event: 'Refund processed', who: 'Student #19377', detail: 'Next.js: Build Full-Stack Apps · $59', when: 'Oct 26', icon: 'dollar' },
+  { event: 'Refund processed', who: 'Student #19377', detail: 'Next.js: Build Full-Stack Apps · रु 59', when: 'Oct 26', icon: 'rupee' },
   { event: 'Category updated', who: 'Maya Patel', detail: 'Renamed “AI” to “AI & ML”', when: 'Oct 25', icon: 'layers' },
 ]

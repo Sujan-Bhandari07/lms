@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Avatar from './Avatar'
 import { I, Stars } from './Icon'
 import { Content, Course, curriculum, fmtDur, reviews } from '@/src/lib/courses'
+import { formatNpr } from '@/src/lib/currency'
 
 const BARS: [number, number][] = [[5, 84], [4, 13], [3, 2], [2, 1], [1, 0]]
 const TABS: [string, string][] = [['overview', 'Overview'], ['curriculum', 'Curriculum'], ['instructor', 'Instructor'], ['reviews', 'Reviews']]
@@ -21,7 +22,7 @@ export default function CourseDetail({ c, content }: { c: Course; content: Conte
   const total = curriculum.reduce((a, s) => a + s.lessons.reduce((x, l) => x + l[1], 0), 0)
   const off = c.was ? Math.round((1 - c.price / c.was) * 100) : 0
   const title = c.id === 'nestjs-backend-development' ? 'NestJS Backend Development: Build Production-Ready APIs' : c.title
-  const price = c.price ? `$${c.price}` : 'Free'
+  const price = c.price ? formatNpr(c.price) : 'Free'
 
   useEffect(() => {
     if (!modal) return
@@ -74,7 +75,7 @@ export default function CourseDetail({ c, content }: { c: Course; content: Conte
               <div className="px-5 pt-6">
                 <div className="flex flex-wrap items-baseline gap-2.5">
                   <b className="font-display text-4xl leading-[44px] font-bold tracking-[-0.02em]">{price}</b>
-                  {c.was && <s className="text-muted">${c.was}</s>}
+                  {c.was && <s className="text-muted">{formatNpr(c.was)}</s>}
                   {off > 0 && <span className="bdg bdg-gold ml-auto">{off}% off</span>}
                 </div>
                 <div className="mt-5 hidden lg:block">{cta('btn-lg w-full')}</div>
@@ -193,8 +194,8 @@ export default function CourseDetail({ c, content }: { c: Course; content: Conte
               <>
                 <h3 id="mt" className="t-h3 mb-2 pr-8">Enroll in this course</h3><p className="text-[15px] text-muted">{title}</p>
                 <div className="my-6 grid gap-2 rounded-ui border border-line p-4 text-sm text-muted">
-                  {c.was ? <><div className="flex justify-between"><span>Course price</span><span>${c.was}.00</span></div><div className="flex justify-between"><span>Discount ({off}%)</span><span>−${c.was - c.price}.00</span></div></> : null}
-                  <div className="flex justify-between border-t border-line pt-2 font-semibold text-ink"><span>Total</span><span>${c.price}.00</span></div>
+                  {c.was ? <><div className="flex justify-between"><span>Course price</span><span>{formatNpr(c.was)}</span></div><div className="flex justify-between"><span>Discount ({off}%)</span><span>−{formatNpr(c.was - c.price)}</span></div></> : null}
+                  <div className="flex justify-between border-t border-line pt-2 font-semibold text-ink"><span>Total</span><span>{formatNpr(c.price)}</span></div>
                 </div>
                 <div className="flex justify-end gap-3"><button className="btn btn-s h-11 max-sm:flex-1" onClick={() => setModal(false)}>Cancel</button><button className="btn btn-p h-11 max-sm:flex-1" autoFocus onClick={() => setEnrolled(true)}>Confirm enrollment</button></div>
               </>

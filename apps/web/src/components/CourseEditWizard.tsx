@@ -73,7 +73,7 @@ export default function CourseEditWizard() {
       return
     }
     if (!Number.isFinite(parsedPrice) || parsedPrice < 0 || !Number.isFinite(parsedDiscount) || parsedDiscount < 0 || parsedDiscount > 100) {
-      setError('Enter a non-negative course price and a discount between 0 and 100.')
+      setError('Enter a non-negative course price in NPR and a discount between 0 and 100.')
       return
     }
     if (photo && (!photo.type.startsWith('image/') || photo.size > 500 * 1024 * 1024)) {
@@ -115,7 +115,7 @@ export default function CourseEditWizard() {
         <label className="grid gap-2 text-sm font-medium">Description<textarea required rows={6} value={desc} onChange={(event) => setDesc(event.target.value)} className={`${INPUT} resize-y py-3`} /></label>
         <label className="grid gap-2 text-sm font-medium">Topics or technology stack<input required value={techstack} onChange={(event) => setTechstack(event.target.value)} className={`${INPUT} h-12`} /></label>
         <div className="grid gap-5 sm:grid-cols-2">
-          <label className="grid gap-2 text-sm font-medium">Stored course price<input type="number" min="0" step="0.01" required value={price} onChange={(event) => setPrice(event.target.value)} className={`${INPUT} h-12`} /></label>
+          <label className="grid gap-2 text-sm font-medium">Stored course price (NPR)<input type="number" min="0" step="0.01" required value={price} onChange={(event) => setPrice(event.target.value)} className={`${INPUT} h-12`} /></label>
           <label className="grid gap-2 text-sm font-medium">Discount (%)<input type="number" min="0" max="100" step="0.01" required value={discount} onChange={(event) => setDiscount(event.target.value)} className={`${INPUT} h-12`} /></label>
         </div>
         <label className="grid gap-2 text-sm font-medium">Replace course photo (optional)<input type="file" accept="image/*" onChange={(event) => setPhoto(event.target.files?.[0] ?? null)} className="rounded-ui border border-line bg-page p-3 text-sm font-normal file:mr-3 file:rounded-md file:border-0 file:bg-surface file:px-3 file:py-2" /></label>
