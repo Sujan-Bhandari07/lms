@@ -70,7 +70,7 @@ The backend consists of eight NestJS applications: a gateway, users, notificatio
 | **Monorepo** | Nx, npm |
 | **Frontend** | Next.js, React, Tailwind CSS |
 | **Backend** | NestJS, TypeScript |
-| **Data** | MongoDB with Mongoose, Redis (sessions and caching) |
+| **Database** | MongoDB with Mongoose, Redis (sessions and caching) |
 | **Messaging** | RabbitMQ |
 | **Real-time** | WebSockets |
 | **AI** | LLMs, LangChain, LangGraph |
