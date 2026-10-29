@@ -1,49 +1,76 @@
 'use client'
-import Link from 'next/link'
+
+import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { FormEvent, useRef, useState } from 'react'
+import { useLoginMutation, useRegisterMutation, type UserProfile } from '@/src/services/api/Userapi'
+import { useAppDispatch } from '@/src/lib/hooks'
+import { setuser } from '@/src/services/slices/Userslice'
+import { getApiErrorMessage } from '@/src/lib/apiFeedback'
+import { toast } from 'sonner'
 import { I } from './Icon'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
-const validate = (email: string, pw: string) => ({
-  email: !email.trim() ? 'Enter your email address.' : !EMAIL_RE.test(email.trim()) ? 'Enter a valid email, like name@example.com.' : '',
-  password: !pw ? 'Enter your password.' : pw.length < 8 ? 'Your password must be at least 8 characters.' : '',
-})
+const PASSWORD_RE = /^(?=(?:.*[a-z]){2,})(?=.*[A-Z])(?=(?:.*\d){2,})(?=.*[^A-Za-z0-9]).{6,}$/
+const FIELD = 'h-12 w-full rounded-ui border border-line bg-page px-4 text-base text-ink outline-none transition placeholder:text-muted hover:border-[#CFCCC4] focus:border-ink focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-page'
 
-const FIELD = 'h-12 w-full rounded-ui border bg-page px-4 text-base text-ink outline-none transition placeholder:text-muted hover:border-[#CFCCC4] focus:border-ink focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-page'
-
-function FieldError({ id, msg }: { id: string; msg: string }) {
-  return msg ? <p id={id} role="alert" className="mt-2 flex items-start gap-2 text-[13px] leading-5 text-error"><I n="alert" c="mt-px size-4" />{msg}</p> : null
-}
-
-export default function LoginForm() {
+export default function LoginForm({ mode = 'login' }: { mode?: 'login' | 'register' }) {
   const router = useRouter()
+  const dispatch = useAppDispatch()
+  const [login, loginState] = useLoginMutation()
+  const [register, registerState] = useRegisterMutation()
+  const [fullname, setFullname] = useState('')
   const [email, setEmail] = useState('')
-  const [pw, setPw] = useState('')
-  const [show, setShow] = useState(false)
-  const [remember, setRemember] = useState(true)
-  const [touched, setTouched] = useState({ email: false, password: false })
-  const [loading, setLoading] = useState(false)
+  const [password, setPassword] = useState('')
+  const [role, setRole] = useState<UserProfile['role']>('student')
+  const [showPassword, setShowPassword] = useState(false)
   const [formError, setFormError] = useState('')
-  const emailRef = useRef<HTMLInputElement>(null)
-  const pwRef = useRef<HTMLInputElement>(null)
-  const err = validate(email, pw)
-  const showErr = { email: touched.email && err.email, password: touched.password && err.password }
+  const request = mode === 'register' ? registerState : loginState
+  const busy = request.isLoading
 
-  function submit(e: FormEvent) {
-    e.preventDefault()
-    setTouched({ email: true, password: true })
+  useEffect(() => {
+    if (request.isLoading) {
+      toast.loading(mode === 'register' ? 'Creating your account…' : 'Signing you in…', { id: 'auth-request' })
+      return
+    }
+
+    if (request.isError) {
+      toast.error(getApiErrorMessage(request.error), { id: 'auth-request' })
+      return
+    }
+
+    if (!request.isSuccess) return
+    const response = request.data
+    if (!response?.success || !response.payload) {
+      toast.error(response?.message || 'The server response did not include your account profile.', { id: 'auth-request' })
+      return
+    }
+
+    dispatch(setuser(response.payload))
+    toast.success(response.message || (mode === 'register' ? 'Account created.' : 'Signed in.'), { id: 'auth-request' })
+    router.replace(response.payload.role === 'tutor' ? '/instructor' : '/dashboard')
+  }, [dispatch, mode, request.data, request.error, request.isError, request.isLoading, request.isSuccess, router])
+
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
     setFormError('')
-    if (err.email) return emailRef.current?.focus()
-    if (err.password) return pwRef.current?.focus()
-    setLoading(true)
-    // Demo only: replace with your auth call (e.g. signIn / POST /api/auth/login).
-    setTimeout(() => {
-      if (email.trim().toLowerCase() === 'error@ujyalo.com') {
-        setLoading(false)
-        setFormError('We couldn’t sign you in. Check your email and password, then try again.')
-      } else router.push('/dashboard')
-    }, 900)
+    if (mode === 'register' && !fullname.trim()) {
+      setFormError('Enter your full name.')
+      return
+    }
+    if (!EMAIL_RE.test(email.trim())) {
+      setFormError('Enter a valid email address.')
+      return
+    }
+    if (!PASSWORD_RE.test(password)) {
+      setFormError('Use at least 6 characters, including 2 lowercase letters, 1 uppercase letter, 2 numbers, and 1 symbol.')
+      return
+    }
+
+    if (mode === 'register') {
+      register({ fullname: fullname.trim(), email: email.trim(), password, role })
+    } else {
+      login({ email: email.trim(), password })
+    }
   }
 
   return (
@@ -54,44 +81,37 @@ export default function LoginForm() {
         </div>
       )}
 
-      <div>
-        <label htmlFor="email" className="mb-2 block text-sm leading-[22px] font-medium">Email address</label>
-        <input
-          ref={emailRef} id="email" name="email" type="email" inputMode="email" autoComplete="email" placeholder="you@example.com"
-          value={email} onChange={(e) => setEmail(e.target.value)} onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-          aria-invalid={!!showErr.email} aria-describedby={showErr.email ? 'email-err' : undefined}
-          className={`${FIELD} ${showErr.email ? 'border-error' : 'border-line'}`}
-        />
-        <FieldError id="email-err" msg={showErr.email as string} />
-      </div>
-
-      <div>
-        <div className="mb-2 flex items-center justify-between">
-          <label htmlFor="password" className="text-sm leading-[22px] font-medium">Password</label>
-          <Link href="#" className="text-[13px] font-medium text-muted underline decoration-gold underline-offset-4 hover:text-ink">Forgot password?</Link>
+      {mode === 'register' && (
+        <div>
+          <label htmlFor="fullname" className="mb-2 block text-sm font-medium">Full name</label>
+          <input id="fullname" name="fullname" autoComplete="name" required value={fullname} onChange={(event) => setFullname(event.target.value)} className={FIELD} />
         </div>
+      )}
+      <div>
+        <label htmlFor="email" className="mb-2 block text-sm font-medium">Email address</label>
+        <input id="email" name="email" type="email" inputMode="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" className={FIELD} />
+      </div>
+      <div>
+        <label htmlFor="password" className="mb-2 block text-sm font-medium">Password</label>
         <div className="relative">
-          <input
-            ref={pwRef} id="password" name="password" type={show ? 'text' : 'password'} autoComplete="current-password" placeholder="Enter your password"
-            value={pw} onChange={(e) => setPw(e.target.value)} onBlur={() => setTouched((t) => ({ ...t, password: true }))}
-            aria-invalid={!!showErr.password} aria-describedby={showErr.password ? 'pw-err' : undefined}
-            className={`${FIELD} pr-12 ${showErr.password ? 'border-error' : 'border-line'}`}
-          />
-          <button type="button" onClick={() => setShow(!show)} aria-pressed={show} aria-label={show ? 'Hide password' : 'Show password'}
-            className="absolute top-1/2 right-1 grid size-11 -translate-y-1/2 cursor-pointer place-items-center rounded-ui text-muted hover:text-ink">
-            <I n={show ? 'eyeoff' : 'eye'} />
+          <input id="password" name="password" type={showPassword ? 'text' : 'password'} autoComplete={mode === 'register' ? 'new-password' : 'current-password'} required value={password} onChange={(event) => setPassword(event.target.value)} className={`${FIELD} pr-12`} />
+          <button type="button" onClick={() => setShowPassword(!showPassword)} aria-pressed={showPassword} aria-label={showPassword ? 'Hide password' : 'Show password'} className="absolute top-1/2 right-1 grid size-11 -translate-y-1/2 cursor-pointer place-items-center rounded-ui text-muted hover:text-ink">
+            <I n={showPassword ? 'eyeoff' : 'eye'} />
           </button>
         </div>
-        <FieldError id="pw-err" msg={showErr.password as string} />
+        {mode === 'register' && <p className="mt-2 text-xs text-muted">At least 6 characters, 2 lowercase letters, 1 uppercase letter, 2 numbers, and 1 symbol.</p>}
       </div>
-
-      <label className="flex min-h-11 cursor-pointer items-center gap-3 text-sm">
-        <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="size-[18px] accent-btn" />
-        Keep me signed in on this device
-      </label>
-
-      <button type="submit" disabled={loading} aria-busy={loading} className="btn btn-p btn-lg w-full">
-        {loading ? <><span className="size-4 animate-spin rounded-full border-2 border-btn-fg/30 border-t-btn-fg" />Signing in…</> : 'Sign In'}
+      {mode === 'register' && (
+        <div>
+          <label htmlFor="role" className="mb-2 block text-sm font-medium">Account type</label>
+          <select id="role" value={role} onChange={(event) => setRole(event.target.value as UserProfile['role'])} className={`${FIELD} cursor-pointer`}>
+            <option value="student">Student</option>
+            <option value="tutor">Tutor</option>
+          </select>
+        </div>
+      )}
+      <button type="submit" disabled={busy} aria-busy={busy} className="btn btn-p btn-lg w-full">
+        {busy ? <><span className="size-4 animate-spin rounded-full border-2 border-btn-fg/30 border-t-btn-fg" />{mode === 'register' ? 'Creating account…' : 'Signing in…'}</> : mode === 'register' ? 'Create account' : 'Sign in'}
       </button>
     </form>
   )

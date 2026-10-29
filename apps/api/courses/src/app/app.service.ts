@@ -49,8 +49,10 @@ export class AppService {
       tutor,
     } = data;
     const priceAfterDiscount = price - (discount / 100) * price;
+
+    const url = await this.media.upload(title,"course")
     const course = await this.coursesmodel.create({
-      title,
+      title:url.url,
       desc,
       coursename,
       price: priceAfterDiscount,
@@ -270,4 +272,8 @@ export class AppService {
 
     return courses;
   }
+
+
+
+  
 }

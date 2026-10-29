@@ -1,13 +1,11 @@
-import Footer from '@/src/components/Footer'
 import Header from '@/src/components/Header'
 
-/** Public marketing pages: landing, explore, course details. */
+/** Public account pages and API availability notices. */
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header />
       {children}
-      <Footer />
     </>
   )
 }

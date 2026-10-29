@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
-import AdminDashboard from '@/src/components/AdminDashboard'
+import UnavailableFeature from '@/src/components/UnavailableFeature'
 
-export const metadata: Metadata = { title: 'Admin Dashboard' }
-export default function Page() { return <AdminDashboard /> }
+export const metadata: Metadata = { title: 'Admin dashboard' }
+
+export default function AdminPage() {
+  return <UnavailableFeature feature="Admin dashboard and course review queue" />
+}

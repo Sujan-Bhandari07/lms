@@ -23,6 +23,51 @@ class TutorDto {
   tutorid!: string;
 }
 
+
+
+
+
+export class GCreateCourseDto {
+  @IsString({ message: "Coursename must be a string." })
+  @IsDefined({ message: "Coursename is required" })
+  @IsNotEmpty({ message: "Coursename can't be empty." })
+  coursename!: string;
+
+  @IsString({ message: "Description of course must be a string." })
+  @IsDefined({ message: "Description of course is required" })
+  @IsNotEmpty({ message: "Description of course can't be empty." })
+  desc!: string;
+
+  @IsString({ message: "Techstack must be a string." })
+  @IsDefined({ message: "Techstack is required" })
+  @IsNotEmpty({ message: "Techstack can't be empty." })
+  techstack!: string;
+
+  @ValidateNested()
+  @Type(() => TutorDto)
+  tutor!: TutorDto;
+
+  @Type(() => Number)
+  @IsNumber(
+    { allowInfinity: false, allowNaN: false },
+    { message: "Price of course must be a number." },
+  )
+  @IsDefined({ message: "Price of course is required" })
+  @Min(0, { message: "Price of course must be greater than or equal to 0." })
+  price!: number;
+
+  @Type(() => Number)
+  @IsNumber(
+    { allowInfinity: false, allowNaN: false },
+    { message: "Discount of course must be a number." },
+  )
+  @IsOptional()
+  @Min(0, { message: "Discount of course must be greater than or equal to 0." })
+  discount?: number;
+}
+
+
+
 export class CreateCourseDto {
   @IsString({ message: "Coursename must be a string." })
   @IsDefined({ message: "Coursename is required" })

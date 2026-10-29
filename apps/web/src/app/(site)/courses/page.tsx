@@ -1,11 +1,8 @@
 import type { Metadata } from 'next'
-import Explorer from '@/src/components/Explorer'
+import UnavailableFeature from '@/src/components/UnavailableFeature'
 
-export const metadata: Metadata = { title: 'Explore Courses' }
+export const metadata: Metadata = { title: 'Course catalog' }
 
-type SP = { q?: string; category?: string }
-
-export default async function CoursesPage(props: { searchParams?: Promise<SP> | SP }) {
-  const sp = (await props.searchParams) ?? {}
-  return <Explorer initialQuery={sp.q ?? ''} initialCategory={sp.category ?? ''} />
+export default function CoursesPage() {
+  return <UnavailableFeature feature="Course catalog" />
 }

@@ -1,7 +1,7 @@
 import { BadRequestException, Body, Controller, Get, Inject, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { AuthGuard } from '../guards/auth.guard';
-import { CreateCourseDto, GetCourseTutorDto, GUploadPartDto, ProvideRatingDto, CouseCompletionDto,SendCommentDto, VerifyCourseDto, GetAllStudentsDto } from '@lms/shared';
+import { CreateCourseDto, GetCourseTutorDto, GUploadPartDto, ProvideRatingDto, CouseCompletionDto,SendCommentDto, VerifyCourseDto, GetAllStudentsDto, GCreateCourseDto } from '@lms/shared';
 import { firstValueFrom } from 'rxjs';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -14,8 +14,24 @@ export class CourseController {
 
       
  @Post("createcourse")
- createcourse(@Body() data:CreateCourseDto){
-return firstValueFrom(this.coursesClient.send("createcourse",data))
+  @UseInterceptors(
+  FileInterceptor('photo', {
+    limits: {
+      fileSize: 500 * 1024 * 1024, // 500 MB
+    },
+    fileFilter: (_req, file, cb) =>
+      file.mimetype.startsWith('image/')
+        ? cb(null, true)
+        : cb(
+            new BadRequestException('Only image files are allowed'),
+            false,
+          ),
+  }),
+)
+ createcourse(@Body() data:GCreateCourseDto,
+@UploadedFile() file:Express.Multer.File){
+  const buffer= file.buffer.toString("base64")
+return firstValueFrom(this.coursesClient.send("createcourse",{...data,title:buffer}))
  }
 
   @Post("verifycourse")

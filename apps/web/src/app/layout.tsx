@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Sprite } from '@/src/components/Icon'
+import Providers from '@/src/services/Providers'
 
 export const metadata: Metadata = {
   title: { default: 'Ujyalo — Learn Skills That Move You Forward', template: '%s — Ujyalo' },
-  description: 'Structured online courses, recorded video lessons, certificates and AI-powered learning support.',
+  description: 'Sign in to Ujyalo or create a learner or tutor account.',
 }
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover' }
 
@@ -18,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <Sprite />
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

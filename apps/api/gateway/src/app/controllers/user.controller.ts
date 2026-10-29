@@ -94,7 +94,7 @@ export class UsersController {
   }
 
   @Post("logout")
-  async logout(@Res() res: Response, @Req() req: Request) {
+  async logout(@Res({passthrough:true}) res: Response, @Req() req: Request) {
     const { token } = req.cookies;
     if (!token) {
       throw new UnauthorizedException("Already been logout.");
