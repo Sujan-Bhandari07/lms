@@ -1,19 +1,28 @@
+import { button, detailRow, detailsBox, esc, layout } from "./template.email";
+
 export const COURSE_CERTIFICATE_EMAIL = (
   fullname: string,
   courseName: string,
-  email:string
-  
-
+  email: string,
 ) => ({
-    from:process.env.SENDER_EMAIL,
-to:email,
+  from: process.env.SENDER_EMAIL,
+  to: email,
   subject: `Congratulations! You Completed ${courseName}`,
-  html: `
-    <h2>Congratulations, ${fullname}!</h2>
-    <p>You have successfully completed <strong>${courseName}</strong>.</p>
-    <p>Your course certificate is ready.</p>
-  
-    <p>Keep learning and growing!</p>
-    <strong>Team Ujyalo</strong>
-  `,
+  html: layout({
+    preheader: `You've completed ${courseName}. Your certificate is ready!`,
+    icon: "🎓",
+    heading: `Congratulations, ${esc(fullname)}!`,
+    body: `
+      <p style="margin:0 0 16px;">
+        You have successfully completed <strong>${esc(courseName)}</strong>. This is a real achievement, and we are proud of your dedication and hard work.
+      </p>
+      ${detailsBox(
+        detailRow("Course", courseName) + detailRow("Status", "Completed ✔"),
+      )}
+      <p style="margin:0;">
+        Your course certificate is now ready. Keep learning and growing!
+      </p>
+      ${button("View My Certificate")}
+    `,
+  }),
 });

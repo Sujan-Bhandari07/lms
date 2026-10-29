@@ -8,7 +8,7 @@ const TONES = ['bg-ph1', 'bg-ph2', 'bg-ph3']
 
 export default function CourseCard({ c }: { c: Course }) {
   const [saved, setSaved] = useState(false)
-  const href = `/courses/${c.slug}`
+  const href = `/courses/${c.id}`
   const badge = c.badge === 'New' ? 'bdg-dark' : c.badge === 'Free' ? '' : 'bdg-gold'
   return (
     <article className="card lift flex flex-col p-3 pb-5">

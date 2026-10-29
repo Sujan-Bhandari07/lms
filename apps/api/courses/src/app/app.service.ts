@@ -29,8 +29,9 @@ import { firstValueFrom } from "rxjs";
 @Injectable()
 export class AppService {
   constructor(
-    @Inject("NOTIFICATION_SERVICE") private readonly notificationClient:ClientProxy,
-    @Inject("USERS_SERVICE") private readonly usersClient:ClientProxy,
+    @Inject("NOTIFICATION_SERVICE")
+    private readonly notificationClient: ClientProxy,
+    @Inject("USERS_SERVICE") private readonly usersClient: ClientProxy,
     @Inject(REDIS_CLIENT) private readonly redis: Redis,
     @InjectModel(Courses.name)
     private readonly coursesmodel: Model<CoursesDocument>,
@@ -73,13 +74,16 @@ export class AppService {
     course.isverified = verify;
 
     await course.save();
-    const user = await firstValueFrom(this.usersClient.send("getusernotification",{userid:course.tutor.tutorid}))
-    this.notificationClient.emit("verifiedcourseemail",{
-      fullname:user.fullname,
-      email:user.email,
-      coursename:course.coursename
-
-    })
+    const user = await firstValueFrom(
+      this.usersClient.send("getusernotification", {
+        userid: course.tutor.tutorid,
+      }),
+    );
+    this.notificationClient.emit("verifiedcourseemail", {
+      fullname: user.fullname,
+      email: user.email,
+      coursename: course.coursename,
+    });
     return success("Course verified Successfully");
   }
 
@@ -167,6 +171,13 @@ export class AppService {
     const { userid, username, courseid } = data;
     const course = await this.coursesmodel.findById(courseid);
     if (!course) throw new NotFoundException("Course not found");
+
+    if (!course.providecompletionoption){
+
+      throw new BadRequestException(
+        "This course is running so cant be set as completed.",
+      );
+    }
     course.totalcoursecompletions.push({
       userid,
       username,
@@ -232,37 +243,31 @@ export class AppService {
 
   async getAllCourse() {
     const courses = await this.coursesmodel.find({});
-    if (!courses.length){
-
+    if (!courses.length) {
       return "No courses is currently available. Pls satye tuned for upcoming updates";
     }
-return courses
+    return courses;
   }
 
+  async getspecificcourse(data: { name: string }) {
+    const words = data.name.trim().split(/\s+/);
 
-  async getspecificcourse(data:{
-    name:string
-  }){
+    const courses = await this.coursesmodel.find({
+      $or: words.flatMap((word) => {
+        const regex = new RegExp(
+          word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+          "i",
+        );
 
-  const words =data.name.trim().split(/\s+/);
+        return [
+          { coursename: regex },
+          { title: regex },
+          { description: regex },
+        ];
+      }),
+    });
+    if (!courses) return "No course was found";
 
-  const courses = await this.coursesmodel.find({
-    $or: words.flatMap((word) => {
-      const regex = new RegExp(
-        word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-        "i",
-      );
-
-      return [
-        { coursename: regex },
-        { title: regex },
-        { description: regex },
-      ];
-    }),
-  });
-  if(!courses)return "No course was found"
-
-  return courses;
-
+    return courses;
   }
 }

@@ -64,6 +64,7 @@ export class AppService {
   }
 
   async coursecertificateemail(data: ICourseCertificate) {
+    console.log(data)
     const mailoption = COURSE_CERTIFICATE_EMAIL(
       data.fullname,
       data.coursename,

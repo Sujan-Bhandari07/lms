@@ -1,28 +1,28 @@
 export type Level = 'Beginner' | 'Intermediate' | 'Advanced'
 export interface Course {
-  slug: string; title: string; instructor: string; category: string; level: Level
+  id: string; title: string; instructor: string; category: string; level: Level
   rating: number; students: number; minutes: number; price: number; was?: number; badge?: string; order: number
 }
 
 export const courses: Course[] = [
-  { slug: 'nestjs-backend-development', title: 'NestJS Backend Development', instructor: 'Daniel Reyes', category: 'Programming', level: 'Intermediate', rating: 4.9, students: 12480, minutes: 860, price: 64, was: 99, badge: 'New', order: 12 },
-  { slug: 'nextjs-full-stack-apps', title: 'Next.js: Build Full-Stack Apps', instructor: 'Sarah Okafor', category: 'Web Development', level: 'Intermediate', rating: 4.8, students: 18260, minutes: 1005, price: 59, was: 89, badge: 'Bestseller', order: 10 },
-  { slug: 'python-for-ai', title: 'Python for AI: From Zero to Models', instructor: 'Priya Raman', category: 'AI & ML', level: 'Beginner', rating: 4.9, students: 26900, minutes: 1090, price: 69, badge: 'Premium', order: 7 },
-  { slug: 'machine-learning-foundations', title: 'Machine Learning Foundations', instructor: 'Marcus Lindqvist', category: 'AI & ML', level: 'Advanced', rating: 4.7, students: 9730, minutes: 1350, price: 79, order: 5 },
-  { slug: 'ui-ux-design-fundamentals', title: 'UI/UX Design Fundamentals', instructor: 'Lena Fischer', category: 'Design', level: 'Beginner', rating: 4.8, students: 14320, minutes: 540, price: 49, order: 4 },
-  { slug: 'design-systems-in-figma', title: 'Design Systems in Figma', instructor: 'Omar Haddad', category: 'Design', level: 'Intermediate', rating: 4.7, students: 6210, minutes: 450, price: 54, order: 9 },
-  { slug: 'product-management-essentials', title: 'Product Management Essentials', instructor: 'Grace Liu', category: 'Business', level: 'Beginner', rating: 4.6, students: 11050, minutes: 480, price: 39, order: 3 },
-  { slug: 'financial-modeling-for-startups', title: 'Financial Modeling for Startups', instructor: 'Ravi Shankar', category: 'Business', level: 'Intermediate', rating: 4.7, students: 5480, minutes: 660, price: 59, order: 6 },
-  { slug: 'typescript-mastery', title: 'TypeScript Mastery', instructor: 'Sarah Okafor', category: 'Programming', level: 'Intermediate', rating: 4.9, students: 21700, minutes: 720, price: 49, was: 69, badge: 'Bestseller', order: 8 },
-  { slug: 'react-tailwind-modern-interfaces', title: 'React & Tailwind: Modern Interfaces', instructor: 'Tomás Silva', category: 'Web Development', level: 'Beginner', rating: 4.8, students: 23400, minutes: 780, price: 0, badge: 'Free', order: 2 },
-  { slug: 'prompt-engineering-llm-apps', title: 'Prompt Engineering & LLM Apps', instructor: 'Priya Raman', category: 'AI & ML', level: 'Intermediate', rating: 4.8, students: 7820, minutes: 390, price: 44, badge: 'New', order: 11 },
-  { slug: 'docker-kubernetes-essentials', title: 'Docker & Kubernetes Essentials', instructor: 'Daniel Reyes', category: 'Programming', level: 'Advanced', rating: 4.6, students: 8340, minutes: 900, price: 69, order: 1 },
+  { id: 'nestjs-backend-development', title: 'NestJS Backend Development', instructor: 'Daniel Reyes', category: 'Programming', level: 'Intermediate', rating: 4.9, students: 12480, minutes: 860, price: 64, was: 99, badge: 'New', order: 12 },
+  { id: 'nextjs-full-stack-apps', title: 'Next.js: Build Full-Stack Apps', instructor: 'Sarah Okafor', category: 'Web Development', level: 'Intermediate', rating: 4.8, students: 18260, minutes: 1005, price: 59, was: 89, badge: 'Bestseller', order: 10 },
+  { id: 'python-for-ai', title: 'Python for AI: From Zero to Models', instructor: 'Priya Raman', category: 'AI & ML', level: 'Beginner', rating: 4.9, students: 26900, minutes: 1090, price: 69, badge: 'Premium', order: 7 },
+  { id: 'machine-learning-foundations', title: 'Machine Learning Foundations', instructor: 'Marcus Lindqvist', category: 'AI & ML', level: 'Advanced', rating: 4.7, students: 9730, minutes: 1350, price: 79, order: 5 },
+  { id: 'ui-ux-design-fundamentals', title: 'UI/UX Design Fundamentals', instructor: 'Lena Fischer', category: 'Design', level: 'Beginner', rating: 4.8, students: 14320, minutes: 540, price: 49, order: 4 },
+  { id: 'design-systems-in-figma', title: 'Design Systems in Figma', instructor: 'Omar Haddad', category: 'Design', level: 'Intermediate', rating: 4.7, students: 6210, minutes: 450, price: 54, order: 9 },
+  { id: 'product-management-essentials', title: 'Product Management Essentials', instructor: 'Grace Liu', category: 'Business', level: 'Beginner', rating: 4.6, students: 11050, minutes: 480, price: 39, order: 3 },
+  { id: 'financial-modeling-for-startups', title: 'Financial Modeling for Startups', instructor: 'Ravi Shankar', category: 'Business', level: 'Intermediate', rating: 4.7, students: 5480, minutes: 660, price: 59, order: 6 },
+  { id: 'typescript-mastery', title: 'TypeScript Mastery', instructor: 'Sarah Okafor', category: 'Programming', level: 'Intermediate', rating: 4.9, students: 21700, minutes: 720, price: 49, was: 69, badge: 'Bestseller', order: 8 },
+  { id: 'react-tailwind-modern-interfaces', title: 'React & Tailwind: Modern Interfaces', instructor: 'Tomás Silva', category: 'Web Development', level: 'Beginner', rating: 4.8, students: 23400, minutes: 780, price: 0, badge: 'Free', order: 2 },
+  { id: 'prompt-engineering-llm-apps', title: 'Prompt Engineering & LLM Apps', instructor: 'Priya Raman', category: 'AI & ML', level: 'Intermediate', rating: 4.8, students: 7820, minutes: 390, price: 44, badge: 'New', order: 11 },
+  { id: 'docker-kubernetes-essentials', title: 'Docker & Kubernetes Essentials', instructor: 'Daniel Reyes', category: 'Programming', level: 'Advanced', rating: 4.6, students: 8340, minutes: 900, price: 69, order: 1 },
 ]
 
 export const categories: [string, string][] = [['Programming', 'code'], ['Web Development', 'globe'], ['AI & ML', 'cpu'], ['Design', 'layers'], ['Business', 'brief']]
 export const categoryIcon = Object.fromEntries(categories) as Record<string, string>
 
-export const getCourse = (slug: string) => courses.find((c) => c.slug === slug)
+export const getCourse = (id: string) => courses.find((c) => c.id === id)
 export const initials = (n: string) => n.split(' ').map((w) => w[0]).join('').slice(0, 2)
 export function fmtDur(m: number) {
   const h = Math.floor(m / 60), r = m % 60
@@ -58,7 +58,7 @@ export const nestContent: Content = {
 }
 // Placeholder copy for courses that don't have full content yet. Replace with real data/CMS.
 export const contentFor = (c: Course): Content =>
-  c.slug === 'nestjs-backend-development' ? nestContent : {
+  c.id === 'nestjs-backend-development' ? nestContent : {
     subtitle: `A structured, self-paced ${c.level.toLowerCase()} course in ${c.category} taught by ${c.instructor}, with recorded lessons, quizzes and a certificate.`,
     outcomes: ['Understand the core concepts step by step', 'Apply them in hands-on projects', 'Test your knowledge with module quizzes', 'Earn a certificate of completion'],
     requirements: ['No special equipment needed', 'Curiosity and a few hours each week'],

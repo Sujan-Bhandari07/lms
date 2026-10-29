@@ -269,7 +269,7 @@ export class AppService {
       this.notificationclient.emit("coursecertificateemail",{
         coursename,
         fullname:user.fullname,
-        emai:user.email
+        email:user.email
       })
 
       return success("Certifacte added to student profile", studentprofile);
@@ -350,6 +350,9 @@ export class AppService {
     });
     if (!tutor) {
       throw new NotFoundException("Tutor not found");
+    }
+    if(tutor.isverified){
+      throw new ConflictException("Already verified !")
     }
 
     tutor.isverified = true;

@@ -74,7 +74,7 @@ export default function LearnShell({ course }: { course: Course }) {
         <button className="grid size-11 cursor-pointer place-items-center rounded-ui hover:bg-surface" onClick={() => setSide(!side)} aria-label={side ? 'Hide curriculum' : 'Show curriculum'} aria-expanded={side}><I n="panel" /></button>
         <Logo href="/dashboard" />
         <span className="hidden h-6 w-px bg-line md:block" />
-        <Link href={`/courses/${course.slug}`} className="hidden min-w-0 flex-1 truncate text-sm font-medium md:block">{course.title}</Link>
+        <Link href={`/courses/${course.id}`} className="hidden min-w-0 flex-1 truncate text-sm font-medium md:block">{course.title}</Link>
         <div className="ml-auto flex items-center gap-3 sm:gap-4 md:ml-0">
           <div className="hidden items-center gap-3 sm:flex" title={`${done.size} of ${flat.length} lessons complete`}>
             <div className="h-1.5 w-32 overflow-hidden rounded-full bg-surface"><i className="block h-full rounded-full bg-gold transition-[width] duration-300" style={{ width: `${pct}%` }} /></div>

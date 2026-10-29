@@ -65,6 +65,8 @@
   .bdg { @apply inline-flex h-6 w-max items-center gap-1 rounded-full bg-surface px-2.5 text-xs leading-none font-semibold text-muted; }
   .bdg-gold { @apply bg-gold-tint text-gold-deep; }
   .bdg-dark { @apply bg-btn text-btn-fg; }
+  .bdg-ok { @apply bg-ok/15 text-ok; }
+  .bdg-err { @apply bg-error/15 text-error; }
   .bdg-out { @apply border border-line bg-transparent; }
 
   /* surfaces */

@@ -4,12 +4,11 @@ import CourseCard from '@/src/components/CourseCard'
 import { I, Stars } from '@/src/components/Icon'
 import Search from '@/src/components/Search'
 import SectionHead from '@/src/components/SectionHead'
-import { courses } from '@/src/lib/courses'
-
+import { courses } from "@/src/lib/courses"
 const SEC = 'py-12 md:py-16 lg:py-24'
 const HOVER = 'transition duration-200 ease-ujyalo hover:-translate-y-0.5 hover:shadow-md'
 const CATS = [['Web Development', '62', 'code'], ['Backend & Cloud', '38', 'server'], ['AI & Machine Learning', '45', 'cpu'], ['Data Science', '31', 'chart'], ['UI/UX Design', '27', 'layers'], ['Business & Product', '24', 'brief']]
-const FEATURED = ['nestjs-backend-development', 'nextjs-full-stack-apps', 'python-for-ai', 'machine-learning-foundations'].map((s) => courses.find((c) => c.slug === s)!)
+const FEATURED = ['nestjs-backend-development', 'nextjs-full-stack-apps', 'python-for-ai', 'machine-learning-foundations'].map((s) => courses.find((c) => c.id === s)!)
 const INSTRUCTORS = [['Daniel Reyes', 'Senior Backend Engineer', 6, '31k', 4.9], ['Sarah Okafor', 'Full-Stack Developer', 9, '52k', 4.8], ['Priya Raman', 'AI Research Engineer', 5, '44k', 4.9], ['Marcus Lindqvist', 'Machine Learning Lead', 7, '28k', 4.7]] as const
 const QUOTES = [
   ['Aarav Khadka', 'Backend Developer', 'The curriculum is perfectly sequenced. I finished the NestJS course in five weeks and shipped my first production API.'],
@@ -78,7 +77,7 @@ export default function Home() {
       {/* Featured courses */}
       <section id="courses" className={`bg-surface ${SEC}`}><div className="wrap">
         <SectionHead over="Featured courses" title="Structured learning, led by working practitioners" link="View all courses" />
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">{FEATURED.map((c) => <CourseCard key={c.slug} c={c} />)}</div>
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">{FEATURED.map((c) => <CourseCard key={c.id} c={c} />)}</div>
         <div className="mt-12 flex justify-center"><Link className="btn btn-s btn-lg" href="/courses">Explore All Courses</Link></div>
       </div></section>
 

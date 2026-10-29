@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { I } from './Icon'
-import { categoryIcon } from '@/src//lib/courses'
+import { categoryIcon } from '@/src/lib/courses'
 import { enrolled, progressOf } from '@/src/lib/student'
 
 const FILTERS = ['All', 'In Progress', 'Completed'] as const
@@ -25,13 +25,13 @@ export default function MyCourses() {
         {list.map((e) => {
           const p = progressOf(e), full = p === 100
           return (
-            <li key={e.slug} className="flex flex-wrap items-center gap-4 p-4 sm:flex-nowrap">
+            <li key={e.id} className="flex flex-wrap items-center gap-4 p-4 sm:flex-nowrap">
               <div className={`relative grid h-16 w-24 shrink-0 place-items-center overflow-hidden rounded-xl text-muted ${TONES[e.order % 3]}`}>
                 <svg className="absolute inset-0 size-full text-ink"><rect width="100%" height="100%" fill="url(#dots)" /></svg>
                 <I n={categoryIcon[e.category] ?? 'code'} c="relative size-6 [stroke-width:1.25]" />
               </div>
               <div className="min-w-0 flex-1 basis-[calc(100%-7rem)] sm:basis-auto">
-                <Link href={`/courses/${e.slug}`} className="block truncate text-[15px] leading-6 font-semibold hover:underline hover:decoration-gold hover:underline-offset-4">{e.title}</Link>
+                <Link href={`/courses/${e.id}`} className="block truncate text-[15px] leading-6 font-semibold hover:underline hover:decoration-gold hover:underline-offset-4">{e.title}</Link>
                 <p className="text-[13px] text-muted">{e.instructor} · {e.done}/{e.total} lessons</p>
               </div>
               <div className="flex w-full items-center gap-3 sm:w-52">
@@ -40,7 +40,7 @@ export default function MyCourses() {
               </div>
               {full
                 ? <Link href="#" className="btn btn-s h-10 max-sm:w-full"><I n="award" c="s" />Certificate</Link>
-                : <Link href={`/learn/${e.slug}`} className="btn btn-p h-10 max-sm:w-full">Continue</Link>}
+                : <Link href={`/learn/${e.id}`} className="btn btn-p h-10 max-sm:w-full">Continue</Link>}
             </li>
           )
         })}

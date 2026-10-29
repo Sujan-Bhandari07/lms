@@ -5,7 +5,7 @@ import CourseCard from '@/src/components/CourseCard'
 import { I } from '@/src/components/Icon'
 import MyCourses from '@/src/components/MyCourses'
 import { categoryIcon, courses } from '@/src/lib/courses'
-import { activity, certificates, enrolled, goals, interests, progressOf, recentLessons, recommendedSlugs, stats, student } from '@/src/lib/student'
+import { activity, certificates, enrolled, goals, interests, progressOf, recentLessons, recommendedids, stats, student } from '@/src/lib/student'
 
 export const metadata: Metadata = { title: 'Dashboard' }
 
@@ -25,7 +25,7 @@ function Section({ title, link, href = '#', children, className = '' }: { title:
 
 export default function Dashboard() {
   const inProgress = enrolled.filter((e) => progressOf(e) < 100).slice(0, 3)
-  const recommended = recommendedSlugs.map((s) => courses.find((c) => c.slug === s)!)
+  const recommended = recommendedids.map((s) => courses.find((c) => c.id === s)!)
   return (
     <main className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8 lg:py-10">
       {/* Welcome */}
@@ -61,7 +61,7 @@ export default function Dashboard() {
           {inProgress.map((e, i) => {
             const p = progressOf(e)
             return (
-              <article key={e.slug} className={`card lift flex flex-col p-3 pb-5 ${i === 0 ? 'ring-1 ring-gold/60' : ''}`}>
+              <article key={e.id} className={`card lift flex flex-col p-3 pb-5 ${i === 0 ? 'ring-1 ring-gold/60' : ''}`}>
                 <div className={`relative grid aspect-video place-items-center overflow-hidden rounded-xl text-muted ${TONES[e.order % 3]}`}>
                   <svg className="absolute inset-0 size-full text-ink"><rect width="100%" height="100%" fill="url(#dots)" /></svg>
                   <I n={categoryIcon[e.category] ?? 'code'} c="relative size-9 [stroke-width:1.25]" />
@@ -76,7 +76,7 @@ export default function Dashboard() {
                     <span className="text-[13px] font-semibold tabular-nums">{p}%</span>
                   </div>
                   <p className="mt-1.5 text-xs text-muted">{e.done} of {e.total} lessons complete</p>
-                  <Link href={`/learn/${e.slug}`} className="btn btn-p mt-auto w-full !mt-5">Continue Learning<I n="arrow" c="s" /></Link>
+                  <Link href={`/learn/${e.id}`} className="btn btn-p mt-auto w-full !mt-5">Continue Learning<I n="arrow" c="s" /></Link>
                 </div>
               </article>
             )
@@ -90,7 +90,7 @@ export default function Dashboard() {
       {/* Recommended */}
       <Section title="Recommended for You" link="Explore all" href="/courses" className="mt-12">
         <p className="-mt-2 mb-5 flex flex-wrap items-center gap-2 text-sm text-muted">Based on your interests:{interests.map((t) => <span key={t} className="bdg bdg-out">{t}</span>)}</p>
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{recommended.map((c) => <CourseCard key={c.slug} c={c} />)}</div>
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{recommended.map((c) => <CourseCard key={c.id} c={c} />)}</div>
       </Section>
 
       {/* Recent lessons + goals */}
@@ -99,7 +99,7 @@ export default function Dashboard() {
           <ul className="card divide-y divide-line overflow-hidden">
             {recentLessons.map((l) => (
               <li key={l.title}>
-                <Link href={`/learn/${l.slug}`} className="flex items-center gap-4 p-4 transition-colors hover:bg-surface">
+                <Link href={`/learn/${l.id}`} className="flex items-center gap-4 p-4 transition-colors hover:bg-surface">
                   <span className="grid size-10 shrink-0 place-items-center rounded-full bg-surface"><I n="play" /></span>
                   <span className="min-w-0 flex-1"><span className="block truncate text-[15px] leading-6 font-medium">{l.title}</span><span className="block truncate text-[13px] text-muted">{l.course} · {l.when}</span></span>
                   <span className="w-12 shrink-0"><span className="block h-1 overflow-hidden rounded-full bg-surface"><i className="block h-full rounded-full bg-gold" style={{ width: `${l.pct}%` }} /></span></span>

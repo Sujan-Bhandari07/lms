@@ -5,15 +5,10 @@ import { useEffect, useState } from 'react'
 import Avatar from './Avatar'
 import { I } from './Icon'
 import { Logo } from './Header'
-import { student } from '@/src/lib/student'
+import type { ShellConfig } from '@/src/lib/nav'
 
-const NAV: [label: string, href: string, icon: string, count?: number][] = [
-  ['Dashboard', '/dashboard', 'grid'], ['Explore Courses', '/courses', 'compass'], ['My Learning', '#', 'bookopen'], ['AI Workspace', '#', 'spark'],
-  ['Certificates', '#', 'award'], ['Messages', '#', 'msg', 2], ['Notifications', '#', 'bell', 3], ['Settings', '#', 'gear'],
-]
-
-/** Authenticated app chrome: 264px sidebar, 72px icon rail on tablet, slide-over drawer on mobile. */
-export default function AppShell({ children }: { children: React.ReactNode }) {
+/** Authenticated app chrome: 264px sidebar, 72px icon rail on tablet, slide-over drawer on mobile. Shared by student, instructor and admin areas. */
+export default function AppShell({ nav, user, home, card, children }: ShellConfig & { children: React.ReactNode }) {
   const path = usePathname()
   const [open, setOpen] = useState(false)
   useEffect(() => setOpen(false), [path])
@@ -24,20 +19,20 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-dvh">
       <header className="sticky top-0 z-20 flex h-16 items-center gap-2 border-b border-line bg-page/90 px-3 backdrop-blur-[12px] md:hidden">
         <button className="grid size-11 cursor-pointer place-items-center" onClick={() => setOpen(true)} aria-label="Open navigation" aria-expanded={open}><I n="menu" c="l" /></button>
-        <Logo href="/dashboard" />
-        <Avatar name={student.name} ring={false} className="ml-auto size-9 text-xs" />
+        <Logo href={home} />
+        <Avatar name={user.name} ring={false} className="ml-auto size-9 text-xs" />
       </header>
 
       {open && <div className="fixed inset-0 z-30 bg-[rgba(17,17,17,.48)] md:hidden" onClick={() => setOpen(false)} />}
       <aside aria-label="Application" className={`fixed inset-y-0 left-0 z-40 flex w-[264px] flex-col border-r border-line bg-surface p-4 transition-transform duration-200 ease-ujyalo md:z-30 md:w-[72px] md:translate-x-0 lg:w-[264px] ${open ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex h-10 items-center justify-between px-2 md:max-lg:justify-center md:max-lg:px-0">
-          <span className="md:max-lg:hidden"><Logo href="/dashboard" /></span>
-          <span className="hidden md:max-lg:block"><Logo href="/dashboard" /></span>
+          <span className="md:max-lg:hidden"><Logo href={home} /></span>
+          <span className="hidden md:max-lg:block"><Logo href={home} /></span>
           <button className="grid size-10 cursor-pointer place-items-center md:hidden" onClick={() => setOpen(false)} aria-label="Close navigation"><I n="x" /></button>
         </div>
-        <p className={`over mt-8 mb-2 px-3 !text-muted ${label}`}>Menu</p>
-        <nav className="mt-4 grid gap-1 md:mt-4 lg:mt-0" aria-label="Main">
-          {NAV.map(([text, href, icon, count]) => {
+        <p className={`over mt-8 mb-2 px-3 !text-muted ${label}`}>{user.role} menu</p>
+        <nav className="mt-4 grid gap-1 lg:mt-0" aria-label="Main">
+          {nav.map(([text, href, icon, count]) => {
             const on = href === path
             return (
               <Link key={text} href={href} title={text} aria-current={on ? 'page' : undefined}
@@ -49,15 +44,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             )
           })}
         </nav>
-        <div className="mt-auto grid gap-3">
-          <div className={`rounded-card border border-line bg-page p-4 ${label}`}>
-            <p className="text-[13px] font-medium">Weekly goal</p>
-            <p className="mt-0.5 text-xs text-muted">3 of 5 lessons completed</p>
-            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface"><i className="block h-full w-[60%] rounded-full bg-gold" /></div>
-          </div>
+        <div className="mt-auto grid gap-3 pt-6">
+          {card && (
+            <div className={`rounded-card border border-line bg-page p-4 ${label}`}>
+              <p className="text-[13px] font-medium">{card.title}</p>
+              <p className="mt-0.5 text-xs leading-[18px] text-muted">{card.sub}</p>
+              {card.pct > 0 && <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface"><i className="block h-full rounded-full bg-gold" style={{ width: `${card.pct}%` }} /></div>}
+            </div>
+          )}
           <div className="flex items-center gap-3 border-t border-line pt-4 md:max-lg:justify-center">
-            <Avatar name={student.name} ring={false} className="size-9 text-xs" />
-            <div className={`min-w-0 flex-1 ${label}`}><b className="block truncate text-sm leading-5 font-semibold">{student.name}</b><span className="text-xs text-muted">Student</span></div>
+            <Avatar name={user.name} ring={false} className="size-9 text-xs" />
+            <div className={`min-w-0 flex-1 ${label}`}><b className="block truncate text-sm leading-5 font-semibold">{user.name}</b><span className="text-xs text-muted">{user.role}</span></div>
             <Link href="/login" aria-label="Sign out" className={`grid size-9 place-items-center text-muted hover:text-ink ${label}`}><I n="logout" c="s" /></Link>
           </div>
         </div>

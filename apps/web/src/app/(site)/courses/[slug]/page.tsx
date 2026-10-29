@@ -5,7 +5,7 @@ import { contentFor, courses, getCourse } from '@/src/lib/courses'
 
 type P = { params: Promise<{ slug: string }> | { slug: string } }
 
-export const generateStaticParams = () => courses.map((c) => ({ slug: c.slug }))
+export const generateStaticParams = () => courses.map((c) => ({ slug: c.id }))
 
 export async function generateMetadata(props: P): Promise<Metadata> {
   const c = getCourse((await props.params).slug)
