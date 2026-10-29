@@ -7,7 +7,8 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import {MEDIA_QUEUE} from "@lms/medias"
+import { MEDIA_QUEUE } from "@lms/medias"
+import { RmqDiagnosticsInterceptor, ServiceExceptionFilter } from "@lms/filters"
 async function bootstrap() {
   process.title="Media service"
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -24,6 +25,8 @@ async function bootstrap() {
     },
   );
 
+  app.useGlobalFilters(new ServiceExceptionFilter())
+  app.useGlobalInterceptors(new RmqDiagnosticsInterceptor("media"))
   await app.listen();
   Logger.log("Media service started");
 }

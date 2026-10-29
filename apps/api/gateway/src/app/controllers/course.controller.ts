@@ -3,6 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { AuthGuard } from '../guards/auth.guard';
 import { AuthReq, CreateCourseDto, GetCourseTutorDto, GUploadPartDto, ProvideRatingDto, CouseCompletionDto,SendCommentDto, VerifyCourseDto, GetAllStudentsDto, GCreateCourseDto } from '@lms/shared';
 import { firstValueFrom } from 'rxjs';
+import { instrumentRmqClient } from "@lms/filters";
 import { FileInterceptor } from '@nestjs/platform-express';
 
 interface SessionProfile {
@@ -20,7 +21,10 @@ export class CourseController {
     constructor(
         @Inject("COURSES_SERVICE") private readonly coursesClient: ClientProxy,
         @Inject("USERS_SERVICE") private readonly usersClient: ClientProxy,
-      ) {}
+      ) {
+        this.coursesClient = instrumentRmqClient(this.coursesClient, "courses");
+        this.usersClient = instrumentRmqClient(this.usersClient, "users");
+      }
 
       
  @Post("createcourse")

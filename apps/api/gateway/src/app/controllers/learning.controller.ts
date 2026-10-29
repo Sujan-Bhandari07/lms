@@ -14,6 +14,7 @@ import {
 import { ClientProxy } from "@nestjs/microservices";
 import { AuthReq, EnrollCourseDto, UpdateTutorProfileDto } from "@lms/shared";
 import { firstValueFrom, timeout } from "rxjs";
+import { instrumentRmqClient } from "@lms/filters";
 import { AuthGuard } from "../guards/auth.guard";
 
 interface SessionProfile {
@@ -41,7 +42,10 @@ export class LearningController {
   constructor(
     @Inject("USERS_SERVICE") private readonly usersClient: ClientProxy,
     @Inject("COURSES_SERVICE") private readonly coursesClient: ClientProxy,
-  ) {}
+  ) {
+    this.usersClient = instrumentRmqClient(this.usersClient, "users");
+    this.coursesClient = instrumentRmqClient(this.coursesClient, "courses");
+  }
 
   @Get("enrollments")
   async enrollments(@Req() req: AuthReq) {

@@ -19,6 +19,7 @@ import {
   success,
 } from "@lms/shared";
 import { firstValueFrom, timeout } from "rxjs";
+import { instrumentRmqClient } from "@lms/filters";
 import { AuthGuard } from "../guards/auth.guard";
 import { ChatAuthService } from "../services/chat-auth.service";
 
@@ -41,7 +42,9 @@ export class AiController {
   constructor(
     @Inject("AGENTS_SERVICE") private readonly agentsClient: ClientProxy,
     private readonly authService: ChatAuthService,
-  ) {}
+  ) {
+    this.agentsClient = instrumentRmqClient(this.agentsClient, "agents");
+  }
 
   @Get("conversations")
   async listConversations(@Req() req: AuthReq) {
@@ -129,4 +132,3 @@ export class AiController {
     );
   }
 }
-

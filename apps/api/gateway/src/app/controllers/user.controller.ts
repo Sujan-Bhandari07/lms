@@ -29,6 +29,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { ClientProxy } from "@nestjs/microservices";
 import type { CookieOptions, Request, Response } from "express";
 import { firstValueFrom } from "rxjs";
+import { instrumentRmqClient } from "@lms/filters";
 import { AuthGuard } from "../guards/auth.guard";
 import { Throttle } from "@nestjs/throttler";
 
@@ -46,7 +47,9 @@ interface ApiEnvelope<T> {
 export class UsersController {
   constructor(
     @Inject("USERS_SERVICE") private readonly usersClient: ClientProxy,
-  ) {}
+  ) {
+    this.usersClient = instrumentRmqClient(this.usersClient, "users");
+  }
   @Post("register")
   @Throttle({
     default:{

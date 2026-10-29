@@ -37,6 +37,7 @@ import { MediaClient } from "@lms/medias";
 import { ClientProxy } from "@nestjs/microservices";
 import { firstValueFrom } from "rxjs";
 import { DEFAULT_PROFILE_PIC } from "./constants/default-profile-pic";
+import { instrumentRmqClient } from "@lms/filters";
 @Injectable()
 export class AppService implements OnModuleInit {
   private readonly logger = new Logger(AppService.name);
@@ -57,6 +58,12 @@ export class AppService implements OnModuleInit {
     private readonly media: MediaClient,
     private readonly config: ConfigService,
   ) {
+    this.coursesclient = instrumentRmqClient(this.coursesclient, "courses");
+    this.chatclient = instrumentRmqClient(this.chatclient, "chat");
+    this.notificationclient = instrumentRmqClient(
+      this.notificationclient,
+      "notifications",
+    );
     this.validateUnpaidEnrollmentConfig();
   }
 

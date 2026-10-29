@@ -9,6 +9,7 @@ import {
 import { ClientProxy } from "@nestjs/microservices";
 import { ChatContact, ChatEligiblePair } from "@lms/shared";
 import { firstValueFrom, timeout } from "rxjs";
+import { instrumentRmqClient } from "@lms/filters";
 
 export interface SessionProfile {
   _id: string;
@@ -55,7 +56,10 @@ export class ChatAuthService {
   constructor(
     @Inject("USERS_SERVICE") private readonly usersClient: ClientProxy,
     @Inject("COURSES_SERVICE") private readonly coursesClient: ClientProxy,
-  ) {}
+  ) {
+    this.usersClient = instrumentRmqClient(this.usersClient, "users");
+    this.coursesClient = instrumentRmqClient(this.coursesClient, "courses");
+  }
 
   async sessionProfile(token: string): Promise<SessionProfile> {
     if (!token) throw new UnauthorizedException("A session is required.");
@@ -228,4 +232,3 @@ export class ChatAuthService {
     return `${studentId}:${instructorId}`;
   }
 }
-

@@ -7,6 +7,7 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import{Transport,MicroserviceOptions} from "@nestjs/microservices"
+import { RmqDiagnosticsInterceptor, ServiceExceptionFilter } from "@lms/filters"
 
 async function bootstrap() {
   process.title="Notification service"
@@ -24,6 +25,8 @@ async function bootstrap() {
     },
   );
 
+  app.useGlobalFilters(new ServiceExceptionFilter())
+  app.useGlobalInterceptors(new RmqDiagnosticsInterceptor("notifications"))
   await app.listen();
   Logger.log("Notification service started");
 }

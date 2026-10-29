@@ -22,6 +22,7 @@ import {
   VerifyPaymentDto,
 } from "@lms/shared";
 import { firstValueFrom, timeout } from "rxjs";
+import { instrumentRmqClient } from "@lms/filters";
 import { AuthGuard } from "../guards/auth.guard";
 
 interface SessionProfile {
@@ -62,6 +63,9 @@ export class PaymentController implements OnModuleInit {
     @Inject("COURSES_SERVICE") private readonly coursesClient: ClientProxy,
     private readonly config: ConfigService,
   ) {
+    this.paymentClient = instrumentRmqClient(this.paymentClient, "payments");
+    this.usersClient = instrumentRmqClient(this.usersClient, "users");
+    this.coursesClient = instrumentRmqClient(this.coursesClient, "courses");
     this.allowUnpaidEnrollment = this.validateUnpaidEnrollmentConfig();
   }
 

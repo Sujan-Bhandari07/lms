@@ -23,6 +23,7 @@ import {
   ChatSocketAck,
 } from "@lms/shared";
 import { firstValueFrom, timeout } from "rxjs";
+import { instrumentRmqClient } from "@lms/filters";
 import { Server, Socket } from "socket.io";
 import {
   AuthorizedContact,
@@ -76,7 +77,9 @@ export class ChatGateway
   constructor(
     @Inject("CHAT_SERVICE") private readonly chatClient: ClientProxy,
     private readonly authService: ChatAuthService,
-  ) {}
+  ) {
+    this.chatClient = instrumentRmqClient(this.chatClient, "chat");
+  }
 
   afterInit(server: Server) {
     server.use((client, next) => {

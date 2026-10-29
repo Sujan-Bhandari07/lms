@@ -27,6 +27,7 @@ import {
 } from "@lms/shared";
 import { ClientProxy } from "@nestjs/microservices";
 import { firstValueFrom } from "rxjs";
+import { instrumentRmqClient } from "@lms/filters";
 
 @Injectable()
 export class AppService {
@@ -38,7 +39,13 @@ export class AppService {
     @InjectModel(Courses.name)
     private readonly coursesmodel: Model<CoursesDocument>,
     private readonly media: MediaClient,
-  ) {}
+  ) {
+    this.notificationClient = instrumentRmqClient(
+      this.notificationClient,
+      "notifications",
+    );
+    this.usersClient = instrumentRmqClient(this.usersClient, "users");
+  }
 
   async createcourse(data: ICreateCourse) {
     const {

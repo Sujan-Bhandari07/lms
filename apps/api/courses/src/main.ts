@@ -7,7 +7,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { MicroserviceOptions, Transport } from "@nestjs/microservices"
-import {ServiceExceptionFilter} from "@lms/filters"
+import { RmqDiagnosticsInterceptor, ServiceExceptionFilter } from "@lms/filters"
 async function bootstrap() {
   process.title="Courses service"
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -25,6 +25,7 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new ServiceExceptionFilter())
+  app.useGlobalInterceptors(new RmqDiagnosticsInterceptor("courses"))
   app.useGlobalPipes(new ValidationPipe({
     whitelist:true,
     transform:true,

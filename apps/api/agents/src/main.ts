@@ -7,7 +7,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import {Transport,MicroserviceOptions} from "@nestjs/microservices"
-import {ServiceExceptionFilter} from "@lms/filters"
+import { RmqDiagnosticsInterceptor, ServiceExceptionFilter } from "@lms/filters"
 
 async function bootstrap() {
   process.title="Agents service"
@@ -26,6 +26,7 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new ServiceExceptionFilter())
+  app.useGlobalInterceptors(new RmqDiagnosticsInterceptor("agents"))
   app.useGlobalPipes(new ValidationPipe({
     whitelist:true,
     transform:true,

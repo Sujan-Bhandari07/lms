@@ -20,6 +20,7 @@ import {
   success,
 } from "@lms/shared";
 import { firstValueFrom, timeout } from "rxjs";
+import { instrumentRmqClient } from "@lms/filters";
 import { AuthGuard } from "../guards/auth.guard";
 import { ChatAuthService } from "../services/chat-auth.service";
 import { ChatGateway } from "../sockets/chat.gateway";
@@ -38,7 +39,9 @@ export class ChatController {
     @Inject("CHAT_SERVICE") private readonly chatClient: ClientProxy,
     private readonly authService: ChatAuthService,
     private readonly chatGateway: ChatGateway,
-  ) {}
+  ) {
+    this.chatClient = instrumentRmqClient(this.chatClient, "chat");
+  }
 
   @Get("conversations")
   async listConversations(@Req() req: AuthReq) {
@@ -234,4 +237,3 @@ export class ChatController {
     return success("Unread count found.", { unreadCount: total });
   }
 }
-

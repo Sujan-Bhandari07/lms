@@ -11,6 +11,7 @@ export default defineConfig({
             '@lms/shared': resolve(import.meta.dirname, 'libs/shared/src/index.ts'),
             '@lms/redis': resolve(import.meta.dirname, 'libs/redis/src/index.ts'),
             '@lms/db': resolve(import.meta.dirname, 'libs/db/src/index.ts'),
+            '@lms/filters': resolve(import.meta.dirname, 'libs/filters/src/index.ts'),
           },
         },
         test: {

@@ -28,6 +28,7 @@ import {
   UpdateCourseDto,
 } from "@lms/shared";
 import { firstValueFrom, timeout } from "rxjs";
+import { instrumentRmqClient } from "@lms/filters";
 import { AuthGuard } from "../guards/auth.guard";
 
 interface SessionProfile {
@@ -64,7 +65,10 @@ export class CourseCatalogController {
   constructor(
     @Inject("COURSES_SERVICE") private readonly coursesClient: ClientProxy,
     @Inject("USERS_SERVICE") private readonly usersClient: ClientProxy,
-  ) {}
+  ) {
+    this.coursesClient = instrumentRmqClient(this.coursesClient, "courses");
+    this.usersClient = instrumentRmqClient(this.usersClient, "users");
+  }
 
   @Get()
   async list(@Query() query: PublicCoursesQueryDto) {
