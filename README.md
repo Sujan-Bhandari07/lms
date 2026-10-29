@@ -1,4 +1,3 @@
-
 <div align="center">
 
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
@@ -23,7 +22,7 @@
 
 An AI-powered Learning Management System built with an Nx monorepo, Next.js, and NestJS microservices.
 
-![Status](https://img.shields.io/badge/status-currently%20in%20development-F59E0B?style=for-the-badge)
+![Status](https://img.shields.io/badge/status-ready-22C55E?style=for-the-badge)
 
 ![Nx](https://img.shields.io/badge/Nx-143055?style=flat-square&logo=nx&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
@@ -45,7 +44,7 @@ An AI-powered Learning Management System built with an Nx monorepo, Next.js, and
 ---
 
 > [!NOTE]
-> 🚧 **Currently in Development.** Ujyalo is under active development. Features, APIs, and architecture may change, and the project is not yet production-ready.
+> ✅ **Ready.** Ujyalo is ready to use. Check the configuration section below before deploying, since some settings (such as the eSewa test mode and unpaid enrollment) are development-only.
 
 ## 📖 About
 
@@ -57,12 +56,12 @@ The backend consists of eight NestJS applications: a gateway, users, notificatio
 
 | Feature | Description | Status |
 | --- | --- | --- |
-| 🔎 **AI course discovery** | Find relevant courses using natural language | 🚧 In development |
-| 🧑‍🏫 **AI instructor discovery** | Match students with instructors by interests and learning needs | 🚧 In development |
-| 🤖 **AI learning assistant** | Ask questions and get AI-generated explanations | 🚧 In development |
-| 💬 **Student–instructor chat** | Real-time direct messaging over WebSockets | 🚧 In development |
-| 🎓 **Management workflows** | Courses, students, tutors, and certificates | 🚧 In development |
-| 🧩 **Microservice backend** | Message-driven services communicating via RabbitMQ | 🚧 In development |
+| 🔎 **AI course discovery** | Find relevant courses using natural language | ✅ Ready |
+| 🧑‍🏫 **AI instructor discovery** | Match students with instructors by interests and learning needs | ✅ Ready |
+| 🤖 **AI learning assistant** | Ask questions and get AI-generated explanations | ✅ Ready |
+| 💬 **Student–instructor chat** | Real-time direct messaging over WebSockets | ✅ Ready |
+| 🎓 **Management workflows** | Courses, students, tutors, and certificates | ✅ Ready |
+| 🧩 **Microservice backend** | Message-driven services communicating via RabbitMQ | ✅ Ready |
 
 ## 🧰 Tech Stack
 
