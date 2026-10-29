@@ -1,22 +1,38 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Message, messageSchema } from "./message.schema";
-import mongoose, { HydratedDocument, Types } from "mongoose";
+import { HydratedDocument } from "mongoose";
 
-export type ConversationDocument = HydratedDocument<Conversation>
-
-@Schema({ _id: false })
-export class User {
-  userid: string;
-  username: string;
-}
-export const userSchema = SchemaFactory.createForClass(User);
+export type ConversationDocument = HydratedDocument<Conversation>;
 
 @Schema({ timestamps: true })
 export class Conversation {
-  @Prop({ type: [String], default: [] })
-  participants: string[];
+  @Prop({ type: String, required: true })
+  pairKey!: string;
 
-  @Prop({ type: [mongoose.Schema.Types.ObjectId], default: [], required: true ,ref:"Message"})
-  messages: Types.ObjectId[];
+  @Prop({ type: String, required: true })
+  studentId!: string;
+
+  @Prop({ type: String, required: true })
+  instructorId!: string;
+
+  @Prop({ type: [String], required: true })
+  participants!: string[];
+
+  @Prop({ type: [String], default: [] })
+  courseIds!: string[];
+
+  @Prop({ type: String, default: "" })
+  lastMessagePreview!: string;
+
+  @Prop({ type: Date, default: null })
+  lastMessageAt!: Date | null;
+
+  @Prop({ type: Number, default: 0 })
+  studentUnreadCount!: number;
+
+  @Prop({ type: Number, default: 0 })
+  instructorUnreadCount!: number;
 }
-export const conversationSchema= SchemaFactory.createForClass(Conversation)
+
+export const conversationSchema = SchemaFactory.createForClass(Conversation);
+conversationSchema.index({ pairKey: 1 }, { unique: true });
+conversationSchema.index({ participants: 1, lastMessageAt: -1 });

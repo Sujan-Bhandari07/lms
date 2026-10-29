@@ -10,10 +10,14 @@ import { Students, Studentsschema } from "./schema/studentprofile";
 import { Tutors, TutorsSchema } from "./schema/tutorsprofie";
 import { Users, Userschema } from "./schema/userschema";
 import { ClientsModule, Transport } from "@nestjs/microservices";
+import { resolve } from "node:path";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [resolve(process.cwd(), "apps/api/users/.env"), ".env"],
+    }),
     ClientsModule.registerAsync([
       {
         name: 'COURSES_SERVICE',
@@ -27,7 +31,20 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
             queueOptions: { durable: true },
           },
         }),
-      },  {
+      },        {
+        name: "CHAT_SERVICE",
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [config.getOrThrow<string>("RABBITMQ_URL")],
+            queue: config.getOrThrow<string>("CHAT_QUEUE"),
+            queueOptions: { durable: true },
+          },
+        }),
+      },
+      {
         name: 'NOTIFICATION_SERVICE',
         imports: [ConfigModule],
         inject: [ConfigService],

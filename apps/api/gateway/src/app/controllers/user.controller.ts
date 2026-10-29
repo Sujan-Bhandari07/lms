@@ -14,6 +14,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Inject,
   Post,
@@ -26,10 +27,20 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ClientProxy } from "@nestjs/microservices";
-import type { Request, Response } from "express";
+import type { CookieOptions, Request, Response } from "express";
 import { firstValueFrom } from "rxjs";
 import { AuthGuard } from "../guards/auth.guard";
 import { Throttle } from "@nestjs/throttler";
+
+interface SessionProfile {
+  _id: string;
+  role: "student" | "tutor" | "admin";
+}
+
+interface ApiEnvelope<T> {
+  success: boolean;
+  payload?: T;
+}
 
 @Controller("users")
 export class UsersController {
@@ -39,7 +50,7 @@ export class UsersController {
   @Post("register")
   @Throttle({
     default:{
-      limit:5,
+      limit:100,
       ttl:5 * 60 * 1000,
     }
   })
@@ -48,11 +59,12 @@ export class UsersController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const response = await firstValueFrom(
-      this.usersClient.send("register", data),
+      this.usersClient.send("register", {
+        ...data,
+        profilepic: data.profilepic ?? "",
+      }),
     );
-    res.cookie("token", response.payload.token, {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", response.payload.token, this.sessionCookieOptions());
     return {
       success: true,
       message: response.message,
@@ -69,7 +81,7 @@ export class UsersController {
   @Post("login")
     @Throttle({
     default:{
-      limit:3,
+      limit:100,
       ttl:5 * 60 * 1000,
     }
   })
@@ -78,7 +90,7 @@ export class UsersController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await firstValueFrom(this.usersClient.send("login", data));
-    res.cookie("token", result.token, { maxAge: 7 * 24 * 60 * 60 * 1000 });
+    res.cookie("token", result.token, this.sessionCookieOptions());
 
     return {
       success: true,
@@ -103,7 +115,7 @@ export class UsersController {
       this.usersClient.send("logout", { token }),
     );
     if (result.success) {
-      res.clearCookie("token");
+      res.clearCookie("token", { path: "/" });
       return {
         message: result.message,
       };
@@ -147,18 +159,21 @@ export class UsersController {
 
   @Post("updateenrolledcourse")
   @UseGuards(AuthGuard)
-  updatecourse(@Body() data: UUpdateEnrolledCourseDto) {
-
-    
+  async updatecourse(@Body() data: UUpdateEnrolledCourseDto, @Req() req: AuthReq) {
+    const profile = await this.requireRole(req.user, "student");
     return firstValueFrom(
-      this.usersClient.send("updateenrolledcourse",data),
+      this.usersClient.send("enrollcourse", {
+        studentid: profile._id,
+        courseid: data.courseid,
+      }),
     );
   }
 
 
  @Post("updatecertificate")
   @UseGuards(AuthGuard)
-  updatecertificate(@Body() data: UCreateCerticateDto) {
+  async updatecertificate(@Body() data: UCreateCerticateDto, @Req() req: AuthReq) {
+    await this.requireRole(req.user, "student");
     return firstValueFrom(
       this.usersClient.send("updatecertificate",data),
     );
@@ -169,7 +184,8 @@ export class UsersController {
 
   @Post("updatetutorprofile")
   @UseGuards(AuthGuard)
-  updatetutorprofile(@Body() data: UUpdateTutorDto) {
+  async updatetutorprofile(@Body() data: UUpdateTutorDto, @Req() req: AuthReq) {
+    await this.requireRole(req.user, "tutor");
     return firstValueFrom(
       this.usersClient.send("updatetutorprofile",data),
     );
@@ -178,7 +194,8 @@ export class UsersController {
 
     @Post("verifytutor")
   @UseGuards(AuthGuard)
-  verifytutor( @Body() data:VerifyTutorDto) {
+  async verifytutor( @Body() data:VerifyTutorDto, @Req() req: AuthReq) {
+  await this.requireRole(req.user, "admin");
     return firstValueFrom(
       this.usersClient.send("verifytutor", data),
     );
@@ -186,7 +203,8 @@ export class UsersController {
 
   @Post("toggleiscompleted")
   @UseGuards(AuthGuard)
-  toggleiscompleted( @Body() data:UMakeCourseCompletedDto) {
+  async toggleiscompleted( @Body() data:UMakeCourseCompletedDto, @Req() req: AuthReq) {
+    await this.requireRole(req.user, "student");
     return firstValueFrom(
       this.usersClient.send("toggleiscompleted",data),
     );
@@ -194,21 +212,53 @@ export class UsersController {
 
 
    @Post("getstudents")
- getstudents(@Body() data:GetAllStudentsDto){
+ @UseGuards(AuthGuard)
+ async getstudents(@Body() data:GetAllStudentsDto, @Req() req: AuthReq){
+await this.requireRole(req.user, "tutor");
 return firstValueFrom(this.usersClient.send("getstudents",data))
  }
 
 
 
    @Post("getalltutors")
- getalltutors(@Body() data:GetAllStudentsDto){
+ @UseGuards(AuthGuard)
+ async getalltutors(@Body() data:GetAllStudentsDto, @Req() req: AuthReq){
+await this.requireUserRole(req.user);
 return firstValueFrom(this.usersClient.send("getalltutors",data))
  }
-  
- 
 
+  private async requireRole(token: string, role: SessionProfile["role"]) {
+    const profile = await this.sessionProfile(token);
+    if (profile.role !== role) {
+      throw new ForbiddenException(`A ${role} account is required.`);
+    }
+    return profile;
+  }
 
-  
+  private async requireUserRole(token: string) {
+    const profile = await this.sessionProfile(token);
+    if (profile.role === "admin") {
+      throw new ForbiddenException("A student or tutor account is required.");
+    }
+  }
 
+  private async sessionProfile(token: string): Promise<SessionProfile> {
+    const result = await firstValueFrom(
+      this.usersClient.send<ApiEnvelope<SessionProfile>>("getprofile", { token }),
+    );
+    if (!result?.success || !result.payload) {
+      throw new UnauthorizedException("Your session is no longer valid.");
+    }
+    return result.payload;
+  }
 
+  private sessionCookieOptions(): CookieOptions {
+    return {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+  }
 }

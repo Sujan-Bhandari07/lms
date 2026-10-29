@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import ProfileSettings from '@/src/components/ProfileSettings'
+import TutorProfileSettings from '@/src/components/TutorProfileSettings'
 
 export const metadata: Metadata = { title: 'Profile settings' }
 
 export default function InstructorProfilePage() {
-  return <ProfileSettings />
+  return <TutorProfileSettings />
 }

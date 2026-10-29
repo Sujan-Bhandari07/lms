@@ -1,6 +1,7 @@
 import {
   GetAllStudentsDto,
   GetAllTutorsDto,
+  GetPublicUserProfilesDto,
   GetUserNotificationDto,
   LoginDto,
   LogoutDto,
@@ -90,6 +91,58 @@ return this.userService.gettutorstool()
   getusernotification(@Payload() data:GetUserNotificationDto){
 return this.userService.getusernotification(data)
   }
+
+    @MessagePattern("getpendingtutors")
+    getpendingtutors() {
+      return this.userService.getPendingTutors();
+    }
+
+    @MessagePattern("getpublicuserprofiles")
+    getpublicuserprofiles(@Payload() data: GetPublicUserProfilesDto) {
+      return this.userService.getPublicUserProfiles(data);
+    }
+
+    @MessagePattern("chat.getParticipants")
+    getchatparticipants(@Payload() data: { userids: string[] }) {
+      return this.userService.getChatParticipants(data);
+    }
+
+    @MessagePattern("chat.getEligibleStudentsForTutor")
+    getEligibleStudentsForTutor(
+      @Payload() data: { tutorid: string; courseids: string[] },
+    ) {
+      return this.userService.getEligibleStudentsForTutor(data);
+    }
+
+    @MessagePattern("getenrolledcourses")
+    getenrolledcourses(@Payload() data: { studentid: string }) {
+      return this.userService.getEnrolledCourses(data);
+    }
+
+    @MessagePattern("enrollcourse")
+    enrollcourse(@Payload() data: {
+      studentid: string;
+      courseid: string;
+      paymentVerified?: boolean;
+      developmentBypass?: boolean;
+    }) {
+      return this.userService.enrollCourse(data);
+    }
+
+    @MessagePattern("completeenrolledcourse")
+    completeenrolledcourse(@Payload() data: { studentid: string; courseid: string }) {
+      return this.userService.completeEnrolledCourse(data);
+    }
+
+    @MessagePattern("getcertificates")
+    getcertificates(@Payload() data: { studentid: string }) {
+      return this.userService.getCertificates(data);
+    }
+
+    @MessagePattern("gettutorprofile")
+    gettutorprofile(@Payload() data: { userid: string }) {
+      return this.userService.getTutorProfile(data);
+    }
 
 
   

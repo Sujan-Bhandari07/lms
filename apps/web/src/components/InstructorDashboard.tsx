@@ -5,6 +5,7 @@ import { FormEvent, useEffect, useRef } from 'react'
 import { I } from './Icon'
 import {
   useGetCoursesByTutorQuery,
+  useGetTutorStudentsQuery,
   useToggleCourseCompletionOptionMutation,
   useUploadCoursePartMutation,
 } from '@/src/services/api/Userapi'
@@ -14,12 +15,12 @@ import { toast } from 'sonner'
 
 export default function InstructorDashboard() {
   const profile = useAppSelector((state) => state.user)
-  const { data, isLoading, isFetching, isSuccess, isError, error, refetch } = useGetCoursesByTutorQuery(
-    { tutorid: profile?._id ?? '', tutorname: profile?.fullname ?? '' },
-    { skip: !profile },
-  )
+  const { data, isLoading, isFetching, isSuccess, isError, error, refetch } = useGetCoursesByTutorQuery(undefined, {
+    skip: !profile,
+  })
   const [toggleCompletionOption, toggleState] = useToggleCourseCompletionOptionMutation()
   const [uploadPart, uploadState] = useUploadCoursePartMutation()
+  const studentsQuery = useGetTutorStudentsQuery()
   const courses = data?.payload ?? []
   const requestStarted = useRef(false)
 
@@ -76,6 +77,18 @@ export default function InstructorDashboard() {
     toast.success(getApiSuccessMessage(uploadState.data, 'Course part uploaded.'), { id: 'course-part-upload' })
   }, [uploadState.data, uploadState.error, uploadState.isError, uploadState.isLoading, uploadState.isSuccess])
 
+  useEffect(() => {
+    if (studentsQuery.isLoading || studentsQuery.isFetching) {
+      toast.loading('Loading your enrolled students…', { id: 'tutor-students' })
+      return
+    }
+    if (studentsQuery.isError) {
+      toast.error(getApiErrorMessage(studentsQuery.error), { id: 'tutor-students' })
+    } else if (studentsQuery.data) {
+      toast.success(getApiSuccessMessage(studentsQuery.data, 'Student roster loaded.'), { id: 'tutor-students' })
+    }
+  }, [studentsQuery.data, studentsQuery.error, studentsQuery.isError, studentsQuery.isFetching, studentsQuery.isLoading])
+
   function submitPart(courseid: string, event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const form = new FormData(event.currentTarget)
@@ -129,12 +142,20 @@ export default function InstructorDashboard() {
           <ul className="card divide-y divide-line overflow-hidden">
             {courses.map((course) => (
               <li key={course._id} className="flex flex-wrap items-center gap-4 p-5">
-                <span className="grid size-11 shrink-0 place-items-center rounded-ui bg-surface text-muted"><I n="bookopen" /></span>
+                <span
+                  role={course.title ? 'img' : undefined}
+                  aria-label={course.title ? `${course.coursename} course photo` : undefined}
+                  className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-ui bg-surface bg-cover bg-center text-muted"
+                  style={course.title ? { backgroundImage: `url("${course.title.replaceAll('"', '%22')}")` } : undefined}
+                >
+                  {!course.title && <I n="bookopen" />}
+                </span>
                 <div className="min-w-0 flex-1">
                   <h3 className="truncate text-[15px] font-semibold">{course.coursename}</h3>
-                  <p className="mt-1 text-sm text-muted">{course.title}</p>
+                  <p className="mt-1 text-sm text-muted">{course.desc}</p>
                   <p className="mt-1 text-xs text-muted">Course ID: {course._id}</p>
                 </div>
+                <Link href={`/instructor/courses/${course._id}/edit`} className="btn btn-s h-10">Edit course</Link>
                 <span className={`bdg ${course.isverified ? 'bdg-ok' : 'bdg-gold'}`}>{course.isverified ? 'Approved' : 'Awaiting review'}</span>
                 <span className="text-sm text-muted">{course.totalenrolledstudents?.length ?? 0} enrollments</span>
                 <div className="w-full border-t border-line pt-4">
@@ -177,6 +198,24 @@ export default function InstructorDashboard() {
                     )}
                   </details>
                 </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="mt-12" aria-labelledby="student-roster-heading">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div><h2 id="student-roster-heading" className="t-h3">Enrolled students</h2><p className="mt-1 text-sm text-muted">Students enrolled across your courses.</p></div>
+        </div>
+        {studentsQuery.isError && <p role="alert" className="rounded-ui border border-error/40 bg-error/10 p-4 text-sm">Student roster could not be loaded. See the notification for details.</p>}
+        {!studentsQuery.isLoading && !studentsQuery.isError && (studentsQuery.data?.payload?.length ?? 0) === 0 && <p className="rounded-ui bg-surface p-5 text-sm text-muted">No students are enrolled in your courses yet.</p>}
+        {studentsQuery.data?.payload && studentsQuery.data.payload.length > 0 && (
+          <ul className="card divide-y divide-line">
+            {studentsQuery.data.payload.map((student) => (
+              <li key={student.userid} className="flex items-center gap-3 p-4">
+                <span className="grid size-9 place-items-center rounded-full bg-surface text-muted"><I n="user" c="s" /></span>
+                <span className="text-sm font-medium">{student.username}</span>
               </li>
             ))}
           </ul>

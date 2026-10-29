@@ -5,8 +5,10 @@ import {
   GetAllStudentsDto,
   GetCourseTutorDto,
   GetSpecificCourseDto,
+  PublicCoursesQueryDto,
   ProvideRatingDto,
   SendCommentDto,
+  UpdateCourseDto,
   UpdateStudentInCourseDto,
   UserCourseDto,
   VerifyCourseDto
@@ -47,6 +49,11 @@ export class AppController {
   @MessagePattern("getcoursesbytutor")
   getcoursesbytutor(@Payload() data: GetCourseTutorDto) {
     return this.coursesService.getCoursesByTutor(data);
+  }
+
+  @MessagePattern("chat.getTutorCourses")
+  getTutorCoursesForChat(@Payload() data: { tutorid: string }) {
+    return this.coursesService.getTutorCoursesForChat(data);
   }
 
   @EventPattern("updateenrolled")
@@ -96,6 +103,31 @@ export class AppController {
   getspecificcourse( @Payload() data:GetSpecificCourseDto){
 
     return this.coursesService.getspecificcourse(data)
+  }
+
+  @MessagePattern("getpubliccourses")
+  getpubliccourses(@Payload() data: PublicCoursesQueryDto) {
+    return this.coursesService.getPublicCourses(data);
+  }
+
+  @MessagePattern("getpendingcourses")
+  getpendingcourses() {
+    return this.coursesService.getPendingCourses();
+  }
+
+  @MessagePattern("getpubliccoursebyid")
+  getpubliccoursebyid(@Payload() data: { courseid: string }) {
+    return this.coursesService.getPublicCourseById(data.courseid);
+  }
+
+  @MessagePattern("getcoursebyid")
+  getcoursebyid(@Payload() data: { courseid: string }) {
+    return this.coursesService.getCourseById(data.courseid);
+  }
+
+  @MessagePattern("updateownedcourse")
+  updateownedcourse(@Payload() data: UpdateCourseDto & { courseid: string; photo?: string }) {
+    return this.coursesService.updateOwnedCourse(data);
   }
 
 

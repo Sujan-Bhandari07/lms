@@ -101,7 +101,7 @@ export default function AppShell({ nav, role, home, children }: ShellConfig & { 
       <header className="sticky top-0 z-20 flex h-16 items-center gap-2 border-b border-line bg-page/90 px-3 backdrop-blur-[12px] md:hidden">
         <button className="grid size-11 cursor-pointer place-items-center" onClick={() => setOpen(true)} aria-label="Open navigation" aria-expanded={open}><I n="menu" c="l" /></button>
         <Logo href={home} />
-        <Avatar name={profile.fullname} ring={false} className="ml-auto size-9 text-xs" />
+        <Avatar name={profile.fullname} profilepic={profile.profilepic} ring={false} className="ml-auto size-9 text-xs" />
       </header>
 
       {open && <button aria-label="Close navigation" className="fixed inset-0 z-30 bg-[rgba(17,17,17,.48)] md:hidden" onClick={() => setOpen(false)} />}
@@ -111,7 +111,7 @@ export default function AppShell({ nav, role, home, children }: ShellConfig & { 
           <span className="hidden md:max-lg:block"><Logo href={home} /></span>
           <button className="grid size-10 cursor-pointer place-items-center md:hidden" onClick={() => setOpen(false)} aria-label="Close navigation"><I n="x" /></button>
         </div>
-        <p className={`over mt-8 mb-2 px-3 !text-muted ${label}`}>{role === 'tutor' ? 'Tutor menu' : 'Student menu'}</p>
+        <p className={`over mt-8 mb-2 px-3 !text-muted ${label}`}>{role === 'admin' ? 'Admin menu' : role === 'tutor' ? 'Tutor menu' : 'Student menu'}</p>
         <nav className="mt-4 grid gap-1 lg:mt-0" aria-label="Main">
           {nav.map(([text, href, icon]) => {
             const on = href === path
@@ -126,7 +126,7 @@ export default function AppShell({ nav, role, home, children }: ShellConfig & { 
         </nav>
         <div className="mt-auto grid gap-3 pt-6">
           <div className="flex items-center gap-3 border-t border-line pt-4 md:max-lg:justify-center">
-            <Avatar name={profile.fullname} ring={false} className="size-9 text-xs" />
+            <Avatar name={profile.fullname} profilepic={profile.profilepic} ring={false} className="size-9 text-xs" />
             <div className={`min-w-0 flex-1 ${label}`}><b className="block truncate text-sm leading-5 font-semibold">{profile.fullname}</b><span className="text-xs capitalize text-muted">{profile.role}</span></div>
             <button type="button" onClick={signOut} disabled={logoutState.isLoading} aria-label="Sign out" className={`grid size-9 place-items-center text-muted hover:text-ink disabled:opacity-50 ${label}`}><I n="logout" c="s" /></button>
           </div>

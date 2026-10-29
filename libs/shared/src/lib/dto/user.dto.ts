@@ -2,6 +2,7 @@ import {
   IsDefined,
   IsEmail,
   IsEnum,
+  IsIn,
   IsMongoId,
   IsNotEmpty,
   IsOptional,
@@ -38,6 +39,10 @@ export class RegisterDto {
 
   @IsEnum(UserRole)
   role!: UserRole;
+
+  @IsOptional()
+  @IsString()
+  profilepic?: string;
 }
 
 export class LoginDto {
@@ -148,6 +153,10 @@ export class VerifyTutorDto {
   @IsNotEmpty({ message: "User id  cannot be empty." })
   @IsDefined({ message: "User id  is required" })
   userid!: string;
+
+  @IsOptional()
+  @IsIn(["approve", "reject"])
+  decision?: "approve" | "reject";
 }
 
 
@@ -180,4 +189,18 @@ export class GetUserNotificationDto {
   userid!:string
 }
 
+export class EnrollCourseDto {
+  @IsMongoId()
+  @IsDefined()
+  courseid!: string;
+}
 
+export class UpdateTutorProfileDto {
+  @IsString()
+  @IsNotEmpty()
+  acedemics!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  experience!: string;
+}

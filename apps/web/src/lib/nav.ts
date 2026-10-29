@@ -1,7 +1,7 @@
 export type NavItem = [label: string, href: string, icon: string]
 export interface ShellConfig {
   nav: NavItem[]
-  role: 'student' | 'tutor'
+  role: 'student' | 'tutor' | 'admin'
   home: string
 }
 
@@ -24,5 +24,13 @@ export const INSTRUCTOR: ShellConfig = {
     ['Create course', '/instructor/courses/new', 'plus'],
     ['Messages', '/instructor/messages', 'msg'],
     ['Profile', '/instructor/profile', 'user'],
+  ],
+}
+
+export const ADMIN: ShellConfig = {
+  home: '/admin',
+  role: 'admin',
+  nav: [
+    ['Course approvals', '/admin', 'shield'],
   ],
 }

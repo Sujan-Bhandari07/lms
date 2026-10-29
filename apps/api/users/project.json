@@ -5,6 +5,9 @@
   "projectType": "application",
   "tags": [],
   "targets": {
+    "build": {
+      "cache": false
+    },
     "prune-lockfile": {
       "dependsOn": [
         "build"

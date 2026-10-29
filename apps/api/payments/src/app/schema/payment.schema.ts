@@ -2,11 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
 
 
-enum Status{
-    PENDING="pending",
-    SUCCESS="success",
-    FAILED="failed"
-}
+type Status = "pending" | "success" | "failed";
 
 type PaymentsDocument = HydratedDocument<Payments>
 
@@ -39,15 +35,20 @@ export class Payments {
    @Prop({ type: String, required: true })
   transaction_uuid: string;
 
+   @Prop({ type: String })
+   product_code?: string;
 
-   @Prop({ type: String, required: true,enum:["success","pending","failed"],default:"pending" })
-  status: Status;
+   @Prop({ type: String, enum: ["success", "pending", "failed"], default: "pending" })
+   status: Status;
 
-
-
+   @Prop({ type: Object })
+   gateway_response?: Record<string, unknown>;
 
 }
 
-
 const paymentSchema = SchemaFactory.createForClass(Payments)
+paymentSchema.index({ transaction_uuid: 1 }, { unique: true });
+paymentSchema.index({ "sender.userid": 1, status: 1, courseid: 1 });
+paymentSchema.index({ "receiver.userid": 1, status: 1, courseid: 1 });
+
 export {paymentSchema,PaymentsDocument}

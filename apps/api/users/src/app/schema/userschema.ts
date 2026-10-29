@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import {HydratedDocument } from "mongoose"
+import { DEFAULT_PROFILE_PIC } from "../constants/default-profile-pic";
 
 
 
@@ -31,7 +32,7 @@ export class Users{
      @Prop({type:String,required:true,enum:["student","tutor"]})
     role:"student" | "tutor"
 
-     @Prop({type:String,required:true})
+     @Prop({type:String,required:true,default:DEFAULT_PROFILE_PIC})
     profilepic:string
 
 

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import UnavailableFeature from '@/src/components/UnavailableFeature'
+import CourseOverview from '@/src/components/CourseOverview'
 
 export const metadata: Metadata = { title: 'Course details' }
 
 export default function CoursePage() {
-  return <UnavailableFeature feature="Course details and enrollment" />
+  return <CourseOverview />
 }

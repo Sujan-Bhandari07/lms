@@ -2,10 +2,13 @@ import {
   IsBoolean,
   IsDefined,
   IsEnum,
+  IsIn,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
+  Max,
   Min,
   ValidateNested,
 } from "class-validator";
@@ -258,4 +261,83 @@ export class GetSpecificCourseDto{
   @IsNotEmpty({ message: "Name of course  cannot be empty." })
   @IsDefined({ message: "Name of course  is required" })
   name!:string
+}
+
+export class PublicCoursesQueryDto {
+  @IsOptional()
+  @IsString()
+  q?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page = 1;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(50)
+  limit = 12;
+
+  @IsOptional()
+  @IsIn(["newest", "popular", "price-asc", "price-desc", "rating"])
+  sort: "newest" | "popular" | "price-asc" | "price-desc" | "rating" = "newest";
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  minPrice?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  maxPrice?: number;
+}
+
+export class UpdateCourseDto {
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  coursename?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  desc?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  techstack?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ allowInfinity: false, allowNaN: false })
+  @Min(0)
+  price?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ allowInfinity: false, allowNaN: false })
+  @Min(0)
+  @Max(100)
+  discount?: number;
+}
+
+export class CreateCourseCommentDto {
+  @IsString()
+  @IsNotEmpty()
+  comment!: string;
+}
+
+export class CreateCourseRatingDto {
+  @Type(() => Number)
+  @IsNumber({ allowInfinity: false, allowNaN: false })
+  @Min(1)
+  @Max(5)
+  rating!: number;
 }

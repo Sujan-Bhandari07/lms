@@ -81,7 +81,7 @@ export default function ProfileSettings() {
 
       <section className="card mt-8 p-5 sm:p-8">
         <div className="flex items-center gap-4 border-b border-line pb-6">
-          <Avatar name={profile?.fullname ?? 'Account'} ring={false} className="size-14 text-lg" />
+          <Avatar name={profile?.fullname ?? 'Account'} profilepic={profile?.profilepic} ring={false} className="size-14 text-lg" />
           <div>
             <h2 className="text-base font-semibold">{profile?.fullname ?? 'Your account'}</h2>
             <p className="mt-1 text-sm text-muted">{profile?.email}</p>

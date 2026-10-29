@@ -6,6 +6,12 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
 import { UsersController } from "./controllers/user.controller";
 import { CourseController } from "./controllers/course.controller";
 import { PaymentController } from "./controllers/payment.controller";
+import { CourseCatalogController } from "./controllers/course-catalog.controller";
+import { LearningController } from "./controllers/learning.controller";
+import { AdminController } from "./controllers/admin.controller";
+import { ChatController } from "./controllers/chat.controller";
+import { AiController } from "./controllers/ai.controller";
+import { ChatAuthService } from "./services/chat-auth.service";
 import { ChatGateway } from "./sockets/chat.gateway";
 import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
@@ -105,10 +111,20 @@ import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis"
     UsersController,
     CourseController,
     PaymentController,
+    CourseCatalogController,
+    LearningController,
+    AdminController,
+    ChatController,
+    AiController,
   ],
-  providers: [AppService, ChatGateway, {
+  providers: [
+    AppService,
+    ChatAuthService,
+    ChatGateway,
+    {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
-    },],
+    },
+  ],
 })
 export class AppModule {}

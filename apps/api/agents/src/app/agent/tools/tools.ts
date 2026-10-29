@@ -194,6 +194,33 @@ export const getAllTutors=tool(
     }
 )
 
+export const catalogAgent = async (state: StateType) => {
+  const model = groqllm.bindTools([
+    getAllCoursesTool,
+    getAllTutors,
+    getSpecificCourseTool,
+  ]);
+  const systemMessage = new SystemMessage(`
+You are Ujyalo AI, helping learners discover courses and tutors on Ujyalo.
+
+Use the available tools to retrieve real course and tutor records.
+Never invent courses, tutors, prices, or enrollments.
+If a tool returns no results, say so clearly.
+After you have the information you need, answer the user in clear Markdown.
+`);
+  const history = Array.isArray(state.messages) ? state.messages : [];
+  const response = await model.invoke([
+    systemMessage,
+    ...history,
+    new HumanMessage(state.prompt),
+  ]);
+  return {
+    ...state,
+    messages: [response],
+    response: typeof response.content === "string" ? response.content : "",
+  };
+};
+
 export const getWebsiteInformation = async (state:StateType)=>{
 
     const {prompt}=state
@@ -218,7 +245,16 @@ Instructions:
 
 Your goal is to produce an accurate, relevant, well-structured answer grounded in the retrieved context and its sources.
 `;
-    const {context,sources}= await askDocuments(prompt,"Ujyalo")
+    let context = "";
+    let sources: unknown[] = [];
+    try {
+      const retrieved = await askDocuments(prompt, "Ujyalo");
+      context = retrieved.context;
+      sources = retrieved.sources;
+    } catch {
+      context = "";
+      sources = [];
+    }
 const response = await groqllm.invoke([
   {
     role: "system",
@@ -317,9 +353,11 @@ Your goal is to help users understand concepts, solve problems, improve their sk
 
 Respond with the answer to the user's question. Do not return routing labels or internal agent decisions.
 `;
+    const history = Array.isArray(state.messages) ? state.messages : [];
     const response = await groqllm.invoke([
+        new SystemMessage(systemMessage),
+        ...history,
         new HumanMessage(prompt),
-        new SystemMessage(systemMessage)
     ])
 
     return {
@@ -400,10 +438,20 @@ export const final = async(state:StateType)=>{
 
 }
 
-export const shouldcontinue= (state : StateType)=>{
-    return state.type
+export const shouldcontinue = (state: StateType) => {
+  const type = String(state.type ?? "")
+    .trim()
+    .toLowerCase();
+  if (type === "tools") return "catalog";
+  if (type === "website" || type === "general" || type === "other") return type;
+  return "general";
+};
 
-}
+export const shouldCallTools = (state: StateType) => {
+  const last = state.messages?.at(-1);
+  const toolCalls = last && "tool_calls" in last ? last.tool_calls : undefined;
+  return Array.isArray(toolCalls) && toolCalls.length ? "tools" : "__end__";
+};
 
 
 

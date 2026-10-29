@@ -21,7 +21,7 @@ export default function LoginForm({ mode = 'login' }: { mode?: 'login' | 'regist
   const [fullname, setFullname] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState<UserProfile['role']>('student')
+  const [role, setRole] = useState<'student' | 'tutor'>('student')
   const [showPassword, setShowPassword] = useState(false)
   const [formError, setFormError] = useState('')
   const request = mode === 'register' ? registerState : loginState
@@ -47,7 +47,13 @@ export default function LoginForm({ mode = 'login' }: { mode?: 'login' | 'regist
 
     dispatch(setuser(response.payload))
     toast.success(response.message || (mode === 'register' ? 'Account created.' : 'Signed in.'), { id: 'auth-request' })
-    router.replace(response.payload.role === 'tutor' ? '/instructor' : '/dashboard')
+    router.replace(
+      response.payload.role === 'admin'
+        ? '/admin'
+        : response.payload.role === 'tutor'
+          ? '/instructor'
+          : '/dashboard',
+    )
   }, [dispatch, mode, request.data, request.error, request.isError, request.isLoading, request.isSuccess, router])
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -104,7 +110,7 @@ export default function LoginForm({ mode = 'login' }: { mode?: 'login' | 'regist
       {mode === 'register' && (
         <div>
           <label htmlFor="role" className="mb-2 block text-sm font-medium">Account type</label>
-          <select id="role" value={role} onChange={(event) => setRole(event.target.value as UserProfile['role'])} className={`${FIELD} cursor-pointer`}>
+          <select id="role" value={role} onChange={(event) => setRole(event.target.value as 'student' | 'tutor')} className={`${FIELD} cursor-pointer`}>
             <option value="student">Student</option>
             <option value="tutor">Tutor</option>
           </select>

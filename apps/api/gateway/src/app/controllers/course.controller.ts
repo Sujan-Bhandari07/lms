@@ -1,15 +1,25 @@
-import { BadRequestException, Body, Controller, Get, Inject, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, ForbiddenException, Get, Inject, Post, Query, Req, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { AuthGuard } from '../guards/auth.guard';
-import { CreateCourseDto, GetCourseTutorDto, GUploadPartDto, ProvideRatingDto, CouseCompletionDto,SendCommentDto, VerifyCourseDto, GetAllStudentsDto, GCreateCourseDto } from '@lms/shared';
+import { AuthReq, CreateCourseDto, GetCourseTutorDto, GUploadPartDto, ProvideRatingDto, CouseCompletionDto,SendCommentDto, VerifyCourseDto, GetAllStudentsDto, GCreateCourseDto } from '@lms/shared';
 import { firstValueFrom } from 'rxjs';
 import { FileInterceptor } from '@nestjs/platform-express';
+
+interface SessionProfile {
+  role: "student" | "tutor" | "admin";
+}
+
+interface ApiEnvelope<T> {
+  success: boolean;
+  payload?: T;
+}
 
 @Controller("courses")
 @UseGuards(AuthGuard)
 export class CourseController {
     constructor(
         @Inject("COURSES_SERVICE") private readonly coursesClient: ClientProxy,
+        @Inject("USERS_SERVICE") private readonly usersClient: ClientProxy,
       ) {}
 
       
@@ -28,29 +38,38 @@ export class CourseController {
           ),
   }),
 )
- createcourse(@Body() data:GCreateCourseDto,
-@UploadedFile() file:Express.Multer.File){
+ async createcourse(@Body() data:GCreateCourseDto,
+@UploadedFile() file:Express.Multer.File,
+@Req() req: AuthReq){
+  await this.requireRole(req.user, "tutor");
   const buffer= file.buffer.toString("base64")
 return firstValueFrom(this.coursesClient.send("createcourse",{...data,title:buffer}))
  }
 
   @Post("verifycourse")
- verifycourse(@Body() data:VerifyCourseDto){
-return firstValueFrom(this.coursesClient.send("verifycourse",data))
+ async verifycourse(@Body() data:VerifyCourseDto, @Req() req: AuthReq){
+    const profile = await this.sessionProfile(req.user);
+    if (profile.role !== "admin") {
+      throw new ForbiddenException("An admin account is required.");
+    }
+    return firstValueFrom(this.coursesClient.send("verifycourse",data))
  }
 
   @Post("sendcomment")
- sendcomment(@Body() data:SendCommentDto){
+ async sendcomment(@Body() data:SendCommentDto, @Req() req: AuthReq){
+await this.requireRole(req.user, "student");
 return firstValueFrom(this.coursesClient.send("sendcomment",data))
  }
 
   @Post("sendrating")
- sendrating(@Body() data:ProvideRatingDto){
+ async sendrating(@Body() data:ProvideRatingDto, @Req() req: AuthReq){
+await this.requireRole(req.user, "student");
 return firstValueFrom(this.coursesClient.send("sendrating",data))
  }
 
  @Post("providecompletionoption")
- providecompletionoption(@Body() data:CouseCompletionDto){
+ async providecompletionoption(@Body() data:CouseCompletionDto, @Req() req: AuthReq){
+await this.requireRole(req.user, "tutor");
 return firstValueFrom(this.coursesClient.send("providecompletionoption",data))
  }
 
@@ -73,9 +92,11 @@ return firstValueFrom(this.coursesClient.send("providecompletionoption",data))
           ),
   }),
 )
- uploadpart(@Body() data:GUploadPartDto,
-@UploadedFile() file:Express.Multer.File){
+ async uploadpart(@Body() data:GUploadPartDto,
+@UploadedFile() file:Express.Multer.File,
+@Req() req: AuthReq){
 
+    await this.requireRole(req.user, "tutor");
     const buffer=file?.buffer.toString("base64")
 return firstValueFrom(this.coursesClient.send("uploadpart",{...data,videourl:buffer}))
  }
@@ -90,10 +111,27 @@ return firstValueFrom(this.coursesClient.send("uploadpart",{...data,videourl:buf
 
 
   @Get("getcoursesbytutor")
- getcoursesbytutor(@Query() data:GetCourseTutorDto){
+ async getcoursesbytutor(@Query() data:GetCourseTutorDto, @Req() req: AuthReq){
+await this.requireRole(req.user, "tutor");
 return firstValueFrom(this.coursesClient.send("getcoursesbytutor",data))
  }
 
+ private async sessionProfile(token: string): Promise<SessionProfile> {
+   const result = await firstValueFrom(
+     this.usersClient.send<ApiEnvelope<SessionProfile>>("getprofile", { token }),
+   );
+   if (!result?.success || !result.payload) {
+     throw new UnauthorizedException("Your session is no longer valid.");
+   }
+   return result.payload;
+ }
+
+ private async requireRole(token: string, role: SessionProfile["role"]) {
+   const profile = await this.sessionProfile(token);
+   if (profile.role !== role) {
+     throw new ForbiddenException(`A ${role} account is required.`);
+   }
+ }
 
 
 

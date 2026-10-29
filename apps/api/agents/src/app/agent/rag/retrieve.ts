@@ -4,11 +4,14 @@ import { groqllm } from "../models/groq.llm";
 
 
 export async function askDocuments(question: string,collection:string) {
-  const vectorStore =
-    await QdrantVectorStore.fromExistingCollection(embeddings, {
-      url: process.env.QDRANT_URL,
-      collectionName:collection ,
-    });
+  const vectorStore = await QdrantVectorStore.fromExistingCollection(
+    embeddings,
+    {
+      url: process.env.QDRANT_CLUSTER,
+      apiKey: process.env.QDRANT_API_KEY,
+      collectionName: collection,
+    },
+  );
 
   // Find the four most relevant chunks
   const retriever = vectorStore.asRetriever(4);

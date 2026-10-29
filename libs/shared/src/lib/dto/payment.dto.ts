@@ -1,10 +1,13 @@
 import { Type } from "class-transformer";
 import {
+  IsArray,
   IsDefined,
   IsNotEmpty,
+  IsMongoId,
   IsNumber,
   IsString,
   Min,
+  IsUUID,
   ValidateNested,
 } from "class-validator";
 
@@ -76,7 +79,25 @@ receiver!:CreateTransactorsDto
 
 }
 
+export class InitiatePaymentDto {
+  @IsMongoId()
+  courseid!: string;
 
+  @IsUUID()
+  transaction_uuid!: string;
+}
+
+export class VerifyPaymentDto {
+  @IsString()
+  @IsNotEmpty()
+  data!: string;
+}
+
+export class GetPublicUserProfilesDto {
+  @IsArray()
+  @IsMongoId({ each: true })
+  userids!: string[];
+}
 
 
 

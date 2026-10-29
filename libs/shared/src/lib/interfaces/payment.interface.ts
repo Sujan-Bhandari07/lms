@@ -15,3 +15,8 @@ export interface ICreatePayment {
   amount: number;
   courseid: string;
 }
+
+export interface IVerifyPayment {
+  data: string;
+  studentid: string;
+}

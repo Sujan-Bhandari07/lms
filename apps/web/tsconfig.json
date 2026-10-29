@@ -11,7 +11,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "paths": {
-      "@/*": ["./*"]},
+      "@/*": ["./*"],
+      "@lms/shared/chat": [
+        "../../libs/shared/src/lib/interfaces/chat.interface.ts"
+      ]
+    },
     "lib": [
       "dom",
       "dom.iterable",

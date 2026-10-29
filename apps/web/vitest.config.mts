@@ -7,6 +7,8 @@ export default defineConfig(() => ({
   cacheDir: '../../node_modules/.vite/apps/web',
   resolve: {
     alias: {
+      '@/': `${import.meta.dirname}/`,
+      '@lms/shared/chat': join(import.meta.dirname, '../../libs/shared/src/lib/interfaces/chat.interface.ts'),
       '@lms/shared': join(import.meta.dirname, '../.././libs/shared/src/index.ts'),
       '@lms/redis': join(import.meta.dirname, '../.././libs/redis/src/index.ts'),
       '@lms/db': join(import.meta.dirname, '../.././libs/db/src/index.ts'),

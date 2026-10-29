@@ -178,6 +178,14 @@ npm install
 
 Create the required environment files for MongoDB, Redis, RabbitMQ, Cloudinary, and your LLM provider as described in the repository's example env files.
 
+For administrator sign-in, add `ADMIN_EMAIL` and `ADMIN_PASSWORD` from `apps/api/users/.env.example` to the users service environment (`apps/api/users/.env`). Use a unique, strong password. These values are read only by the users service; do not add `NEXT_PUBLIC_` prefixes or commit actual credentials. Admin sign-in is disabled when either value is missing.
+
+For development eSewa checkout, configure the payments service with the test credential `ESEWA_SECRET` and `ESEWA_ENV=test`. It uses product code `EPAYTEST`, form endpoint `https://rc-epay.esewa.com.np/api/epay/main/v2/form`, and status endpoint `https://rc.esewa.com.np/api/epay/transaction/status/`; production eSewa settings are intentionally not supported. Never expose `ESEWA_SECRET` to the web app. The gateway exposes authenticated `POST /api/payments/initiate` and `POST /api/payments/verify` routes. The web app uses its configured `/api` rewrite (`NEXT_PUBLIC_BACKEND_URL`) to reach the gateway.
+
+For local development only, unpaid enrollment after a failed eSewa verification is disabled by default. To enable it, set `NODE_ENV=development` and `ALLOW_UNPAID_ENROLLMENT=true` in both the gateway and users service environments. The server still requires a valid payment attempt belonging to the signed-in student, and the users service independently enforces this development-only setting. The payment record keeps its actual status; the enrollment is labeled as a development enrollment. Development enrollments can participate in chat only while this development-only setting is enabled in both services. Never enable this setting in production.
+
+Student–instructor chat runs through the API gateway’s Socket.IO endpoint and the existing chat microservice. The browser reuses the authenticated, HTTP-only `token` cookie; it does not send user IDs or session secrets. Set `WEB_ORIGIN` on the gateway to the comma-separated web origins allowed to connect (for local development, `http://localhost:3000`) and set `NEXT_PUBLIC_CHAT_SOCKET_URL` to the gateway origin when it differs from `NEXT_PUBLIC_BACKEND_URL` (for local development, `http://localhost:8000`; otherwise the client strips the `/api` suffix). Chat contacts are derived from shared saved course enrollments. Development-bypass enrollments qualify only when `NODE_ENV=development` and `ALLOW_UNPAID_ENROLLMENT=true` are configured on both the gateway and users service.
+
 ### Run
 
 ```bash
@@ -193,7 +201,7 @@ npx nx serve <app-name>
 - [ ] 🔎 AI course discovery
 - [ ] 🧑‍🏫 AI instructor discovery
 - [ ] 🤖 AI learning assistant
-- [ ] 💬 Student–instructor real-time chat
+- [x] 💬 Student–instructor real-time chat
 - [ ] 🎓 Course, student, tutor, and certificate workflows
 - [ ] 🧪 Testing and CI/CD
 - [ ] 🚢 Production deployment

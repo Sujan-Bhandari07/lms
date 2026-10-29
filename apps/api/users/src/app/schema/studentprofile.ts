@@ -23,7 +23,12 @@ class En extends Certificate {
   @Prop({ type: Boolean, default: false })
   iscompleted: boolean;
 
-  
+  @Prop({
+    type: String,
+    enum: ["payment", "development", "free"],
+    default: "free",
+  })
+  enrollmentSource: "payment" | "development" | "free";
 
   // @Prop({ type: String, required: true })
   // coursename: string;

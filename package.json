@@ -88,6 +88,7 @@
     "@nestjs/websockets": "^11.2.8",
     "@qdrant/js-client-rest": "^1.20.0",
     "@reduxjs/toolkit": "^2.13.0",
+    "@types/crypto-js": "^4.2.2",
     "amqp-connection-manager": "^5.0.1",
     "amqplib": "^2.2.0",
     "bcryptjs": "^3.0.3",
@@ -95,6 +96,7 @@
     "class-validator": "^0.15.1",
     "cloudinary": "^2.11.0",
     "cookie-parser": "^1.4.7",
+    "crypto-js": "^4.2.0",
     "geist": "^1.8.2",
     "ioredis": "^5.11.1",
     "langchain": "^1.5.20",
@@ -103,6 +105,7 @@
     "multer": "^2.5.0",
     "next": "~16.1.6",
     "nodemailer": "^10.2.1",
+    "peerjs": "^1.5.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-redux": "^9.3.1",
@@ -110,6 +113,7 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0",
     "socket.io": "^4.8.4",
+    "socket.io-client": "^4.8.4",
     "sonner": "^2.0.8",
     "zod": "^4.6.7"
   }

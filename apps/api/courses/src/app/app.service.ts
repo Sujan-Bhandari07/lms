@@ -22,6 +22,8 @@ import {
   ICourceCompletion,
   success,
   IUpdateUserInCourse,
+  PublicCoursesQueryDto,
+  UpdateCourseDto,
 } from "@lms/shared";
 import { ClientProxy } from "@nestjs/microservices";
 import { firstValueFrom } from "rxjs";
@@ -158,15 +160,30 @@ export class AppService {
     return success("Course found", courses);
   }
 
+  async getTutorCoursesForChat(data: { tutorid: string }) {
+    if (!data.tutorid?.trim()) {
+      throw new BadRequestException("A tutor id is required.");
+    }
+    const courses = await this.coursesmodel
+      .find({ "tutor.tutorid": data.tutorid })
+      .select("_id coursename tutor isverified")
+      .lean();
+    return success("Tutor courses found.", courses);
+  }
+
   async updateenrolled(data: IUserCourse) {
     const { userid, username, courseid } = data;
     const course = await this.coursesmodel.findById(courseid);
     if (!course) throw new NotFoundException("Course not found");
-    course.totalenrolledstudents.push({
-      userid,
-      username,
-    });
-    await course.save();
+    await this.coursesmodel.updateOne(
+      {
+        _id: course._id,
+        "totalenrolledstudents.userid": { $ne: userid },
+      },
+      {
+        $push: { totalenrolledstudents: { userid, username } },
+      },
+    );
   }
 
   async updatecompletion(data: IUserCourse) {
@@ -241,6 +258,119 @@ export class AppService {
     }
     const flatten = students.flat(Infinity);
     return success("students", flatten);
+  }
+
+  async getPublicCourses(query: PublicCoursesQueryDto) {
+    const page = query.page || 1;
+    const limit = query.limit || 12;
+    const filter: Record<string, unknown> = { isverified: true };
+    if (query.q?.trim()) {
+      const escaped = query.q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      filter.$or = [
+        { coursename: { $regex: escaped, $options: "i" } },
+        { desc: { $regex: escaped, $options: "i" } },
+        { techstack: { $regex: escaped, $options: "i" } },
+        { "tutor.tutorname": { $regex: escaped, $options: "i" } },
+      ];
+    }
+    if (query.minPrice !== undefined || query.maxPrice !== undefined) {
+      filter.price = {
+        ...(query.minPrice !== undefined && { $gte: query.minPrice }),
+        ...(query.maxPrice !== undefined && { $lte: query.maxPrice }),
+      };
+    }
+    let sortBy: Record<string, 1 | -1> = { createdAt: -1 };
+    if (query.sort === "popular") sortBy = { enrollmentCount: -1, createdAt: -1 };
+    if (query.sort === "price-asc") sortBy = { price: 1, createdAt: -1 };
+    if (query.sort === "price-desc") sortBy = { price: -1, createdAt: -1 };
+    if (query.sort === "rating") sortBy = { averageRating: -1, createdAt: -1 };
+    const [records, total] = await Promise.all([
+      this.coursesmodel.aggregate([
+        { $match: filter },
+        {
+          $addFields: {
+            enrollmentCount: { $size: { $ifNull: ["$totalenrolledstudents", []] } },
+            averageRating: { $ifNull: [{ $avg: "$ratings.rating" }, 0] },
+          },
+        },
+        { $sort: sortBy },
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+        { $project: { totalenrolledstudents: 0, totalcoursecompletions: 0, "parts.videourl": 0 } },
+      ]),
+      this.coursesmodel.countDocuments(filter),
+    ]);
+    return success("Courses found", {
+      items: records,
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    });
+  }
+
+  async getPendingCourses() {
+    const courses = await this.coursesmodel
+      .find({ isverified: { $ne: true } })
+      .select("coursename title desc techstack tutor price discount createdAt")
+      .sort({ createdAt: -1 })
+      .lean();
+    return success("Pending courses found", courses);
+  }
+
+  async getPublicCourseById(courseid: string) {
+    if (!/^[a-f\d]{24}$/i.test(courseid)) {
+      throw new BadRequestException("Invalid course id.");
+    }
+    const course = await this.coursesmodel.findOne({ _id: courseid, isverified: true }).lean();
+    if (!course) throw new NotFoundException("Course not found.");
+    const [result] = await this.coursesmodel.aggregate([
+      { $match: { _id: course._id } },
+      {
+        $addFields: {
+          enrollmentCount: { $size: { $ifNull: ["$totalenrolledstudents", []] } },
+          averageRating: { $ifNull: [{ $avg: "$ratings.rating" }, 0] },
+        },
+      },
+      { $project: { totalenrolledstudents: 0, totalcoursecompletions: 0, "parts.videourl": 0 } },
+    ]);
+    return success("Course found", result);
+  }
+
+  async getCourseById(courseid: string) {
+    if (!/^[a-f\d]{24}$/i.test(courseid)) {
+      throw new BadRequestException("Invalid course id.");
+    }
+    const course = await this.coursesmodel.findById(courseid).lean();
+    if (!course) throw new NotFoundException("Course not found.");
+    return success("Course found", course);
+  }
+
+  async updateOwnedCourse(data: UpdateCourseDto & { courseid: string; photo?: string }) {
+    if (!/^[a-f\d]{24}$/i.test(data.courseid)) {
+      throw new BadRequestException("Invalid course id.");
+    }
+    const course = await this.coursesmodel.findById(data.courseid);
+    if (!course) throw new NotFoundException("Course not found.");
+
+    if (data.coursename !== undefined) course.coursename = data.coursename.trim();
+    if (data.desc !== undefined) course.desc = data.desc.trim();
+    if (data.techstack !== undefined) course.techstack = data.techstack.trim();
+    if (data.price !== undefined || data.discount !== undefined) {
+      if (data.price === undefined || data.discount === undefined) {
+        throw new BadRequestException("Provide both price and discount when changing course pricing.");
+      }
+      course.price = data.price;
+      course.discount = data.discount;
+    }
+    if (data.photo) {
+      const uploaded = await this.media.upload(data.photo, "course");
+      if (!uploaded?.url) throw new InternalServerErrorException("Course photo upload failed.");
+      course.title = uploaded.url;
+    }
+
+    await course.save();
+    return success("Course updated successfully.", course);
   }
 
   async getAllCourse() {

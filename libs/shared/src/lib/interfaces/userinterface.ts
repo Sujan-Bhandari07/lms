@@ -5,6 +5,7 @@ interface IRegister{
     email:string
     password:string
     role:"student" | "tutor"
+    profilepic?:string | null
 }
 
 type ILogin = Pick<IRegister,"email"| "password">
@@ -33,6 +34,7 @@ interface IUpdateTutor {
 
 interface IverifyTutor{
     userid:string
+    decision?:"approve" | "reject"
 
 }
 

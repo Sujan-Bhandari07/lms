@@ -10,10 +10,14 @@ type TutorsDocument = HydratedDocument<Tutors>
   userid: Types.ObjectId;
   @Prop({ type: Boolean, default: false, required: true })
   isverified: boolean;
+  @Prop({ type: String, enum: ["pending", "approved", "rejected"], default: "pending" })
+  verificationStatus?: "pending" | "approved" | "rejected";
   @Prop({ type: String, })
   experience: string;
   @Prop({ type: String})
   acedemics: string;
+  @Prop({ type: [String], default: [] })
+  certificates?: string[];
 }
 
 const TutorsSchema = SchemaFactory.createForClass(Tutors)
