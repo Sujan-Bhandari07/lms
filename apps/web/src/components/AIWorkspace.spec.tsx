@@ -71,4 +71,24 @@ describe('MarkdownContent', () => {
     expect(markup).not.toContain('href="javascript:')
     expect(markup).not.toContain('<script>')
   })
+
+  it('does not make video playback links clickable', () => {
+    const markup = renderToStaticMarkup(
+      <MarkdownContent
+        text={[
+          '[Watch lesson](https://res.cloudinary.com/demo/video/upload/course/lesson.mp4)',
+          '',
+          '[Course details](https://ujyalo.example.com/courses/abc)',
+          '',
+          '![Course image](https://res.cloudinary.com/demo/image/upload/course.jpg)',
+        ].join('\n')}
+      />,
+    )
+
+    expect(markup).not.toContain('href="https://res.cloudinary.com/demo/video/upload')
+    expect(markup).toContain('Watch lesson')
+    expect(markup).toContain('href="https://ujyalo.example.com/courses/abc"')
+    expect(markup).toContain('<img')
+    expect(markup).toContain('https://res.cloudinary.com/demo/image/upload/course.jpg')
+  })
 })

@@ -66,7 +66,7 @@ describe("Agents AppService", () => {
       _id: convId,
       userId: "user1",
       title: "My AI Chat",
-      lastMessagePreview: "Hello",
+      lastMessagePreview: "[Watch lesson](https://media.example.com/videos/lesson.mp4)",
       lastMessageAt: new Date(),
       updatedAt: new Date(),
     };
@@ -85,7 +85,7 @@ describe("Agents AppService", () => {
         _id: new Types.ObjectId(),
         conversationId: convId,
         role: "assistant",
-        text: "NestJS is a progressive Node.js framework.",
+        text: "Watch [lesson](https://media.example.com/videos/lesson.mp4)",
         createdAt: new Date(),
       },
     ];
@@ -107,6 +107,7 @@ describe("Agents AppService", () => {
     expect(result.payload.messages.length).toBe(2);
     expect(result.payload.messages[0].role).toBe("assistant");
     expect(result.payload.messages[1].role).toBe("user");
+    expect(result.payload.messages[0].text).not.toContain("lesson.mp4");
+    expect(result.payload.conversation.latestMessage).not.toContain("lesson.mp4");
   });
 });
-

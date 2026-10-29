@@ -98,9 +98,57 @@ function normalizeAssistantMarkdown(text: string): string {
 
 function isSafeMarkdownUrl(url: string, key: string): boolean {
   const value = url.trim()
+  if (isProtectedVideoUrl(value)) return false
   if (/^https?:\/\//i.test(value)) return true
   if (key === 'href' && /^mailto:/i.test(value)) return true
   return /^(?:\/(?!\/)|\.{1,2}\/|#)/.test(value)
+}
+
+function isProtectedVideoUrl(value: string): boolean {
+  let decoded = value
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      decoded = decodeURIComponent(decoded)
+    } catch {
+      break
+    }
+  }
+
+  let url: URL
+  try {
+    url = new URL(decoded)
+  } catch {
+    return false
+  }
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return false
+
+  const hostname = url.hostname.toLowerCase()
+
+  return (
+    /\.(?:3gp|avi|m4v|mkv|mov|mp4|mpe?g|mts|m2ts|ogv|webm|wmv|m3u8|mpd)$/i.test(
+      url.pathname,
+    ) ||
+    /\/video\/upload(?:\/|$)/i.test(url.pathname) ||
+    /\/(?:videos?|lessons?|playback|streams?|course[-_]?parts?)(?:\/|$)/i.test(
+      url.pathname,
+    ) ||
+    ((hostname === 'youtube.com' ||
+      hostname.endsWith('.youtube.com') ||
+      hostname === 'youtu.be') &&
+      (url.searchParams.has('v') ||
+        /\/(?:embed|shorts|live)\//i.test(url.pathname) ||
+        hostname === 'youtu.be')) ||
+    ((hostname === 'vimeo.com' || hostname.endsWith('.vimeo.com')) &&
+      /\/(?:video\/)?\d+(?:\/|$)/i.test(url.pathname)) ||
+    ((hostname === 'dailymotion.com' ||
+      hostname.endsWith('.dailymotion.com')) &&
+      /\/video\//i.test(url.pathname)) ||
+    [...url.searchParams.keys()].some((key) =>
+      /^(?:video(?:url|_url)?|playback(?:url|_url)?|stream(?:url|_url)?|lesson(?:url|_url)?)$/i.test(
+        key,
+      ),
+    )
+  )
 }
 
 function MarkdownImage({
@@ -147,15 +195,18 @@ export function MarkdownContent({ text }: { text: string }) {
         remarkPlugins={[remarkGfm]}
         urlTransform={(url, key) => (isSafeMarkdownUrl(url, key) ? url : '')}
         components={{
-          a: ({ children, href }) => (
-            <a
-              href={href}
-              target={/^https?:\/\//i.test(href ?? '') ? '_blank' : undefined}
-              rel={/^https?:\/\//i.test(href ?? '') ? 'noopener noreferrer' : undefined}
-            >
-              {children}
-            </a>
-          ),
+          a: ({ children, href }) =>
+            href && isSafeMarkdownUrl(href, 'href') ? (
+              <a
+                href={href}
+                target={/^https?:\/\//i.test(href) ? '_blank' : undefined}
+                rel={/^https?:\/\//i.test(href) ? 'noopener noreferrer' : undefined}
+              >
+                {children}
+              </a>
+            ) : (
+              <>{children}</>
+            ),
           blockquote: ({ children }) => (
             <blockquote className="border-l-2 border-gold pl-4 text-muted">
               {children}

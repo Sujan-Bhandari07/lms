@@ -13,6 +13,7 @@ import {
   AiConversationDocument,
 } from "./schema/ai-conversation.schema";
 import { AiMessage, AiMessageDocument } from "./schema/ai-message.schema";
+import { sanitizeAssistantResponse } from "./response-sanitizer";
 
 @Injectable()
 export class AppService {
@@ -127,7 +128,9 @@ export class AppService {
           },
         },
       );
-      assistantText = this.responseText(result?.response);
+      assistantText = sanitizeAssistantResponse(
+        this.responseText(result?.response),
+      );
     } catch (error) {
       console.error("AI invocation failed:", error);
       assistantText =
@@ -200,7 +203,9 @@ export class AppService {
     return {
       id: String(conversation._id),
       title: conversation.title,
-      latestMessage: conversation.lastMessagePreview,
+      latestMessage: sanitizeAssistantResponse(
+        conversation.lastMessagePreview,
+      ),
       lastMessageAt: conversation.lastMessageAt?.toISOString() ?? null,
       updatedAt: conversation.updatedAt?.toISOString() ?? new Date().toISOString(),
     };
@@ -217,7 +222,10 @@ export class AppService {
       id: String(message._id),
       conversationId: String(message.conversationId),
       role: message.role,
-      text: message.text,
+      text:
+        message.role === "assistant"
+          ? sanitizeAssistantResponse(message.text)
+          : message.text,
       createdAt: message.createdAt?.toISOString() ?? new Date().toISOString(),
     };
   }
