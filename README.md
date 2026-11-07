@@ -172,7 +172,7 @@ ujyalo/
 ### Installation
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/Sujan-Bhandari07/lms.git
 cd ujyalo
 npm install
 ```
