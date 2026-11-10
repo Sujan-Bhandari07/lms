@@ -23,10 +23,6 @@ export default function CourseWizard() {
   const isLoading = createCourseState.isLoading
 
   useEffect(() => {
-    if (createCourseState.isLoading) {
-      toast.loading('Creating your course…', { id: 'create-course-request' })
-      return
-    }
     if (createCourseState.isError) {
       toast.error(getApiErrorMessage(createCourseState.error), { id: 'create-course-request' })
       return

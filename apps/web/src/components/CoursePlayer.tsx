@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { I } from './Icon'
 import { getApiErrorMessage, getApiSuccessMessage } from '@/src/lib/apiFeedback'
@@ -20,23 +19,9 @@ export default function CoursePlayer() {
   const certificates = useGetCertificatesQuery(undefined, { skip: !course?.iscompleted })
   const [complete, completeState] = useCompleteEnrolledCourseMutation()
   const [createCertificate, certificateState] = useCreateCertificateMutation()
-  const requestStarted = useRef(false)
   const certificate = certificates.data?.payload?.find((item) => item.courseid === id)
 
-  useEffect(() => {
-    if (enrollments.isLoading || enrollments.isFetching) {
-      if (!requestStarted.current) toast.loading('Loading your enrolled courses…', { id: 'course-player' })
-      requestStarted.current = true
-      return
-    }
-    if (!requestStarted.current) return
-    requestStarted.current = false
-    if (enrollments.isError) toast.error(getApiErrorMessage(enrollments.error), { id: 'course-player' })
-    else if (enrollments.data) toast.success(getApiSuccessMessage(enrollments.data, 'Your courses are ready.'), { id: 'course-player' })
-  }, [enrollments.data, enrollments.error, enrollments.isError, enrollments.isFetching, enrollments.isLoading])
-
   async function markComplete() {
-    toast.loading('Saving course completion…', { id: 'course-completion' })
     try {
       const result = await complete({ courseid: id }).unwrap()
       if (!result.success) {
@@ -50,7 +35,6 @@ export default function CoursePlayer() {
   }
 
   async function requestCertificate() {
-    toast.loading('Creating your certificate record…', { id: 'certificate-request' })
     try {
       const result = await createCertificate({ courseid: id }).unwrap()
       if (!result.success) {
@@ -71,7 +55,7 @@ export default function CoursePlayer() {
       <main className="mx-auto grid min-h-[65vh] max-w-[720px] content-center px-5">
         <div className="rounded-card border border-error/40 bg-error/10 p-6" role="alert">
           <h1 className="t-h3">Course access could not be checked</h1>
-          <p className="mt-2 text-sm text-muted">Check the notification for details, then retry.</p>
+          <p className="mt-2 text-sm text-muted">Check your connection, then try again.</p>
           <button type="button" className="btn btn-s mt-5" onClick={() => void enrollments.refetch()}>Try again</button>
         </div>
       </main>

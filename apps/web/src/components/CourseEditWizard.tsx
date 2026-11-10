@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { FormEvent, useEffect, useRef, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { I } from './Icon'
 import { useAppSelector } from '@/src/lib/hooks'
@@ -24,7 +24,6 @@ export default function CourseEditWizard() {
   const [discount, setDiscount] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
   const [error, setError] = useState('')
-  const requestStarted = useRef(false)
 
   useEffect(() => {
     if (!course) return
@@ -36,10 +35,6 @@ export default function CourseEditWizard() {
   }, [course])
 
   useEffect(() => {
-    if (updateState.isLoading) {
-      toast.loading('Saving course changes…', { id: 'course-update' })
-      return
-    }
     if (updateState.isError) {
       toast.error(getApiErrorMessage(updateState.error), { id: 'course-update' })
       return
@@ -51,16 +46,6 @@ export default function CourseEditWizard() {
     }
     toast.success(getApiSuccessMessage(updateState.data, 'Course updated.'), { id: 'course-update' })
   }, [updateState.data, updateState.error, updateState.isError, updateState.isLoading, updateState.isSuccess])
-
-  useEffect(() => {
-    if (coursesQuery.isLoading || coursesQuery.isFetching) {
-      requestStarted.current = true
-      return
-    }
-    if (!requestStarted.current) return
-    requestStarted.current = false
-    if (coursesQuery.isError) toast.error(getApiErrorMessage(coursesQuery.error), { id: 'course-edit-load' })
-  }, [coursesQuery.error, coursesQuery.isError, coursesQuery.isFetching, coursesQuery.isLoading])
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()

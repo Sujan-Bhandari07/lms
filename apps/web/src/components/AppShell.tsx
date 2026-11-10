@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Avatar from './Avatar'
 import { I } from './Icon'
 import { Logo } from './Header'
@@ -10,7 +10,7 @@ import type { ShellConfig } from '@/src/lib/nav'
 import { useLogoutMutation, useGetProfileQuery, userApi } from '@/src/services/api/Userapi'
 import { useAppDispatch } from '@/src/lib/hooks'
 import { setuser } from '@/src/services/slices/Userslice'
-import { getApiErrorMessage, getApiSuccessMessage, isApiFailure } from '@/src/lib/apiFeedback'
+import { getApiErrorMessage } from '@/src/lib/apiFeedback'
 import { toast } from 'sonner'
 
 function isUnauthorized(error: unknown) {
@@ -21,48 +21,24 @@ export default function AppShell({ nav, role, home, children }: ShellConfig & { 
   const path = usePathname()
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const { data, isLoading, isFetching, isSuccess, isError, error, refetch } = useGetProfileQuery()
+  const { data, isLoading, isError, error, refetch } = useGetProfileQuery()
   const [logout, logoutState] = useLogoutMutation()
   const [open, setOpen] = useState(false)
-  const profileRequestStarted = useRef(false)
   const profile = data?.payload
 
   useEffect(() => {
     if (profile) dispatch(setuser(profile))
   }, [dispatch, profile])
   useEffect(() => {
-    if (isLoading || isFetching) {
-      if (!profileRequestStarted.current) toast.loading('Checking your session…', { id: 'profile-request' })
-      profileRequestStarted.current = true
-      return
-    }
-    if (!profileRequestStarted.current) return
-    profileRequestStarted.current = false
-    if (isError) {
-      toast.error(getApiErrorMessage(error), { id: 'profile-request' })
-    } else if (isSuccess && data) {
-      if (isApiFailure(data)) {
-        toast.error(getApiSuccessMessage(data, 'Your session could not be verified.'), { id: 'profile-request' })
-      } else {
-        toast.success(getApiSuccessMessage(data, 'Session verified.'), { id: 'profile-request' })
-      }
-    }
-  }, [data, error, isError, isFetching, isLoading, isSuccess])
-  useEffect(() => {
-    if (logoutState.isLoading) {
-      toast.loading('Signing you out…', { id: 'logout-request' })
-      return
-    }
     if (logoutState.isError) {
       toast.error(getApiErrorMessage(logoutState.error), { id: 'logout-request' })
       return
     }
     if (!logoutState.isSuccess) return
-    toast.success(getApiSuccessMessage(logoutState.data, 'Signed out.'), { id: 'logout-request' })
     dispatch(setuser(null))
     dispatch(userApi.util.resetApiState())
     router.replace('/login')
-  }, [dispatch, logoutState.data, logoutState.error, logoutState.isError, logoutState.isLoading, logoutState.isSuccess, router])
+  }, [dispatch, logoutState.error, logoutState.isError, logoutState.isSuccess, router])
   useEffect(() => {
     if ((isError && isUnauthorized(error)) || (profile && profile.role !== role)) {
       router.replace('/login')
@@ -84,7 +60,7 @@ export default function AppShell({ nav, role, home, children }: ShellConfig & { 
     return (
       <main className="grid min-h-dvh place-items-center px-5">
         <div className="max-w-md rounded-card border border-error/40 bg-error/10 p-6 text-sm" role="alert">
-          <p>We could not verify your session. Check the notification for details and try again.</p>
+          <p>We could not verify your session. Check your connection and try again.</p>
           <button type="button" className="btn btn-s mt-4" onClick={() => void refetch()}>Try again</button>
         </div>
       </main>

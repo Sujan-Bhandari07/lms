@@ -1,46 +1,17 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef } from 'react'
 import { I } from '@/src/components/Icon'
 import Avatar from '@/src/components/Avatar'
 import { useAppSelector } from '@/src/lib/hooks'
 import { useGetCertificatesQuery, useGetEnrollmentsQuery } from '@/src/services/api/Userapi'
-import { getApiErrorMessage, getApiSuccessMessage } from '@/src/lib/apiFeedback'
-import { toast } from 'sonner'
 
 export default function Dashboard() {
   const profile = useAppSelector((state) => state.user)
   const enrollments = useGetEnrollmentsQuery()
   const certificates = useGetCertificatesQuery()
-  const enrollmentToastStarted = useRef(false)
-  const certificateToastStarted = useRef(false)
   const courses = enrollments.data?.payload ?? []
   const completed = courses.filter((course) => course.iscompleted).length
-
-  useEffect(() => {
-    if (enrollments.isLoading || enrollments.isFetching) {
-      if (!enrollmentToastStarted.current) toast.loading('Loading your learning dashboard…', { id: 'student-enrollments' })
-      enrollmentToastStarted.current = true
-      return
-    }
-    if (!enrollmentToastStarted.current) return
-    enrollmentToastStarted.current = false
-    if (enrollments.isError) toast.error(getApiErrorMessage(enrollments.error), { id: 'student-enrollments' })
-    else if (enrollments.data) toast.success(getApiSuccessMessage(enrollments.data, 'Your learning data is up to date.'), { id: 'student-enrollments' })
-  }, [enrollments.data, enrollments.error, enrollments.isError, enrollments.isFetching, enrollments.isLoading])
-
-  useEffect(() => {
-    if (certificates.isLoading || certificates.isFetching) {
-      if (!certificateToastStarted.current) toast.loading('Loading certificates…', { id: 'student-certificates' })
-      certificateToastStarted.current = true
-      return
-    }
-    if (!certificateToastStarted.current) return
-    certificateToastStarted.current = false
-    if (certificates.isError) toast.error(getApiErrorMessage(certificates.error), { id: 'student-certificates' })
-    else if (certificates.data) toast.success(getApiSuccessMessage(certificates.data, 'Certificates loaded.'), { id: 'student-certificates' })
-  }, [certificates.data, certificates.error, certificates.isError, certificates.isFetching, certificates.isLoading])
 
   return (
     <main className="mx-auto max-w-[1000px] px-5 py-8 sm:px-8 lg:py-10">
@@ -72,7 +43,7 @@ export default function Dashboard() {
           <Link href="/courses" className="text-sm font-medium underline decoration-gold underline-offset-4">Browse catalog</Link>
         </div>
         {enrollments.isLoading && <p className="card p-6 text-sm text-muted" role="status">Loading your courses…</p>}
-        {enrollments.isError && <div role="alert" className="rounded-card border border-error/40 bg-error/10 p-5 text-sm">Your courses could not be loaded. See the notification for details and refresh to retry.</div>}
+        {enrollments.isError && <div role="alert" className="rounded-card border border-error/40 bg-error/10 p-5 text-sm">Your courses could not be loaded. Refresh the page to retry.</div>}
         {!enrollments.isLoading && !enrollments.isError && courses.length === 0 && (
           <div className="rounded-card border border-dashed border-line bg-surface px-6 py-12 text-center">
             <span className="mx-auto grid size-12 place-items-center rounded-full bg-page text-muted"><I n="bookopen" /></span>
@@ -116,7 +87,7 @@ export default function Dashboard() {
 
       <section className="mt-10" aria-labelledby="certificates-heading">
         <h2 id="certificates-heading" className="t-h3 mb-5">Certificates</h2>
-        {certificates.isError && <p role="alert" className="text-sm text-error">Certificates could not be loaded. See the notification for details.</p>}
+        {certificates.isError && <p role="alert" className="text-sm text-error">Certificates could not be loaded. Refresh the page to retry.</p>}
         {!certificates.isLoading && !certificates.isError && certificates.data?.payload?.length === 0 && <p className="rounded-ui bg-surface p-5 text-sm text-muted">Certificates will appear here after you complete an eligible course and create its certificate record.</p>}
         {certificates.data?.payload && certificates.data.payload.length > 0 && (
           <ul className="grid gap-3 sm:grid-cols-2">

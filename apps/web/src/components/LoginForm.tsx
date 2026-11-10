@@ -28,11 +28,6 @@ export default function LoginForm({ mode = 'login' }: { mode?: 'login' | 'regist
   const busy = request.isLoading
 
   useEffect(() => {
-    if (request.isLoading) {
-      toast.loading(mode === 'register' ? 'Creating your account…' : 'Signing you in…', { id: 'auth-request' })
-      return
-    }
-
     if (request.isError) {
       toast.error(getApiErrorMessage(request.error), { id: 'auth-request' })
       return
@@ -44,9 +39,8 @@ export default function LoginForm({ mode = 'login' }: { mode?: 'login' | 'regist
       toast.error(response?.message || 'The server response did not include your account profile.', { id: 'auth-request' })
       return
     }
-
     dispatch(setuser(response.payload))
-    toast.success(response.message || (mode === 'register' ? 'Account created.' : 'Signed in.'), { id: 'auth-request' })
+    dispatch(setuser(response.payload))
     router.replace(
       response.payload.role === 'admin'
         ? '/admin'

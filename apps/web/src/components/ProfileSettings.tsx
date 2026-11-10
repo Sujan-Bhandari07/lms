@@ -24,10 +24,6 @@ export default function ProfileSettings() {
   }, [profile])
 
   useEffect(() => {
-    if (request.isLoading) {
-      toast.loading('Saving your profile…', { id: 'profile-update' })
-      return
-    }
     if (request.isError) {
       toast.error(getApiErrorMessage(request.error), { id: 'profile-update' })
       return

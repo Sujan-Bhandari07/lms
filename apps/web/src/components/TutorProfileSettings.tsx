@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useEffect, useRef, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { I } from './Icon'
 import { useGetTutorProfileQuery, useSaveTutorProfileMutation } from '@/src/services/api/Userapi'
 import { getApiErrorMessage, getApiSuccessMessage } from '@/src/lib/apiFeedback'
@@ -11,7 +11,6 @@ export default function TutorProfileSettings() {
   const [saveProfile, saveState] = useSaveTutorProfileMutation()
   const [acedemics, setAcedemics] = useState('')
   const [experience, setExperience] = useState('')
-  const requestStarted = useRef(false)
   const tutor = data?.payload
 
   useEffect(() => {
@@ -21,21 +20,8 @@ export default function TutorProfileSettings() {
     }
   }, [tutor])
 
-  useEffect(() => {
-    if (isLoading) {
-      if (!requestStarted.current) toast.loading('Loading tutor profile…', { id: 'tutor-profile' })
-      requestStarted.current = true
-      return
-    }
-    if (!requestStarted.current) return
-    requestStarted.current = false
-    if (isError) toast.error(getApiErrorMessage(error), { id: 'tutor-profile' })
-    else if (data) toast.success(getApiSuccessMessage(data, 'Tutor profile loaded.'), { id: 'tutor-profile' })
-  }, [data, error, isError, isLoading])
-
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    toast.loading('Saving tutor profile…', { id: 'tutor-profile-save' })
     try {
       const result = await saveProfile({ acedemics: acedemics.trim(), experience: experience.trim() }).unwrap()
       if (!result.success) {
@@ -54,7 +40,7 @@ export default function TutorProfileSettings() {
       <main className="mx-auto max-w-[820px] px-5 py-12">
         <div className="rounded-card border border-error/40 bg-error/10 p-6" role="alert">
           <h1 className="t-h3">Tutor profile unavailable</h1>
-          <p className="mt-2 text-sm text-muted">Check the notification for details and retry.</p>
+          <p className="mt-2 text-sm text-muted">Check your connection and try again.</p>
           <button type="button" className="btn btn-s mt-4" onClick={() => void refetch()}>Try again</button>
         </div>
       </main>

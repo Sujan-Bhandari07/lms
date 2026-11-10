@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { FormEvent, useEffect, useRef } from 'react'
+import { FormEvent, useEffect } from 'react'
 import { I } from './Icon'
 import {
   useGetCoursesByTutorQuery,
@@ -15,39 +15,15 @@ import { toast } from 'sonner'
 
 export default function InstructorDashboard() {
   const profile = useAppSelector((state) => state.user)
-  const { data, isLoading, isFetching, isSuccess, isError, error, refetch } = useGetCoursesByTutorQuery(undefined, {
+  const { data, isLoading, isFetching, isError, error, refetch } = useGetCoursesByTutorQuery(undefined, {
     skip: !profile,
   })
   const [toggleCompletionOption, toggleState] = useToggleCourseCompletionOptionMutation()
   const [uploadPart, uploadState] = useUploadCoursePartMutation()
   const studentsQuery = useGetTutorStudentsQuery()
   const courses = data?.payload ?? []
-  const requestStarted = useRef(false)
 
   useEffect(() => {
-    if (isLoading || isFetching) {
-      if (!requestStarted.current) toast.loading('Loading your courses…', { id: 'tutor-courses-request' })
-      requestStarted.current = true
-      return
-    }
-    if (!requestStarted.current) return
-    requestStarted.current = false
-    if (isError) {
-      toast.error(getApiErrorMessage(error), { id: 'tutor-courses-request' })
-    } else if (isSuccess && data) {
-      if (isApiFailure(data)) {
-        toast.error(getApiSuccessMessage(data, 'Your courses could not be loaded.'), { id: 'tutor-courses-request' })
-      } else {
-        toast.success(getApiSuccessMessage(data, 'Courses loaded.'), { id: 'tutor-courses-request' })
-      }
-    }
-  }, [data, error, isError, isFetching, isLoading, isSuccess])
-
-  useEffect(() => {
-    if (toggleState.isLoading) {
-      toast.loading('Updating course settings…', { id: 'course-completion-option' })
-      return
-    }
     if (toggleState.isError) {
       toast.error(getApiErrorMessage(toggleState.error), { id: 'course-completion-option' })
       return
@@ -61,10 +37,6 @@ export default function InstructorDashboard() {
   }, [toggleState.data, toggleState.error, toggleState.isError, toggleState.isLoading, toggleState.isSuccess])
 
   useEffect(() => {
-    if (uploadState.isLoading) {
-      toast.loading('Uploading course part…', { id: 'course-part-upload' })
-      return
-    }
     if (uploadState.isError) {
       toast.error(getApiErrorMessage(uploadState.error), { id: 'course-part-upload' })
       return
@@ -76,18 +48,6 @@ export default function InstructorDashboard() {
     }
     toast.success(getApiSuccessMessage(uploadState.data, 'Course part uploaded.'), { id: 'course-part-upload' })
   }, [uploadState.data, uploadState.error, uploadState.isError, uploadState.isLoading, uploadState.isSuccess])
-
-  useEffect(() => {
-    if (studentsQuery.isLoading || studentsQuery.isFetching) {
-      toast.loading('Loading your enrolled students…', { id: 'tutor-students' })
-      return
-    }
-    if (studentsQuery.isError) {
-      toast.error(getApiErrorMessage(studentsQuery.error), { id: 'tutor-students' })
-    } else if (studentsQuery.data) {
-      toast.success(getApiSuccessMessage(studentsQuery.data, 'Student roster loaded.'), { id: 'tutor-students' })
-    }
-  }, [studentsQuery.data, studentsQuery.error, studentsQuery.isError, studentsQuery.isFetching, studentsQuery.isLoading])
 
   function submitPart(courseid: string, event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -126,7 +86,7 @@ export default function InstructorDashboard() {
         {isLoading && <p className="card p-6 text-sm text-muted" role="status">Loading your courses…</p>}
         {isError && (
           <div className="rounded-card border border-error/40 bg-error/10 p-5 text-sm" role="alert">
-            <p>Courses could not be loaded. Check the notification for details and try again.</p>
+            <p>Courses could not be loaded. Please try again.</p>
             <button type="button" className="btn btn-s mt-4" onClick={() => void refetch()}>Try again</button>
           </div>
         )}
@@ -208,7 +168,7 @@ export default function InstructorDashboard() {
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <div><h2 id="student-roster-heading" className="t-h3">Enrolled students</h2><p className="mt-1 text-sm text-muted">Students enrolled across your courses.</p></div>
         </div>
-        {studentsQuery.isError && <p role="alert" className="rounded-ui border border-error/40 bg-error/10 p-4 text-sm">Student roster could not be loaded. See the notification for details.</p>}
+        {studentsQuery.isError && <p role="alert" className="rounded-ui border border-error/40 bg-error/10 p-4 text-sm">Student roster could not be loaded. Please try again.</p>}
         {!studentsQuery.isLoading && !studentsQuery.isError && (studentsQuery.data?.payload?.length ?? 0) === 0 && <p className="rounded-ui bg-surface p-5 text-sm text-muted">No students are enrolled in your courses yet.</p>}
         {studentsQuery.data?.payload && studentsQuery.data.payload.length > 0 && (
           <ul className="card divide-y divide-line">

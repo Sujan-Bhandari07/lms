@@ -32,20 +32,12 @@ export default function CourseOverview() {
   const [startingEnrollment, setStartingEnrollment] = useState(false)
   const course = data?.payload
 
-  useEffect(() => {
-    if (isLoading) toast.loading('Loading course details…', { id: 'course-detail' })
-    else if (isError) toast.error(getApiErrorMessage(error), { id: 'course-detail' })
-    else if (course) toast.success(getApiSuccessMessage(data, 'Course details loaded.'), { id: 'course-detail' })
-  }, [course, data, error, isError, isLoading])
-
   async function enterCourse() {
     if (!course || startingEnrollment || enrollState.isLoading || paymentState.isLoading) return
     setStartingEnrollment(true)
-    toast.loading('Checking your enrollment…', { id: 'course-enrollment' })
     try {
       const current = await getEnrollments().unwrap()
       if (current.payload?.some((item) => item._id === course._id)) {
-        toast.success('Opening your course.', { id: 'course-enrollment' })
         router.push(`/learn/${course._id}`)
         return
       }
@@ -97,7 +89,6 @@ export default function CourseOverview() {
         toast.error(result.message || 'Enrollment could not be completed.', { id: 'course-enrollment' })
         return
       }
-      toast.success(getApiSuccessMessage(result, 'You are enrolled.'), { id: 'course-enrollment' })
       router.push(`/learn/${course._id}`)
     } catch (requestError) {
       toast.error(getApiErrorMessage(requestError), { id: 'course-enrollment' })
@@ -109,7 +100,6 @@ export default function CourseOverview() {
   async function submitComment(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!comment.trim()) return
-    toast.loading('Posting your comment…', { id: 'course-comment' })
     try {
       const result = await postComment({ courseid, comment: comment.trim() }).unwrap()
       if (!result.success) {
@@ -124,7 +114,6 @@ export default function CourseOverview() {
   }
 
   async function submitRating() {
-    toast.loading('Submitting your rating…', { id: 'course-rating' })
     try {
       const result = await postRating({ courseid, rating }).unwrap()
       if (!result.success) {
@@ -145,7 +134,7 @@ export default function CourseOverview() {
       <main className="wrap grid min-h-[65vh] content-center">
         <div className="max-w-lg rounded-card border border-error/40 bg-error/10 p-6" role="alert">
           <h1 className="t-h3">Course unavailable</h1>
-          <p className="mt-2 text-sm text-muted">This course may not exist or may not have been approved for the catalog.</p>
+          <p className="mt-2 text-sm text-muted">{getApiErrorMessage(error) || 'This course may not exist or may not have been approved for the catalog.'}</p>
           <div className="mt-5 flex gap-3"><button className="btn btn-s" onClick={() => void refetch()}>Try again</button><Link className="btn btn-p" href="/courses">Browse courses</Link></div>
         </div>
       </main>

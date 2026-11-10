@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import { I } from './Icon'
 import Avatar from './Avatar'
@@ -22,8 +21,6 @@ function submittedDate(value?: string) {
 }
 
 export default function AdminDashboard() {
-  const requestStarted = useRef(false)
-  const tutorRequestStarted = useRef(false)
   const { data, isLoading, isFetching, isError, error, refetch } = useGetPendingCoursesQuery()
   const {
     data: tutorData,
@@ -37,46 +34,6 @@ export default function AdminDashboard() {
   const [verifyTutor, tutorVerificationState] = useVerifyTutorApplicationMutation()
   const courses = data?.payload ?? []
   const tutors = tutorData?.payload ?? []
-
-  useEffect(() => {
-    if (isLoading || isFetching) {
-      if (!requestStarted.current) {
-        toast.loading('Loading course review queue…', { id: 'admin-course-queue' })
-      }
-      requestStarted.current = true
-      return
-    }
-    if (!requestStarted.current) return
-    requestStarted.current = false
-    if (isError) {
-      toast.error(getApiErrorMessage(error), { id: 'admin-course-queue' })
-    } else if (data) {
-      toast.success(
-        getApiSuccessMessage(data, `${courses.length} courses awaiting review.`),
-        { id: 'admin-course-queue' },
-      )
-    }
-  }, [courses.length, data, error, isError, isFetching, isLoading])
-
-  useEffect(() => {
-    if (tutorsLoading || tutorsFetching) {
-      if (!tutorRequestStarted.current) {
-        toast.loading('Loading tutor verification queue…', { id: 'admin-tutor-queue' })
-      }
-      tutorRequestStarted.current = true
-      return
-    }
-    if (!tutorRequestStarted.current) return
-    tutorRequestStarted.current = false
-    if (tutorsError) {
-      toast.error(getApiErrorMessage(tutorError), { id: 'admin-tutor-queue' })
-    } else if (tutorData) {
-      toast.success(
-        getApiSuccessMessage(tutorData, `${tutors.length} tutors awaiting verification.`),
-        { id: 'admin-tutor-queue' },
-      )
-    }
-  }, [tutorData, tutorError, tutors.length, tutorsError, tutorsFetching, tutorsLoading])
 
   function approve(courseid: string, coursename: string) {
     void toast.promise(approveCourse({ courseid }).unwrap(), {
@@ -123,7 +80,7 @@ export default function AdminDashboard() {
 
         {isError && (
           <div className="rounded-card border border-error/40 bg-error/10 p-5 text-sm" role="alert">
-            <p>We couldn’t load the review queue. Check the notification for details and try again.</p>
+            <p>We couldn’t load the review queue. Please try again.</p>
             <button type="button" className="btn btn-s mt-4" onClick={() => void refetch()}>
               Try again
             </button>
@@ -208,7 +165,7 @@ export default function AdminDashboard() {
 
         {tutorsError && (
           <div className="rounded-card border border-error/40 bg-error/10 p-5 text-sm" role="alert">
-            <p>We couldn’t load tutor applications. Check the notification for details and try again.</p>
+            <p>We couldn’t load tutor applications. Please try again.</p>
             <button type="button" className="btn btn-s mt-4" onClick={() => void refetchTutors()}>
               Try again
             </button>

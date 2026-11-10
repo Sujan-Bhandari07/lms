@@ -23,6 +23,7 @@ export class AppController {
 
   @MessagePattern("createcourse")
   createcourse(@Payload() data: CreateCourseDto) {
+    console.log(data)
     return this.coursesService.createcourse(data);
   }
 

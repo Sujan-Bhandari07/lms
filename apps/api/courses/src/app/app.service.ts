@@ -48,6 +48,7 @@ export class AppService {
   }
 
   async createcourse(data: ICreateCourse) {
+    console.log(data)
     const {
       title,
       desc,
@@ -72,6 +73,7 @@ export class AppService {
     if (!course) {
       throw new InternalServerErrorException("Something went wrong.");
     }
+    console.log("created of courses")
     return success("Course created successfully.", course);
   }
 

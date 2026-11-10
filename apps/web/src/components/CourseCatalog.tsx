@@ -1,12 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import LiveCourseCard from './LiveCourseCard'
 import { I } from './Icon'
 import { useGetPublicCoursesQuery } from '@/src/services/api/Userapi'
-import { getApiErrorMessage, getApiSuccessMessage } from '@/src/lib/apiFeedback'
-import { toast } from 'sonner'
 
 const SORTS = [
   ['newest', 'Newest'],
@@ -21,7 +19,6 @@ export default function CourseCatalog() {
   const [price, setPrice] = useState<'all' | 'free'>('all')
   const [sort, setSort] = useState('newest')
   const [page, setPage] = useState(1)
-  const requestStarted = useRef(false)
   const minPrice = price === 'free' ? 0 : undefined
   const maxPrice = price === 'free' ? 0 : undefined
   const { data, isLoading, isFetching, isError, error, refetch } = useGetPublicCoursesQuery({
@@ -34,21 +31,6 @@ export default function CourseCatalog() {
   })
   const pageData = data?.payload
   const courses = pageData?.items ?? []
-
-  useEffect(() => {
-    if (isLoading || isFetching) {
-      if (!requestStarted.current) toast.loading('Loading courses…', { id: 'public-courses' })
-      requestStarted.current = true
-      return
-    }
-    if (!requestStarted.current) return
-    requestStarted.current = false
-    if (isError) {
-      toast.error(getApiErrorMessage(error), { id: 'public-courses' })
-    } else if (data) {
-      toast.success(getApiSuccessMessage(data, `${pageData?.total ?? 0} courses found.`), { id: 'public-courses' })
-    }
-  }, [data, error, isError, isFetching, isLoading, pageData?.total])
 
   function changeFilters(change: () => void) {
     change()
@@ -104,7 +86,7 @@ export default function CourseCatalog() {
 
         {isError && (
           <div className="rounded-card border border-error/40 bg-error/10 p-5 text-sm" role="alert">
-            <p>We couldn’t load courses. Check the notification for details and try again.</p>
+            <p>We couldn’t load courses. Please try again.</p>
             <button type="button" className="btn btn-s mt-4" onClick={() => void refetch()}>Try again</button>
           </div>
         )}
